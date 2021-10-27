@@ -9,47 +9,44 @@
       </div>
     </div>
     <div class="grid justify-items-end items-center h-16 mr-10">
-      <div class="flex h-full">
-        <div class="relative flex mr-10">
-          <i
+      <div class="grid justify-items-center grid-cols-2 h-full">
+        <div
+          class="
+            grid
+            justify-items-center
+            items-center
+            relative
+            h-full
+            w-16
+            cursor-pointer
+            mr-4
+            hover:opacity-50
+          "
+          @click="goAlert()"
+        >
+          <i class="fas fa-bell text-white text-3xl" />
+          <div
             class="
-              fas
-              col-span-2
-              relative
-              flex
+              grid
+              justify-items-center
               items-center
-              justify-center
-              fa-bell
-              text-white text-3xl
-              h-full
-              w-14
-              cursor-pointer
+              absolute
+              right-0
+              bottom-2
+              h-6
+              w-6
+              rounded-full
+              bg-red-600
+              text-white text-xs
+              font-bold
             "
-            @click="goAlert()"
           >
-            <div
-              class="
-                flex
-                justify-center
-                items-center
-                absolute
-                right-0
-                bottom-2
-                h-6
-                w-6
-                rounded-full
-                bg-red-600
-                text-white text-xs
-                font-bold
-              "
-            >
-              1
-            </div>
-          </i>
+            1
+          </div>
         </div>
 
         <div
-          class="h-full w-16 flex justify-center items-center cursor-pointer"
+          class="h-full w-16 grid justify-items-center items-center cursor-pointer hover:opacity-50"
           @click="goProfile()"
         >
           <i class="fas fa-user-circle text-white text-5xl"></i>
