@@ -10,16 +10,16 @@
     </div>
     <div class="grid justify-items-end items-center h-16 mr-10">
       <div class="flex h-full">
-        <div class="relative mr-10">
+        <div class="relative flex mr-10">
           <i
             class="
               fas
               col-span-2
+              relative
               flex
               items-center
               justify-center
               fa-bell
-              relative
               text-white text-3xl
               h-full
               w-14
