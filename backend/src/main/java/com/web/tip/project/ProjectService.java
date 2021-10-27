@@ -22,7 +22,7 @@ public class ProjectService {
     MemberDao memberDao;
     MemberHasTeamDao memberHasTeamDao;
 
-    public List<ProjectDto> getProjectList(String nickname) {
+    public List<ProjectDto> getProjectList(String nickname, boolean isDone) {
 
         Optional<Member> memberOpt = memberDao.findMemberByNickname(nickname);
         if(memberOpt.isPresent()) {
@@ -48,10 +48,14 @@ public class ProjectService {
 
 
                 if(teamOpt.isPresent()){
-                    // 해당 팀이 존재하면 그 팀이 속해 있는 프로젝트의 아이디를 통해 프로젝트 정보를 projectList에 추가한다.
-                    Project project = projectDao.findProjectById(teamOpt.get().getProjectId()).get();
-                    projectList.add(ProjectAdaptor.entityToDto(project));
 
+                    // 해당 팀이 존재하면 그 팀이 속해 있는 프로젝트의 아이디를 통해 프로젝트 정보를 가져온다.
+                    Project project = projectDao.findProjectById(teamOpt.get().getProjectId()).get();
+
+                    // 진행 중인 프로젝트 목록인지 완료된 프로젝트 목록인지 구분하여 projectList에 추가한다.
+                    if(project.isDone() == isDone) {
+                        projectList.add(ProjectAdaptor.entityToDto(project));
+                    }
                 } else {
                     return null;
                 }

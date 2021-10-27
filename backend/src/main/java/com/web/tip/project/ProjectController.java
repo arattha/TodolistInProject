@@ -28,10 +28,10 @@ public class ProjectController {
     // 프로젝트 목록 반환
     @GetMapping("/getProjectList")
     @ApiOperation(value = "프로젝트 목록 반환")
-    public Object getProject(@RequestParam String nickname){
-        log.info("프로젝트 목록 반환");
+    public Object getProject(@RequestParam String nickname, @RequestParam boolean isDone){
+        log.info((isDone ? "완료된 " : "진행 중인 ") + "프로젝트 목록 반환");
 
-        List<ProjectDto> projectList = projectService.getProjectList(nickname);
+        List<ProjectDto> projectList = projectService.getProjectList(nickname, isDone);
         BasicResponse result = new BasicResponse();
 
         if(projectList != null){
