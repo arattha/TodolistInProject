@@ -31,19 +31,19 @@ public class ProjectController {
     public Object getProject(@RequestParam String nickname){
         log.info("프로젝트 목록 반환");
 
-        Optional<Project> projectOpt = projectService.getProjectList(nickname);
+        List<ProjectDto> projectList = projectService.getProjectList(nickname);
         BasicResponse result = new BasicResponse();
 
-        if(projectOpt.isPresent()){
+        if(projectList != null){
 
             result.status = true;
             result.data = "success";
-            result.object = projectOpt.get();
+            result.object = projectList;
 
         } else {
 
-            result.status = true;
-            result.data = "success";
+            result.status = false;
+            result.data = "fail";
             result.object = null;
 
         }

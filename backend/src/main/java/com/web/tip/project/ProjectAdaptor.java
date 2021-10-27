@@ -5,7 +5,6 @@ public class ProjectAdaptor {
     public static ProjectDto entityToDto(Project project){
 
         return ProjectDto.builder()
-                .id(project.getId())
                 .name(project.getName())
                 .desc(project.getDesc())
                 .isDone(project.isDone())
@@ -18,7 +17,6 @@ public class ProjectAdaptor {
     public static Project dtoToEntity(ProjectDto projectDto){
 
         return Project.builder()
-                .id(projectDto.getId())
                 .name(projectDto.getName())
                 .desc(projectDto.getDesc())
                 .isDone(projectDto.isDone())
