@@ -1,14 +1,17 @@
 <template>
   <div class="bg-headerGray h-16 grid grid-cols-2">
     <div class="h-16 ml-2 flex">
-      <div class="flex h-full w-auto ml-3 cursor-pointer" @click="goMain()">
-        <img src="@/images/logo.png" />
+      <div
+        class="grid justify-items-center items-center h-full w-auto ml-3 cursor-pointer mr-10"
+        @click="goMain()"
+      >
+        <img src="@/images/logo.png" class="h-12 w-auto" />
       </div>
       <div v-if="projectName" class="flex justify-center items-center text-white text-2xl">
         {{ projectName }}
       </div>
     </div>
-    <div class="grid justify-items-end items-center h-16 mr-10">
+    <div class="grid justify-items-end items-center h-16 mr-5">
       <div class="grid justify-items-center grid-cols-2 h-full">
         <div
           class="
@@ -19,29 +22,29 @@
             h-full
             w-16
             cursor-pointer
-            mr-4
+            mr-2
             hover:opacity-50
           "
           @click="goAlert()"
         >
-          <i class="fas fa-bell text-white text-3xl" />
+          <i class="fas fa-bell text-white text-lg" />
           <div
             class="
               grid
               justify-items-center
               items-center
               absolute
-              right-0
-              bottom-2
-              h-6
-              w-6
+              right-3
+              bottom-4
+              h-4
+              w-4
               rounded-full
               bg-red-600
               text-white text-xs
               font-bold
             "
           >
-            1
+            9+
           </div>
         </div>
 
@@ -49,7 +52,7 @@
           class="h-full w-16 grid justify-items-center items-center cursor-pointer hover:opacity-50"
           @click="goProfile()"
         >
-          <i class="fas fa-user-circle text-white text-5xl"></i>
+          <i class="fas fa-user-circle text-white text-3xl"></i>
         </div>
       </div>
     </div>
