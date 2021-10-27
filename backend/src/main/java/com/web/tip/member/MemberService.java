@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @AllArgsConstructor
 public class MemberService {
-
     private AuthenticationManagerBuilder authenticationManagerBuilder;
     private PasswordEncoder passwordEncoder;
     private TokenProvider tokenProvider;
@@ -200,5 +200,27 @@ public class MemberService {
     public Member getMemberByNickName(String nickName) {
         return memberDao.findMemberByNickname(nickName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Optional<Member> getMember(String nickname){
+
+        try{
+            return memberDao.findMemberByNickname(nickname);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<Member> getAllMember(){
+
+        try{
+            return memberDao.findAll();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

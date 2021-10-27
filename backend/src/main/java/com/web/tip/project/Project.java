@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
 public class Project {
 
     @Id

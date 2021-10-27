@@ -174,4 +174,51 @@ public class MemberController {
         
         return cookie;
     }
+
+    /*임시*/
+    @GetMapping("/info")
+    public Object getMember(@RequestParam String nickname){
+
+        Optional<Member> member = memberService.getMember(nickname);
+        BasicResponse result = new BasicResponse();
+
+        if(member.isPresent()){
+
+            result.status = true;
+            result.data = "success";
+            result.object = member.get();
+
+        } else {
+
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+        }
+
+        return result;
+    }
+
+    @GetMapping()
+    public Object getAllMember(){
+
+        List<Member> memberList = memberService.getAllMember();
+        BasicResponse result = new BasicResponse();
+
+        if(memberList != null){
+
+            result.status = true;
+            result.data = "success";
+            result.object = memberList;
+
+        } else {
+
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+        }
+
+        return result;
+    }
 }
