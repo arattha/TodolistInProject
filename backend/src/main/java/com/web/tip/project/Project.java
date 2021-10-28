@@ -1,9 +1,8 @@
 package com.web.tip.project;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Setter
