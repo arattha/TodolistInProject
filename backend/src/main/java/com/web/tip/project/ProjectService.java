@@ -2,6 +2,8 @@ package com.web.tip.project;
 
 import com.web.tip.common.MemberHasTeam;
 import com.web.tip.common.MemberHasTeamDao;
+import com.web.tip.error.CustomException;
+import com.web.tip.error.ErrorCode;
 import com.web.tip.member.Member;
 import com.web.tip.member.MemberDao;
 import com.web.tip.team.Team;
@@ -11,8 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,39 +37,48 @@ public class ProjectService {
             // 사용자의 Id를 읽어온다.
             String memberId = member.getId();
 
-            // 읽어온 사용자의 Id로 사용자가 속해있는 팀의 목록을 불러온다.
-            List<MemberHasTeam> MHTList = memberHasTeamDao.findMemberHasTeamByMemberId(memberId);
+            try{
 
-            // 사용자가 담당 중인 프로젝트 목록
-            List<ProjectDto> projectList = new ArrayList<>();
+                // 읽어온 사용자의 Id로 사용자가 속해있는 팀의 목록을 불러온다.
+                List<MemberHasTeam> MHTList = memberHasTeamDao.findMemberHasTeamByMemberId(memberId);
 
-            for(MemberHasTeam mht: MHTList) {
+                // 사용자가 담당 중인 프로젝트 목록
+                List<ProjectDto> projectList = new ArrayList<>();
 
-                // 사용자가 속한 팀의 아이디를 읽어온다.
-                String teamId = mht.getTeamId();
+                for(MemberHasTeam mht: MHTList) {
 
-                // 팀의 아이디로 그 팀에 대한 정보를 불러온다.
-                Optional<Team> teamOpt = teamDao.findTeamById(teamId);
+                    // 사용자가 속한 팀의 아이디를 읽어온다.
+                    String teamId = mht.getTeamId();
+
+                    // 팀의 아이디로 그 팀에 대한 정보를 불러온다.
+                    Optional<Team> teamOpt = teamDao.findTeamById(teamId);
 
 
-                if(teamOpt.isPresent()){
+                    if(teamOpt.isPresent()){
 
-                    // 해당 팀이 존재하면 그 팀이 속해 있는 프로젝트의 아이디를 통해 프로젝트 정보를 가져온다.
-                    Project project = projectDao.findProjectById(teamOpt.get().getProjectId()).get();
+                        // 해당 팀이 존재하면 그 팀이 속해 있는 프로젝트의 아이디를 통해 프로젝트 정보를 가져온다.
+                        Project project = projectDao.findProjectById(teamOpt.get().getProjectId()).get();
 
-                    // 진행 중인 프로젝트 목록인지 완료된 프로젝트 목록인지 구분하여 projectList에 추가한다.
-                    if(project.isDone() == isDone) {
-                        projectList.add(ProjectAdaptor.entityToDto(project));
+                        // 진행 중인 프로젝트 목록인지 완료된 프로젝트 목록인지 구분하여 projectList에 추가한다.
+                        if(project.isDone() == isDone) {
+                            projectList.add(ProjectAdaptor.entityToDto(project));
+                        }
+                    } else {
+                        throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
                     }
-                } else {
-                    return null;
+
                 }
 
+                return projectList;
+
+            } catch (Exception e){
+                e.printStackTrace();
+
+                throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
             }
 
-            return projectList;
-        } else{
-            return null;
+        } else {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
     }
@@ -125,5 +134,16 @@ public class ProjectService {
             return false;
         }
 
+    }
+
+    @Transactional
+    public boolean existsProjectCheck(String projectName) {
+        return projectDao.existsByName(projectName);
+    }
+
+    @Transactional
+    public Project getProjectByProjectName(String projectName){
+        return projectDao.findProjectByName(projectName)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
     }
 }
