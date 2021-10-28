@@ -54,7 +54,7 @@ public class ProjectController {
 
     // 프로젝트 목록 반환
     @PostMapping("/addProject")
-    @ApiOperation(value = "프로젝트 목록 반환")
+    @ApiOperation(value = "프로젝트 추가")
     public Object addProject(@RequestBody ProjectDto projectDto){
         log.info("프로젝트 추가");
 

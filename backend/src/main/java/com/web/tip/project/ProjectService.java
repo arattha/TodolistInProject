@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -89,6 +91,7 @@ public class ProjectService {
 
             // 중복되지 않은 pid를 새로운 프로젝트 Entity인 project변수에 set
             project.setId(pid);
+
             // project table에 insert
             projectDao.save(project);
 
