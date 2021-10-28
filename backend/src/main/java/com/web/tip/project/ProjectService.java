@@ -104,4 +104,26 @@ public class ProjectService {
         }
 
     }
+
+    @Transactional
+    public boolean finishProject(String projectName) {
+
+        // 프로젝트 이름으로 완료시킬 프로젝트 Entity를 가져온다.
+        Optional<Project> projectOpt = projectDao.findProjectByName(projectName);
+
+        if(projectOpt.isPresent()){
+            // 해당 프로젝트가 존재한다면
+
+            // done값을 바꾸고 save 함수를 통해 업데이트를 진행한다.
+            Project project = projectOpt.get();
+            project.setDone(!project.isDone());
+
+            projectDao.save(project);
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 }
