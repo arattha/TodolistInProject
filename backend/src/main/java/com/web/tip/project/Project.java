@@ -1,17 +1,18 @@
 package com.web.tip.project;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @ToString
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
 public class Project {
 
     @Id
