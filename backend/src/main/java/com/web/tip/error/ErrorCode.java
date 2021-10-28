@@ -27,6 +27,8 @@ public enum ErrorCode {
     NICKNAME_DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
 
 
+    /* 500 Internal Server Error : 서버 내 문제 발생 */
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 알 수 없는 오류가 발생했습니다"),
     ;
 
 
