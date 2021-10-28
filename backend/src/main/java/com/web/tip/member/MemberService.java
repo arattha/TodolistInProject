@@ -201,25 +201,4 @@ public class MemberService {
         return memberDao.findMemberByNickname(nickName)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
-
-    public Optional<Member> getMember(String nickname){
-
-        try{
-            return memberDao.findMemberByNickname(nickname);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public List<Member> getAllMember(){
-
-        try{
-            return memberDao.findAll();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
