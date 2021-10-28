@@ -2,9 +2,7 @@ package com.web.tip.project;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,8 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
 public class Project {
 
     @Id
