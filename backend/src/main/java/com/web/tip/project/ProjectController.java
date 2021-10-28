@@ -51,4 +51,30 @@ public class ProjectController {
         return result;
 
     }
+
+    // 프로젝트 목록 반환
+    @PostMapping("/addProject")
+    @ApiOperation(value = "프로젝트 목록 반환")
+    public Object addProject(@RequestBody ProjectDto projectDto){
+        log.info("프로젝트 추가");
+
+        BasicResponse result = new BasicResponse();
+
+        if(projectService.addProject(projectDto)){
+
+            result.status = true;
+            result.data = "success";
+            result.object = null;
+
+        } else {
+
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+        }
+
+        return result;
+
+    }
 }
