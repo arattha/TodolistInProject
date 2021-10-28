@@ -15,8 +15,8 @@ import java.util.List;
 @Setter
 public class CreationTeamRequest {
 
-    String projectId;
+    String projectName;
     String teamName;
-    List<Member> memberList;
+    List<String> memberList;
 
 }

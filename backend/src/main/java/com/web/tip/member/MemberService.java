@@ -220,7 +220,6 @@ public class MemberService {
         } catch (Exception e){
             e.printStackTrace();
         }
-
         return null;
     }
 }
