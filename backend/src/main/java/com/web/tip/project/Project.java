@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
 @Setter
 @Getter
 @ToString
@@ -19,14 +20,13 @@ public class Project {
     private String id;
 
     private String name;
+    @Column(name = "`desc`")
     private String desc;
 
     private boolean isDone;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-
-    @Column(insertable = false)
     private LocalDateTime regDate;
 
 }

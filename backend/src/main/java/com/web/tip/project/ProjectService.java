@@ -6,9 +6,13 @@ import com.web.tip.member.Member;
 import com.web.tip.member.MemberDao;
 import com.web.tip.team.Team;
 import com.web.tip.team.TeamDao;
+import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +26,7 @@ public class ProjectService {
     MemberDao memberDao;
     MemberHasTeamDao memberHasTeamDao;
 
+    @Transactional
     public List<ProjectDto> getProjectList(String nickname, boolean isDone) {
 
         Optional<Member> memberOpt = memberDao.findMemberByNickname(nickname);
@@ -65,6 +70,37 @@ public class ProjectService {
             return projectList;
         } else{
             return null;
+        }
+
+    }
+
+    @Transactional
+    public boolean addProject(ProjectDto projectDto) {
+
+        try{
+
+            // Dto로 받은 project를 Entity로 변경
+            Project project = ProjectAdaptor.dtoToEntity(projectDto);
+
+            // 새로운 프로젝트를 위한 id 생성
+            IdGenerator idGenerator = new IdGenerator();
+            String pid = idGenerator.generateId();
+            while(projectDao.existsById(pid)){
+                pid = idGenerator.generateId();
+            }
+
+            // 중복되지 않은 pid를 새로운 프로젝트 Entity인 project변수에 set
+            project.setId(pid);
+
+            // project table에 insert
+            projectDao.save(project);
+
+            return true;
+
+        } catch (Exception e){
+            e.printStackTrace();
+
+            return false;
         }
 
     }
