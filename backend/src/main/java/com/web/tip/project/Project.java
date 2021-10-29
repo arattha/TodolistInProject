@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
 @ToString
 @Builder
@@ -26,5 +25,9 @@ public class Project {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime regDate;
+
+    public void changeProjectState(){
+        this.isDone = !this.isDone;
+    }
 
 }
