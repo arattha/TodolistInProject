@@ -5,7 +5,6 @@ import javax.persistence.*;
 
 @Entity
 @Builder
-@Table(name="member_has_team")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
