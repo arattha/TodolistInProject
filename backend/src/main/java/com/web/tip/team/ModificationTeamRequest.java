@@ -9,8 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class CreationTeamRequest {
-    String projectId;
-    String teamName;
+public class ModificationTeamRequest {
+    String teamId;
     List<String> memberList;
 }
