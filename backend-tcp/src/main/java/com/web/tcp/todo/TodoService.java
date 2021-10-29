@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class TodoService {
 
-    private IdGenerator idGenerator;
     TodoDao todoDao;
 
     @Transactional
@@ -19,6 +18,7 @@ public class TodoService {
 
         try{
 
+            IdGenerator idGenerator = new IdGenerator();
             String tid = idGenerator.generateId();
             while(todoDao.existsById(tid)){
                 tid = idGenerator.generateId();

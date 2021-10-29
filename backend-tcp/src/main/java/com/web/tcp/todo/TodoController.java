@@ -2,12 +2,13 @@ package com.web.tcp.todo;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,21 +19,15 @@ import java.util.List;
 @RequestMapping("/todo")
 public class TodoController {
 
+    private final SimpMessagingTemplate template;
+
     TodoService todoService;
 
-    // /receive를 메시지를 받을 endpoint로 설정합니다.
-    @MessageMapping("/addTodo")
-
-    // /send로 메시지를 반환합니다.
-    @SendTo("/sendTodo")
-
-    // SocketHandler는 1) /receive에서 메시지를 받고, /send로 메시지를 보내줍니다.
-    // 정의한 SocketVO를 1) 인자값, 2) 반환값으로 사용합니다.
-    public List<Todo> addTodo(TodoDto todoDto) {
-
-        log.info("새로운 Todo 추가" + todoDto.toString());
-
-        return todoService.addTodo(todoDto);
-
+    // client가 '/server/addTodo'경로로 새롭게 추가할 Todo에 관한 데이터를 전송
+    // Todo를 포함하고 있는 project를 구독 중인 client들에게 send
+    @MessageMapping(value = "/addTodo")
+    public void addTodo(TodoDto todoDto){
+        template.convertAndSend("/client/todo/" + todoDto.getProject_id(), todoService.addTodo(todoDto));
     }
+
 }

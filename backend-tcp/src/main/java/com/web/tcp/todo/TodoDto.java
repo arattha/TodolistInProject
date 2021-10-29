@@ -2,7 +2,6 @@ package com.web.tcp.todo;
 
 import lombok.*;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class TodoDto {
 
     @Id
