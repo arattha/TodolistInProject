@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProjectDto {
 
+    private String id;
+
     private String name;
     private String desc;
 
