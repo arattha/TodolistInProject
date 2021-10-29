@@ -8,9 +8,9 @@ import lombok.*;
 @ToString
 @Builder
 public class SignUpRequest {
-    String password;
-    String nickname;
-    String name;
-//    String email;
-//    String phone;
+    private String password;
+    private String nickname;
+    private String name;
+    private String email;
+    private String phone;
 }

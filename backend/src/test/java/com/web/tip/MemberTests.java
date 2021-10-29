@@ -31,7 +31,7 @@ public class MemberTests {
     @Test
     void testSignup(){
         Assertions.assertTrue(memberService.signUp(SignUpRequest.builder()
-                .nickname("choi")
+                .nickname("test")
                 .name("최준오")
                 .password("1234")
                 .build()));
@@ -39,7 +39,6 @@ public class MemberTests {
         Member member = memberService.getMemberByNickName("choi");
         log.info(member.toString());
         Assertions.assertTrue(memberService.existsUserCheck("choi"));
-
     }
 
     @Test
