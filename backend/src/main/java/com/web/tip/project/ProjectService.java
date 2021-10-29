@@ -131,7 +131,7 @@ public class ProjectService {
 
             return true;
         } else {
-            return false;
+            throw new CustomException(ErrorCode.PROJECT_NOT_FOUND);
         }
 
     }
