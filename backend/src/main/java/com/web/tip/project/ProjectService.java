@@ -4,11 +4,14 @@ import com.web.tip.common.MemberHasTeam;
 import com.web.tip.common.MemberHasTeamDao;
 import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
+import com.web.tip.error.JpaErrorCode;
+import com.web.tip.error.JpaException;
 import com.web.tip.member.MemberDao;
 import com.web.tip.team.Team;
 import com.web.tip.team.TeamDao;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -61,18 +64,16 @@ public class ProjectService {
     public boolean addProject(ProjectDto projectDto) {
 
         try{
-
-            // Dto로 받은 project를 Entity로 변경
-            Project project = ProjectAdaptor.dtoToEntity(projectDto);
-
             // 새로운 프로젝트를 위한 id 생성
             String pid = idGenerator.generateId();
             while(projectDao.existsById(pid)){
                 pid = idGenerator.generateId();
             }
+            // Dto로 받은 project를 Entity로 변경
+            projectDto.setId(pid);
 
+            Project project = ProjectAdaptor.dtoToEntity(projectDto);
             // 중복되지 않은 pid를 새로운 프로젝트 Entity인 project변수에 set
-            project.setId(pid);
 
             // project table에 insert
             projectDao.save(project);
@@ -88,25 +89,16 @@ public class ProjectService {
     }
 
     @Transactional
-    public boolean finishProject(String projectName) {
-
+    public boolean finishProject(String projectId) {
         // 프로젝트 이름으로 완료시킬 프로젝트 Entity를 가져온다.
-        Optional<Project> projectOpt = projectDao.findProjectByName(projectName);
-
-        if(projectOpt.isPresent()){
-            // 해당 프로젝트가 존재한다면
-
-            // done값을 바꾸고 save 함수를 통해 업데이트를 진행한다.
-            Project project = projectOpt.get();
-            project.setDone(!project.isDone());
-
+        Project project = projectDao.findById(projectId).orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
+        project.changeProjectState();
+        try{
             projectDao.save(project);
-
-            return true;
-        } else {
-            throw new CustomException(ErrorCode.PROJECT_NOT_FOUND);
+        } catch (DataAccessException e) {
+            throw new JpaException(JpaErrorCode.SAVE_PROJECT_ERROR);
         }
-
+        return true;
     }
 
     @Transactional

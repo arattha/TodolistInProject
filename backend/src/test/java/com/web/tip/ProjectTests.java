@@ -39,4 +39,11 @@ public class ProjectTests {
         Assertions.assertTrue(projectService.existsProjectCheck("test_project"));
     }
 
+    @Test
+    void changeDoneProject(){
+        Assertions.assertTrue(projectService.finishProject("7400990673069"));
+        Project project = projectService.getProjectByProjectName("음악");
+        log.info(project.toString());
+    }
+
 }

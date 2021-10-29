@@ -86,12 +86,12 @@ public class ProjectController {
     // 프로젝트 상태변경
     @PutMapping("/changeDone")
     @ApiOperation(value = "프로젝트 진행 / 완료")
-    public Object changeDoneProject(@RequestParam String projectName) {
+    public Object changeDoneProject(@RequestParam String projectId) {
         log.info("프로젝트 진행 / 완료");
 
         final BasicResponse result = new BasicResponse();
 
-        if (projectService.finishProject(projectName)) {
+        if (projectService.finishProject(projectId)) {
 
             result.status = true;
             result.data = SUCCESS;
