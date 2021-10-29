@@ -5,7 +5,9 @@ import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
+import com.web.tip.member.response.MyPageResponse;
 import com.web.tip.member.security.Authority;
+import com.web.tip.mypage.MemberDetailService;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ public class MemberService {
     private TokenProvider tokenProvider;
     private MemberDao memberDao;
     private RedisTemplate<String, Object> redisTemplate;
-
+    private MemberDetailService memberDetailService;
     private IdGenerator idGenerator;
 
     @Transactional
@@ -46,7 +47,7 @@ public class MemberService {
                 .ifPresent(member -> new CustomException(ErrorCode.MEMBER_DUPLICATE_RESOURCE));
 
         String mid = idGenerator.generateId();
-        while(memberDao.existsById(mid)){
+        while (memberDao.existsById(mid)) {
             mid = idGenerator.generateId();
         }
 
@@ -60,6 +61,7 @@ public class MemberService {
                 .build();
 
         memberDao.save(member);
+        memberDetailService.createMemberDetail(member, signUpRequest);
 
         return true;
     }
@@ -131,7 +133,7 @@ public class MemberService {
 
             // Token 검증
             if (!tokenProvider.validateToken(getRefreshToken) || !tokenProvider.validateToken(getAccessToken)
-                    || !getAccessToken.equals(at)) {
+                    || !at.equals(getAccessToken)) {
                 return Optional.empty();
             }
 
@@ -199,6 +201,11 @@ public class MemberService {
     @Transactional
     public Member getMemberByNickName(String nickName) {
         return memberDao.findMemberByNickname(nickName)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Member getMemberById(String id){
+        return memberDao.findMemberById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
