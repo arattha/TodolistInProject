@@ -7,6 +7,10 @@ module.exports = {
         headerGray: '#4c5870',
         contentGray: '#EBEDEC',
         menuGray: '#A2A9Af',
+        itemGray: '#DADADA',
+      },
+      height: {
+        contentHeight: 'calc(100% - 4rem)',
       },
     },
   },
