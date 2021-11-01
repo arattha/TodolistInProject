@@ -20,17 +20,16 @@ public class Todo {
 
     private String title;
     private String status;
-    @Column(name = "project_id")
     private String projectId;
-    private String member_id;
-    private String team_id;
+    private String memberId;
+    private String teamId;
 
-    private LocalDateTime modify_date;
-    private LocalDateTime reg_date;
+    private LocalDateTime modifyDate;
+    private LocalDateTime regDate;
 
-    public void changeBelong(String team_id, String member_id){
-        this.team_id = team_id;
-        this.member_id = member_id;
+    public void changeBelong(String teamId, String memberId){
+        this.teamId = teamId;
+        this.memberId = memberId;
     }
 
     public void changeTitle(String title){
@@ -42,6 +41,6 @@ public class Todo {
     }
 
     public void changeModifyDate(){
-        this.modify_date = LocalDateTime.now();
+        this.modifyDate = LocalDateTime.now();
     }
 }

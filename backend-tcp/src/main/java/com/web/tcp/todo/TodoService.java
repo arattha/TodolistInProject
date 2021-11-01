@@ -36,11 +36,11 @@ public class TodoService {
                     .id(tid)
                     .title(todoDto.getTitle())
                     .status(todoDto.getStatus())
-                    .projectId(todoDto.getProject_id())
-                    .team_id(todoDto.getTeam_id())
-                    .member_id(todoDto.getMember_id())
-                    .modify_date(todoDto.getModify_date())
-                    .reg_date(todoDto.getReg_date())
+                    .projectId(todoDto.getProjectId())
+                    .teamId(todoDto.getTeamId())
+                    .memberId(todoDto.getMemberId())
+                    .modifyDate(todoDto.getModifyDate())
+                    .regDate(todoDto.getRegDate())
                     .build();
 
             todoDao.save(todo);
@@ -75,18 +75,19 @@ public class TodoService {
         List<TodoDto> todoDtoList = new ArrayList<>();
         try{
             TodoDto todoDto = new TodoDto();
-            List<Todo> todoList = todoDao.findTodoByProjectId(projectId);
+
+            List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
             for(Todo todo : todoList) {
 
                 todoDto = todoDto.builder()
                         .id(todo.getId())
                         .title(todo.getTitle())
                         .status(todo.getStatus())
-                        .project_id(todo.getProjectId())
-                        .team_id(todo.getTeam_id())
-                        .member_id(todo.getMember_id())
-                        .modify_date(todo.getModify_date())
-                        .reg_date(todo.getReg_date())
+                        .projectId(todo.getProjectId())
+                        .teamId(todo.getTeamId())
+                        .memberId(todo.getMemberId())
+                        .modifyDate(todo.getModifyDate())
+                        .regDate(todo.getRegDate())
                         .build();
 
                 todoDtoList.add(todoDto);
@@ -132,40 +133,40 @@ public class TodoService {
 
                 todo.changeStatus(todoDto.getStatus());
 
-                diff.put("writer", todoDto.getMember_id());
+                diff.put("writer", todoDto.getMemberId());
                 diff.put("beforeStatus", todo.getStatus());
                 diff.put("afterStatus", todoDto.getStatus());
-                diff.put("diff", todoDto.getMember_id() + "님께서 상태를 " + todo.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+                diff.put("diff", todoDto.getMemberId() + "님께서 상태를 " + todo.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
             }
             // team
-            else if (checkTeam(todo.getTeam_id(), todoDto.getTeam_id())) {
+            else if (checkTeam(todo.getTeamId(), todoDto.getTeamId())) {
 
-                todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
+                todo.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
 
-                diff.put("writer", todoDto.getMember_id());
-                diff.put("beforeTeamId", todo.getTeam_id());
-                diff.put("afterTeamId", todoDto.getTeam_id());
+                diff.put("writer", todoDto.getMemberId());
+                diff.put("beforeTeamId", todo.getTeamId());
+                diff.put("afterTeamId", todoDto.getTeamId());
 
-                String changeStr = todoDto.getMember_id() + "님께서 해당 할일의 팀을 " + todo.getTeam_id() + "에서 " + todoDto.getTeam_id() + "(으)로 변경했습니다.";
+                String changeStr = todoDto.getMemberId() + "님께서 해당 할일의 팀을 " + todo.getTeamId() + "에서 " + todoDto.getTeamId() + "(으)로 변경했습니다.";
 
-                if (todoDto.getMember_id() != null) {
+                if (todoDto.getMemberId() != null) {
                     // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
-                    diff.put("beforeMember", todo.getMember_id());
-                    diff.put("afterMember", todoDto.getMember_id());
-                    changeStr += "\n할일의 담당자가 " + todo.getMember_id() + "님에서 " + todoDto.getMember_id() + "님으로 변경되었습니다.";
+                    diff.put("beforeMember", todo.getMemberId());
+                    diff.put("afterMember", todoDto.getMemberId());
+                    changeStr += "\n할일의 담당자가 " + todo.getMemberId() + "님에서 " + todoDto.getMemberId() + "님으로 변경되었습니다.";
                 }
 
                 diff.put("diff", changeStr);
             }
             // 담당자만 변경되었을 때
-            else if (checkMember(todo.getMember_id(), todoDto.getMember_id())) {
+            else if (checkMember(todo.getMemberId(), todoDto.getMemberId())) {
 
-                todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
+                todo.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
 
-                diff.put("beforeMember", todo.getMember_id());
-                diff.put("afterMember", todoDto.getMember_id());
-                diff.put("diff", "할일의 담당자가 " + todo.getMember_id() + "님에서 " + todoDto.getMember_id() + "님으로 변경되었습니다.");
+                diff.put("beforeMember", todo.getMemberId());
+                diff.put("afterMember", todoDto.getMemberId());
+                diff.put("diff", "할일의 담당자가 " + todo.getMemberId() + "님에서 " + todoDto.getMemberId() + "님으로 변경되었습니다.");
             }
 
             todo.changeModifyDate();

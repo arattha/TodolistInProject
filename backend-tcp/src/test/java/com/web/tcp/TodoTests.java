@@ -23,20 +23,20 @@ public class TodoTests {
     @Test
     void createTodo(){
         Assertions.assertTrue(todoService.addTodo(TodoDto.builder()
-                .title("test")
+                .title("test2")
                 .status("접수")
-                .project_id("1231231231231")
-                .team_id("1231231231231")
-                .member_id("1231231231231")
-                .modify_date(LocalDateTime.now())
-                .reg_date(LocalDateTime.now())
+                .projectId("1231231231231")
+                .teamId("1231231231231")
+                .memberId("1231231231231")
+                .modifyDate(LocalDateTime.now())
+                .regDate(LocalDateTime.now())
                 .build()
         ), "Todo 추가 실패");
     }
 
     @Test
     void getTodoList(){
-        Assertions.assertTrue(todoService.getTodoList("1231231231231") != null, "Todo 목록 반환 실패");
+        Assertions.assertNotNull(todoService.getTodoList("1231231231231"), "Todo 목록 반환 실패");
     }
 
     @Test
@@ -47,11 +47,11 @@ public class TodoTests {
                 .id(todo.getId())
                 .title("test")
                 .status("접수")
-                .project_id("1231231231231")
-                .team_id("2342342342342")
-                .member_id("1231231231231")
-                .modify_date(LocalDateTime.now())
-                .reg_date(LocalDateTime.now())
+                .projectId("1231231231231")
+                .teamId("2342342342342")
+                .memberId("1231231231231")
+                .modifyDate(LocalDateTime.now())
+                .regDate(LocalDateTime.now())
                 .build()
         ), "Todo 이동 실패");
     }
