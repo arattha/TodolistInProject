@@ -1,7 +1,6 @@
 package com.web.tip.todo.content.record;
 
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
-import com.web.tip.todo.Todo;
 import com.web.tip.todo.content.TodoContent;
 import lombok.*;
 import org.hibernate.annotations.Type;

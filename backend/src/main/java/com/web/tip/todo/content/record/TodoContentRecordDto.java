@@ -1,7 +1,5 @@
 package com.web.tip.todo.content.record;
 
-import com.web.tip.todo.content.TodoContent;
-import com.web.tip.todo.content.url.TodoUrl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +19,7 @@ public class TodoContentRecordDto {
 
     private LocalDateTime modifyDate;
 
-    public static TodoContentRecordDto entityToDto(TodoContentRecord todoContentRecord){
+    public static TodoContentRecordDto entityToDto(TodoContentRecord todoContentRecord) {
         return TodoContentRecordDto.builder()
                 .id(todoContentRecord.getId())
                 .diff(todoContentRecord.getDiff())

@@ -21,7 +21,7 @@ public class TodoContentDto {
 
     private LocalDateTime regDate;
 
-    public static TodoContentDto entityToDto(TodoContent todoContent){
+    public static TodoContentDto entityToDto(TodoContent todoContent) {
         return TodoContentDto.builder()
                 .id(todoContent.getId())
                 .contents(todoContent.getContents())

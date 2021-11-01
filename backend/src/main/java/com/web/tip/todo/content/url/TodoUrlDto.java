@@ -21,7 +21,7 @@ public class TodoUrlDto {
 
     private LocalDateTime regDate;
 
-    public static TodoUrlDto entityToDto(TodoUrl todoUrl, String writer){
+    public static TodoUrlDto entityToDto(TodoUrl todoUrl, String writer) {
         return TodoUrlDto.builder()
                 .id(todoUrl.getId())
                 .url(todoUrl.getUrl())
