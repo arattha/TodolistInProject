@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view class="h-screen w-auto bg-contentGray" />
+  <div id="app" class="h-screen bg-contentGray">
+    <router-view />
   </div>
 </template>
 
