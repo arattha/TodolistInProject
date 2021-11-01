@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +29,7 @@ public class TodoService {
                     .id(tid)
                     .title(todoDto.getTitle())
                     .status(todoDto.getStatus())
-                    .project_id(todoDto.getProject_id())
+                    .projectId(todoDto.getProject_id())
                     .team_id(todoDto.getTeam_id())
                     .member_id(todoDto.getMember_id())
                     .modify_date(todoDto.getModify_date())
@@ -42,5 +43,35 @@ public class TodoService {
         }
 
         return todoDao.findAll();
+    }
+
+    @Transactional
+    public Object getTodo(String projectId) {
+
+        List<TodoDto> todoDtoList = new ArrayList<>();
+        try{
+            TodoDto todoDto = new TodoDto();
+            List<Todo> todoList = todoDao.findTodoByProjectId(projectId);
+            for(Todo todo : todoList) {
+
+                todoDto = todoDto.builder()
+                        .id(todo.getId())
+                        .title(todo.getTitle())
+                        .status(todo.getStatus())
+                        .project_id(todo.getProjectId())
+                        .team_id(todo.getTeam_id())
+                        .member_id(todo.getMember_id())
+                        .modify_date(todo.getModify_date())
+                        .reg_date(todo.getReg_date())
+                        .build();
+
+                todoDtoList.add(todoDto);
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return todoDtoList;
     }
 }

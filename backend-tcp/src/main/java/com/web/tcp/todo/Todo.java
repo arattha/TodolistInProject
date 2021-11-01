@@ -2,6 +2,7 @@ package com.web.tcp.todo;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
@@ -20,7 +21,8 @@ public class Todo {
 
     private String title;
     private String status;
-    private String project_id;
+    @Column(name = "project_id")
+    private String projectId;
     private String member_id;
     private String team_id;
 
