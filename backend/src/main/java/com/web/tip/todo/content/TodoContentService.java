@@ -91,6 +91,7 @@ public class TodoContentService {
         if (!todoContent.isUse()) {
             throw new CustomException(TODO_CONTENT_NOT_FOUND);
         }
+        String beforeContents = todoContent.getContents();
 
         TodoContent modifiedContent = TodoContent.builder()
                 .id(todoContent.getId())
@@ -104,7 +105,8 @@ public class TodoContentService {
         TodoContent savedContent = todoContentDao.save(modifiedContent);
 
         modifyTodoUrls(savedContent);
-        saveTodoContentRecord(savedContent, todoContent.getContents());
+        saveTodoContentRecord(savedContent, beforeContents);
+
         return TodoContentDto.entityToDto(savedContent);
     }
 
@@ -129,9 +131,9 @@ public class TodoContentService {
         return TodoContentDto.entityToDto(todoContentDao.save(removedTodoContent));
     }
 
-    private void saveTodoContentRecord(TodoContent todoContent, String before){
+    private void saveTodoContentRecord(TodoContent todoContent, String before) {
         String id = idGenerator.generateId();
-        while(todoContentRecordDao.existsById(id)){
+        while (todoContentRecordDao.existsById(id)) {
             id = idGenerator.generateId();
         }
 
