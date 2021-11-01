@@ -1,5 +1,5 @@
 <template>
-  <div class="grid justify-items-center items-center h-screen">
+  <div class="grid justify-items-center items-center">
     <div class="grid grid-rows-2 justify-items-center items-center h-3/4">
       <div class="flex h-full w-full justify-center items-center">
         <img src="@/images/login.png" class="h-3/4 w-auto" />
@@ -25,6 +25,7 @@
             "
             placeholder="아이디"
             @keyup.enter="idKeyupEnter()"
+            v-model="id"
           />
         </div>
         <div class="grid items-center justify-items-center">
@@ -47,6 +48,7 @@
             "
             placeholder="비밀번호"
             @keyup.enter="pwKeyupEnter()"
+            v-model="password"
           />
         </div>
         <div class="grid items-center justify-items-center">
@@ -95,23 +97,57 @@
 </template>
 
 <script>
+import { loginUser } from '@/api/auth.js';
+import { mapActions } from 'vuex';
+
 export default {
   name: 'Login',
+  data() {
+    return {
+      id: '',
+      password:'',
+    };
+  },
   methods: {
+    ...mapActions(['toggle_isLogin', 'set_id', 'set_nickname', 'set_type', 'toggle_isLoading']),
     login() {
-      alert('로그인 로직!');
+        loginUser(
+          {
+            nickname:this.id,
+            password:this.password
+          }
+          ,
+          (res) => {
+            if (res.object.member) {
+              this.set_id(res.object.id);
+              this.set_nickname(res.object.nickname);
+              this.toggle_isLogin(true);
+
+              alert('로그인 성공');
+              this.$router.push('Main');
+            } else {
+              console.log(res.object)
+              alert('회원가입이 필요합니다. \n회원가입 페이지로 이동합니다.');
+              this.$router.push('Signup');
+            }
+          },
+          (error) => {
+            alert('문제가 발생했습니다. 다시 시도해주세요.');
+            console.log(error);
+          }
+        );
     },
     goSignup() {
       this.$router.push('/signup');
     },
     idKeyupEnter() {
-      alert('id에서 엔터!');
+      this.login();
     },
     pwKeyupEnter() {
-      alert('pw에서 엔터!');
+      this.login();
     },
     loginKeyupEnter() {
-      alert('login버튼 에서 엔터!');
+      this.login();
     },
   },
 };

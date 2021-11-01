@@ -1,4 +1,4 @@
-package com.web.tip.member;
+package com.web.tcp.member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

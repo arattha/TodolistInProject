@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-headerGray h-16 grid grid-cols-2">
+  <div class="bg-headerGray h-16 w-full grid grid-cols-2">
     <div class="h-16 ml-2 flex">
       <div
         class="grid justify-items-center items-center h-full w-auto ml-3 cursor-pointer mr-10"
@@ -7,7 +7,10 @@
       >
         <img src="@/images/logo.png" class="h-12 w-auto" />
       </div>
-      <div v-if="projectName" class="flex justify-center items-center text-white text-2xl">
+      <div
+        v-if="projectName"
+        class="sm:flex justify-center items-center text-white text-2xl hidden"
+      >
         {{ projectName }}
       </div>
     </div>

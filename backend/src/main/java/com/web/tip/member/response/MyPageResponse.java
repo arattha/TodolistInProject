@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 public class MyPageResponse {
     private String name;
-    private String nickName;
+    private String nickname;
     private Authority authority;
     private String email;
     private String phone;
@@ -22,7 +22,7 @@ public class MyPageResponse {
     public static MyPageResponse entityToResponse(Member member, MemberDetailDto memberDetailDto){
         return MyPageResponse.builder()
                 .name(member.getName())
-                .nickName(member.getNickname())
+                .nickname(member.getNickname())
                 .authority(member.getAuthority())
                 .email(memberDetailDto.getEmail())
                 .phone(memberDetailDto.getPhone())

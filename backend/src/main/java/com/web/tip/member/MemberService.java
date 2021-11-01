@@ -5,7 +5,6 @@ import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
-import com.web.tip.member.response.MyPageResponse;
 import com.web.tip.member.security.Authority;
 import com.web.tip.mypage.MemberDetailService;
 import com.web.tip.util.IdGenerator;
@@ -194,8 +193,8 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean existsUserCheck(String nickName) {
-        return memberDao.existsByNickname(nickName);
+    public boolean existsUserCheck(String nickname) {
+        return memberDao.existsByNickname(nickname);
     }
 
     @Transactional
