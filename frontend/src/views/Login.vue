@@ -1,5 +1,5 @@
 <template>
-  <div class="grid justify-items-center items-center h-screen">
+  <div class="grid justify-items-center items-center">
     <div class="grid grid-rows-2 justify-items-center items-center h-3/4">
       <div class="flex h-full w-full justify-center items-center">
         <img src="@/images/login.png" class="h-3/4 w-auto" />
