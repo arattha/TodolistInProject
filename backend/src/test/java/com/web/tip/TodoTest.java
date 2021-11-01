@@ -28,18 +28,6 @@ public class TodoTest {
     private TodoDao todoDao;
 
     @Autowired
-    private TodoRecordDao todoRecordDao;
-
-    @Autowired
-    private TodoContentDao todoContentDao;
-
-    @Autowired
-    private TodoContentRecordDao todoContentRecordDao;
-
-    @Autowired
-    private TodoUrlDao todoUrlDao;
-
-    @Autowired
     private IdGenerator idGenerator;
 
     @Autowired
@@ -55,7 +43,7 @@ public class TodoTest {
     void testTodo(){
         Member member = memberDao.findMemberByNickname("test")
                 .get();
-        Project project = projectDao.findProjectByName("test")
+        Project project = projectDao.findProjectByName("test_project")
                 .get();
         Team team = teamDao.findTeamByProjectId(project.getId())
                 .get(0);
@@ -73,6 +61,4 @@ public class TodoTest {
         Todo savedTodo = todoDao.save(todo);
         Assertions.assertEquals(savedTodo.getId(), todo.getId());
     }
-
-
 }
