@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
 @ToString
 @Builder
@@ -28,4 +27,21 @@ public class Todo {
 
     private LocalDateTime modify_date;
     private LocalDateTime reg_date;
+
+    public void changeBelong(String team_id, String member_id){
+        this.team_id = team_id;
+        this.member_id = member_id;
+    }
+
+    public void changeTitle(String title){
+        this.title = title;
+    }
+
+    public void changeStatus(String status){
+        this.status = status;
+    }
+
+    public void changeModifyDate(){
+        this.modify_date = LocalDateTime.now();
+    }
 }
