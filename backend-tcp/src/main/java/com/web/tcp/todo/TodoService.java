@@ -2,6 +2,8 @@ package com.web.tcp.todo;
 
 import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
+import com.web.tcp.member.Member;
+import com.web.tcp.member.MemberDao;
 import com.web.tcp.todoRecord.TodoRecord;
 import com.web.tcp.todoRecord.TodoRecordDao;
 import com.web.tcp.util.IdGenerator;
@@ -18,6 +20,7 @@ import java.util.*;
 @AllArgsConstructor
 public class TodoService {
 
+    MemberDao memberDao;
     TodoDao todoDao;
     TodoRecordDao todoRecordDao;
 
@@ -118,6 +121,16 @@ public class TodoService {
 
             String todoId = todoDto.getId();
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+            Todo todoTmp = Todo.builder()
+                    .id(todo.getId())
+                    .title(todo.getTitle())
+                    .status(todo.getStatus())
+                    .projectId(todo.getProjectId())
+                    .teamId(todo.getTeamId())
+                    .memberId(todo.getMemberId())
+                    .modifyDate(todo.getModifyDate())
+                    .regDate(todo.getRegDate())
+                    .build();
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
@@ -128,58 +141,73 @@ public class TodoService {
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
 
+            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            String beforeWriter = member.getName();
+
             // status
-            if (checkStatus(todo.getStatus(), todoDto.getStatus())) {
+            if (checkStatus(todoTmp.getStatus(), todoDto.getStatus())) {
 
                 todo.changeStatus(todoDto.getStatus());
 
-                diff.put("writer", todoDto.getMemberId());
-                diff.put("beforeStatus", todo.getStatus());
+                diff.put("writer", beforeWriter);
+                diff.put("beforeStatus", todoTmp.getStatus());
                 diff.put("afterStatus", todoDto.getStatus());
-                diff.put("diff", todoDto.getMemberId() + "님께서 상태를 " + todo.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+                diff.put("diff", beforeWriter + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
             }
             // team
-            else if (checkTeam(todo.getTeamId(), todoDto.getTeamId())) {
+            else if (checkTeam(todoTmp.getTeamId(), todoDto.getTeamId())) {
 
-                todo.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
+                todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
 
-                diff.put("writer", todoDto.getMemberId());
-                diff.put("beforeTeamId", todo.getTeamId());
+                diff.put("writer", beforeWriter);
+                diff.put("beforeTeamId", todoTmp.getTeamId());
                 diff.put("afterTeamId", todoDto.getTeamId());
 
-                String changeStr = todoDto.getMemberId() + "님께서 해당 할일의 팀을 " + todo.getTeamId() + "에서 " + todoDto.getTeamId() + "(으)로 변경했습니다.";
+                String changeStr = beforeWriter + "님께서 해당 할일의 팀을 " + todoTmp.getTeamId() + "에서 " + todoDto.getTeamId() + "(으)로 변경했습니다.";
 
                 if (todoDto.getMemberId() != null) {
                     // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
-                    diff.put("beforeMember", todo.getMemberId());
-                    diff.put("afterMember", todoDto.getMemberId());
-                    changeStr += "\n할일의 담당자가 " + todo.getMemberId() + "님에서 " + todoDto.getMemberId() + "님으로 변경되었습니다.";
+
+                    Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                    String nextWriter = nextMember.getName();
+
+                    diff.put("beforeMember", beforeWriter);
+                    diff.put("afterMember", nextWriter);
+                    changeStr += "\n할일의 담당자가 " + beforeWriter + "님에서 " + nextWriter + "님으로 변경되었습니다.";
                 }
 
                 diff.put("diff", changeStr);
             }
             // 담당자만 변경되었을 때
-            else if (checkMember(todo.getMemberId(), todoDto.getMemberId())) {
+            else if (checkMember(todoTmp.getMemberId(), todoDto.getMemberId())) {
 
-                todo.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
+                todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
 
-                diff.put("beforeMember", todo.getMemberId());
-                diff.put("afterMember", todoDto.getMemberId());
-                diff.put("diff", "할일의 담당자가 " + todo.getMemberId() + "님에서 " + todoDto.getMemberId() + "님으로 변경되었습니다.");
+                Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                String nextWriter = nextMember.getName();
+
+                diff.put("beforeMember", beforeWriter);
+                diff.put("afterMember", nextWriter);
+                diff.put("diff", "할일의 담당자가 " + beforeWriter + "님에서 " + nextWriter + "님으로 변경되었습니다.");
             }
 
-            todo.changeModifyDate();
+            if(!diff.isEmpty()) {
 
-            TodoRecord todoRecord = TodoRecord.builder()
-                    .id(todoRecordId)
-                    .diff(diff)
-                    .todo_id(todo.getId())
-                    .modify_date(LocalDateTime.now())
-                    .build();
 
-            todoRecordDao.save(todoRecord);
-            todoDao.save(todo);
+                TodoRecord todoRecord = TodoRecord.builder()
+                        .id(todoRecordId)
+                        .diff(diff)
+                        .todo_id(todoTmp.getId())
+                        .modify_date(LocalDateTime.now())
+                        .build();
+
+                todoRecordDao.save(todoRecord);
+            }
+
+            todoTmp.changeModifyDate();
+            todoDao.save(todoTmp);
+
         } catch (Exception e){
             e.printStackTrace();
 
