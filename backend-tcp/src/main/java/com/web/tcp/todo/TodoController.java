@@ -23,14 +23,16 @@ public class TodoController {
     // Todo를 포함하고 있는 project를 구독 중인 client들에게 send
     @MessageMapping(value = "/addTodo")
     public void addTodo(TodoDto todoDto){
-        template.convertAndSend("/client/todo/" + todoDto.getProject_id(), todoService.addTodo(todoDto));
+        String projectId = todoDto.getProject_id();
+        todoService.addTodo(todoDto);
+        template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
     }
 
     // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
     // 해당 프로젝트를 구독 중인 client들에게 send
     @MessageMapping(value = "/getTodo")
     public void getTodo(String projectId){
-        template.convertAndSend("/client/todo/" + projectId, todoService.getTodo(projectId));
+        template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
     }
 
     // client가 '/server/moveTodo'경로로 이동한 TodoDto 전송
@@ -39,7 +41,7 @@ public class TodoController {
     public void moveTodo(TodoDto todoDto){
         String projectId = todoDto.getProject_id();
         todoService.moveTodo(todoDto);
-        template.convertAndSend("/client/todo/" + projectId, todoService.getTodo(projectId));
+        template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
     }
 
 }

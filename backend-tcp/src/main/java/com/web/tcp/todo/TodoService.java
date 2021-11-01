@@ -6,12 +6,14 @@ import com.web.tcp.todoRecord.TodoRecord;
 import com.web.tcp.todoRecord.TodoRecordDao;
 import com.web.tcp.util.IdGenerator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class TodoService {
@@ -20,7 +22,7 @@ public class TodoService {
     TodoRecordDao todoRecordDao;
 
     @Transactional
-    public List<Todo> addTodo(TodoDto todoDto) {
+    public boolean addTodo(TodoDto todoDto) {
 
         try{
 
@@ -43,15 +45,32 @@ public class TodoService {
 
             todoDao.save(todo);
 
+            String todoRecordId = idGenerator.generateId();
+            while(todoRecordDao.existsById(todoRecordId)){
+                todoRecordId = idGenerator.generateId();
+            }
+
+            Map<String, String> diff = new HashMap<>();
+            diff.put("diff", todo.getTitle() + "이(가) 생성되었습니다.");
+            TodoRecord todoRecord = TodoRecord.builder()
+                    .id(todoRecordId)
+                    .diff(diff)
+                    .todo_id(todo.getId())
+                    .modify_date(LocalDateTime.now())
+                    .build();
+
+            todoRecordDao.save(todoRecord);
+            return true;
+
         } catch(Exception e){
             e.printStackTrace();
         }
 
-        return todoDao.findAll();
+        return false;
     }
 
     @Transactional
-    public Object getTodo(String projectId) {
+    public Object getTodoList(String projectId) {
 
         List<TodoDto> todoDtoList = new ArrayList<>();
         try{
@@ -75,76 +94,98 @@ public class TodoService {
 
         } catch (Exception e){
             e.printStackTrace();
+            return null;
         }
 
         return todoDtoList;
     }
 
     @Transactional
-    public void moveTodo(TodoDto todoDto) {
+    public Todo getTodo(String todoTitle) {
+
+        Todo todo = todoDao.findTodoByTitle(todoTitle).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        return todo;
+
+    }
+
+    @Transactional
+    public boolean moveTodo(TodoDto todoDto) {
         // 해당 Todo의 변경된 데이터를 DB에 반영하고
         // 이를 todoRecord DB에 저장
 
-        String todoId = todoDto.getId();
-        Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        try {
 
-        IdGenerator idGenerator = new IdGenerator();
-        String todoRecordId = idGenerator.generateId();
+            String todoId = todoDto.getId();
+            Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
-        // todo변경 시 diff에 저장
-        Map<String, String> diff = new HashMap<>();
-
-        // status
-        if(checkStatus(todo.getStatus(), todoDto.getStatus())){
-
-            todo.changeStatus(todoDto.getStatus());
-
-            diff.put("writer", todoDto.getMember_id());
-            diff.put("beforeStatus", todo.getStatus());
-            diff.put("afterStatus", todoDto.getStatus());
-            diff.put("diff", todoDto.getMember_id() + "님께서 상태를 " + todo.getStatus() + "에서 " + todoDto.getStatus() +"로 변경했습니다.");
-
-        }
-        // team
-        else if(checkTeam(todo.getTeam_id(), todoDto.getTeam_id())){
-
-            todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
-
-            diff.put("writer", todoDto.getMember_id());
-            diff.put("beforeTeamId", todo.getTeam_id());
-            diff.put("afterTeamId", todoDto.getTeam_id());
-
-            String changeStr = todoDto.getMember_id() + "님께서 해당 할일의 팀을 " + todo.getTeam_id() + "에서 " + todoDto.getTeam_id() +"로 변경했습니다.";
-
-            if(todoDto.getMember_id() != null){
-                // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
-                diff.put("beforeMember", todo.getMember_id());
-                diff.put("afterMember", todoDto.getMember_id());
-                changeStr += "\n할일의 담당자가 " + todo.getMember_id() + "에서 " + todoDto.getMember_id() +"로 변경되었습니다.";
+            IdGenerator idGenerator = new IdGenerator();
+            String todoRecordId = idGenerator.generateId();
+            while(todoRecordDao.existsById(todoRecordId)){
+                todoRecordId = idGenerator.generateId();
             }
 
-            diff.put("diff", changeStr);
+            // todo변경 시 diff에 저장
+            Map<String, String> diff = new HashMap<>();
+
+            // status
+            if (checkStatus(todo.getStatus(), todoDto.getStatus())) {
+
+                todo.changeStatus(todoDto.getStatus());
+
+                diff.put("writer", todoDto.getMember_id());
+                diff.put("beforeStatus", todo.getStatus());
+                diff.put("afterStatus", todoDto.getStatus());
+                diff.put("diff", todoDto.getMember_id() + "님께서 상태를 " + todo.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+
+            }
+            // team
+            else if (checkTeam(todo.getTeam_id(), todoDto.getTeam_id())) {
+
+                todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
+
+                diff.put("writer", todoDto.getMember_id());
+                diff.put("beforeTeamId", todo.getTeam_id());
+                diff.put("afterTeamId", todoDto.getTeam_id());
+
+                String changeStr = todoDto.getMember_id() + "님께서 해당 할일의 팀을 " + todo.getTeam_id() + "에서 " + todoDto.getTeam_id() + "(으)로 변경했습니다.";
+
+                if (todoDto.getMember_id() != null) {
+                    // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
+                    diff.put("beforeMember", todo.getMember_id());
+                    diff.put("afterMember", todoDto.getMember_id());
+                    changeStr += "\n할일의 담당자가 " + todo.getMember_id() + "님에서 " + todoDto.getMember_id() + "님으로 변경되었습니다.";
+                }
+
+                diff.put("diff", changeStr);
+            }
+            // 담당자만 변경되었을 때
+            else if (checkMember(todo.getMember_id(), todoDto.getMember_id())) {
+
+                todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
+
+                diff.put("beforeMember", todo.getMember_id());
+                diff.put("afterMember", todoDto.getMember_id());
+                diff.put("diff", "할일의 담당자가 " + todo.getMember_id() + "님에서 " + todoDto.getMember_id() + "님으로 변경되었습니다.");
+            }
+
+            todo.changeModifyDate();
+
+            TodoRecord todoRecord = TodoRecord.builder()
+                    .id(todoRecordId)
+                    .diff(diff)
+                    .todo_id(todo.getId())
+                    .modify_date(LocalDateTime.now())
+                    .build();
+
+            todoRecordDao.save(todoRecord);
+            todoDao.save(todo);
+        } catch (Exception e){
+            e.printStackTrace();
+
+            return false;
         }
-        // 담당자만 변경되었을 때
-        else if(checkMember(todo.getMember_id(), todoDto.getMember_id())){
 
-            todo.changeBelong(todoDto.getTeam_id(), todoDto.getMember_id());
-
-            diff.put("beforeMember", todo.getMember_id());
-            diff.put("afterMember", todoDto.getMember_id());
-            diff.put("diff","할일의 담당자가 " + todo.getMember_id() + "에서 " + todoDto.getMember_id() +"로 변경되었습니다.");
-        }
-
-        todo.changeModifyDate();
-
-        TodoRecord todoRecord = TodoRecord.builder()
-                .id(todoRecordId)
-                .diff(diff)
-                .modifyDate(LocalDateTime.now())
-                .build();
-
-        todoRecordDao.save(todoRecord);
-        todoDao.save(todo);
+        return true;
 
     }
 

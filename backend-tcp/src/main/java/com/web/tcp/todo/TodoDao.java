@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface TodoDao extends JpaRepository<Todo, String> {
 
     Optional<Todo> findTodoById(String id);
+    Optional<Todo> findTodoByTitle(String title);
     List<Todo> findTodoByProjectId(String project_id);
 }
