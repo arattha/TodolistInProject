@@ -1,58 +1,58 @@
 <template>
   <div class="flex flex-col h-full">
     <Header />
-    <div class="flex flex-shrink-0 bg-menuGray h-16">
-      <div class="grid grid-cols-3 items-center justify-items-center h-full mx-4 gap-4 w-96">
-        <div
-          class="
-            flex
-            justify-center
-            items-center
-            text-lg
-            font-black
-            cursor-pointer
-            h-full
-            w-full
-            hover:text-white
-          "
-        >
-          전체 할일
-        </div>
-        <div
-          class="
-            flex
-            justify-center
-            items-center
-            text-lg
-            font-black
-            cursor-pointer
-            h-full
-            w-full
-            hover:text-white
-          "
-        >
-          내 할일
-        </div>
-        <div
-          class="
-            flex
-            justify-center
-            items-center
-            text-lg
-            font-black
-            cursor-pointer
-            h-full
-            w-full
-            hover:text-white
-          "
-        >
-          진행 상황
-        </div>
+    <div class="flex flex-shrink-0 items-center bg-menuGray h-16">
+      <div
+        class="
+          flex
+          justify-center
+          items-center
+          text-lg
+          font-black
+          cursor-pointer
+          h-full
+          w-36
+          mr-5
+          hover:text-white
+        "
+      >
+        전체 할일
+      </div>
+      <div
+        class="
+          flex
+          justify-center
+          items-center
+          text-lg
+          font-black
+          cursor-pointer
+          h-full
+          w-36
+          mr-5
+          hover:text-white
+        "
+      >
+        내 할일
+      </div>
+      <div
+        class="
+          flex
+          justify-center
+          items-center
+          text-lg
+          font-black
+          cursor-pointer
+          h-full
+          w-36
+          hover:text-white
+        "
+      >
+        진행 상황
       </div>
     </div>
 
-    <div class="flex flex-col h-full">
-      <div class="grid grid-cols-2 items-center justify-items-center gap-5 my-5 mx-8 w-56">
+    <div class="flex overflow-auto flex-col">
+      <div class="flex my-5 mx-8 w-56">
         <button
           class="
             bg-itemGray
@@ -62,6 +62,7 @@
             w-24
             py-2
             px-4
+            mr-8
             rounded-lg
             shadow-md
             hover:bg-menuGray
@@ -98,8 +99,8 @@
         </button>
       </div>
 
-      <div id="scroll_div" class="flex overflow-x-auto items-center ml-8 mb-1 scroll_type1 h-full">
-        <div class="mb-2 mr-8" v-for="(teamInfo, index) in teamInfoList" :key="index">
+      <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1">
+        <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamInfoList" :key="index">
           <Total-Kanban :teamInfo="teamInfo" />
         </div>
       </div>
@@ -139,6 +140,33 @@ export default {
               name: '최광진',
               todoName: '회원가입',
             },
+            {
+              status: '접수',
+              name: '최광진',
+              todoName: '회원가입',
+            },
+            {
+              status: '접수',
+              name: '최광진',
+              todoName: '회원가입',
+            },
+            {
+              status: '접수',
+              name: '최광진',
+              todoName: '회원가입',
+            },
+            {
+              status: '접수',
+              name: '최광진',
+              todoName: '회원가입',
+            },
+
+            {
+              status: '접수',
+              name: '최광진',
+              todoName: '회원가입',
+            },
+
             {
               status: '접수',
               name: '최광진',

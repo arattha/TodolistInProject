@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-shrink-0 h-full w-96">
-    <div class="bg-itemGray rounded-lg shadow-lg w-full">
+  <div class="flex w-96">
+    <div class="flex flex-col bg-itemGray rounded-lg shadow-lg w-full">
       <div class="flex justify-between items-center px-5 py-2 my-3">
         <div class="flex border-b-2 w-24 pb-2 border-black text-xl font-black">
           {{ teamInfo.teamName }}
@@ -52,8 +52,8 @@
           <div class="w-1/2">진행중인 일 : {{ teamInfo.progressCnt }}</div>
         </div>
       </div>
-      <div class="overflow-y-auto h-96 scroll_type2">
-        <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
+      <div class="flex flex-col overflow-y-auto scroll_type2 h-full">
+        <div class="flex mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
           <Todo-Card :todoInfo="todoInfo" />
         </div>
       </div>

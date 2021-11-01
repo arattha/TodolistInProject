@@ -11,7 +11,7 @@
       rounded-lg
       cursor-pointer
       shadow-md
-      hover:bg-opacity-50
+      hover:bg-opacity-40
     "
     @click="clicktodo"
   >
@@ -22,7 +22,8 @@
       </div>
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5">
-          <i class="far fa-star"></i>
+          <!-- <i class="far fa-star"></i> -->
+          <i class="fas fa-star text-white"></i>
           <i class="fas fa-star text-yellow-400"></i>
         </div>
         <div
@@ -35,7 +36,7 @@
             bg-progress
             w-16
             h-8
-            text-xs
+            text-sm
             font-black
           "
         >
@@ -43,7 +44,7 @@
         </div>
         <div
           v-if="todoInfo.status === '접수'"
-          class="flex justify-center items-center rounded-2xl bg-add w-16 h-8 text-xs font-black"
+          class="flex justify-center items-center rounded-2xl bg-add w-16 h-8 text-sm font-black"
         >
           {{ todoInfo.status }}
         </div>
@@ -57,7 +58,7 @@
             bg-green-500
             w-16
             h-8
-            text-xs
+            text-sm
             font-black
           "
         >
@@ -65,7 +66,7 @@
         </div>
         <div
           v-if="todoInfo.status === '완료'"
-          class="flex justify-center items-center rounded-2xl bg-done w-16 h-8 text-xs font-black"
+          class="flex justify-center items-center rounded-2xl bg-done w-16 h-8 text-sm font-black"
         >
           {{ todoInfo.status }}
         </div>
