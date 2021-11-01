@@ -9,6 +9,6 @@ import lombok.*;
 @ToString
 @Builder
 public class LoginRequest {
-    private String nickName;
+    private String nickname;
     private String password;
 }
