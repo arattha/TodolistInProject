@@ -49,10 +49,10 @@ public class MemberController {
 
         result.status = true;
         result.data = SUCCESS;
-
-
         // 만약 존재하지 않는 유저라면 회원가입을 유도하기 위해 isMember를 false로 반환
-        if (!memberService.existsUserCheck(loginRequest.getNickName())) {
+
+        System.out.println(memberService.existsUserCheck(loginRequest.getNickname()));
+        if (!memberService.existsUserCheck(loginRequest.getNickname())) {
             loginResponse = LoginResponse.builder()
                     .isMember(false)
                     .build();
@@ -61,22 +61,26 @@ public class MemberController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
-        // 현재 mid의 Member 정보를 가져와 반환 객체인 loginResponse에 필요한 내용을 담는다.
-        Member member = memberService.getMemberByNickName(loginRequest.getNickName());
-
-        loginResponse = LoginResponse.builder()
-                .mid(member.getId())
-                .nickname(member.getNickname())
-                .isMember(true)
-                .build();
-
-        result.object = loginResponse;
-
         // 로그인을 처리하기 위한 토큰을 발급받고 쿠키에 담는다.
-        Optional<TokenDto> tokenDtoOptional = memberService.login(member.getPassword(), member.getNickname());
+        Optional<TokenDto> tokenDtoOptional = memberService.login(loginRequest.getPassword(), loginRequest.getNickname());
+        if(tokenDtoOptional.isPresent()){
+            // 현재 mid의 Member 정보를 가져와 반환 객체인 loginResponse에 필요한 내용을 담는다.
+            Member member = memberService.getMemberByNickName(loginRequest.getNickname());
 
-        Cookie cookie = getAuthCookie(tokenDtoOptional);
-        response.addCookie(cookie);
+            loginResponse = LoginResponse.builder()
+                    .mid(member.getId())
+                    .nickname(member.getNickname())
+                    .isMember(true)
+                    .build();
+
+            result.object = loginResponse;
+
+            Cookie cookie = getAuthCookie(tokenDtoOptional);
+            response.addCookie(cookie);
+        } else {
+            result.object = "fail";
+            result.status = false;
+        }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
