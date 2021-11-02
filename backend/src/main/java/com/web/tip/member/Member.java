@@ -1,6 +1,7 @@
 package com.web.tip.member;
 
 import com.web.tip.member.security.Authority;
+import com.web.tip.mypage.MemberDetail;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,4 +33,7 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    @OneToOne(mappedBy = "member")
+    private MemberDetail memberDetail;
 }
