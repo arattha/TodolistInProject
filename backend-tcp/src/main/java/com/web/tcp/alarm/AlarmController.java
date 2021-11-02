@@ -1,7 +1,5 @@
 package com.web.tcp.alarm;
 
-import com.web.tcp.todo.TodoDto;
-import com.web.tcp.todo.TodoService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -37,11 +35,12 @@ public class AlarmController {
 
     // client가 '/server/getAlarm'경로로 member 아이디 전송
     // 해당 member(client)에게 send
-    @MessageMapping(value = "/getAlarm")
-    public void getTodo(String memberId, String alarmId){
+    @MessageMapping(value = "/checkAlarm")
+    public void checkAlarm(String memberId, String alarmId){
 
         try{
             alarmId = (String) StringToJson(alarmId).get("alarmId");
+            memberId = (String) StringToJson(memberId).get("memberId");
             alarmService.checkAlarm(alarmId);
             template.convertAndSend("/client/alarm/" + memberId, alarmService.getAlarmList(alarmId));
         } catch(Exception e){

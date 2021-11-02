@@ -1,10 +1,12 @@
 package com.web.tcp.todo;
 
+import com.web.tcp.alarm.AlarmService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ public class TodoController {
 
     private final SimpMessagingTemplate template;
 
+    AlarmService alarmService;
     TodoService todoService;
 
     // client가 '/server/addTodo'경로로 새롭게 추가할 Todo에 관한 데이터를 전송
@@ -44,11 +47,20 @@ public class TodoController {
 
     // client가 '/server/moveTodo'경로로 이동한 TodoDto 전송
     // 수정된 Todo의 목록들을 해당 프로젝트를 구독 중인 client들에게 전송
-    @MessageMapping(value = "/moveTodo")
-    public void moveTodo(TodoDto todoDto){
+    @MessageMapping(value = "/moveTodo/{type}")
+    public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
+
+        if(type.equals("status")){
+            todoService.moveTodoStatus(todoDto);
+        } else if(type.equals("team")) {
+            todoService.moveTodoTeam(todoDto);
+        } else if(type.equals("member")){
+            todoService.moveTodoMember(todoDto);
+        } else {
+            return;
+        }
 
         String projectId = todoDto.getProjectId();
-        todoService.moveTodo(todoDto);
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
     }
 
