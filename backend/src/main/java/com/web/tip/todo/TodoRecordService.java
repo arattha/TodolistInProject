@@ -30,7 +30,7 @@ public class TodoRecordService {
 
         List<TodoRecordDto> todoRecordDtos = new ArrayList<>();
         for (TodoRecord todoRecord : todoRecords) {
-            todoRecordDtos.add(TodoRecordDto.entityToDto(todoRecord));
+            todoRecordDtos.add(TodoRecordDto.todoRecordToDto(todoRecord));
         }
         return todoRecordDtos;
     }

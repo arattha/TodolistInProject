@@ -36,9 +36,7 @@ public class MemberTests {
                 .password("1234")
                 .build()));
 
-        Member member = memberService.getMemberByNickName("choi");
-        log.info(member.toString());
-        Assertions.assertTrue(memberService.existsUserCheck("choi"));
+        Assertions.assertTrue(memberService.existsUserCheck("test"));
     }
 
     @Test
@@ -46,4 +44,8 @@ public class MemberTests {
         Assertions.assertTrue(memberService.login("1234", "choi").isPresent());
     }
 
+    @Test
+    void testOneToOneMapping(){
+        Assertions.assertNotNull(memberService.getMemberByNickName("test").getMemberDetail());
+    }
 }

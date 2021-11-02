@@ -19,6 +19,8 @@ public class TodoContentDto {
 
     private String writer;
 
+    private String profileImg;
+
     private LocalDateTime regDate;
 
     public static TodoContentDto entityToDto(TodoContent todoContent) {
@@ -26,6 +28,7 @@ public class TodoContentDto {
                 .id(todoContent.getId())
                 .contents(todoContent.getContents())
                 .writer(todoContent.getMember().getName())
+                .profileImg(todoContent.getMember().getMemberDetail().getProfileImg())
                 .regDate(todoContent.getRegDate())
                 .build();
     }
