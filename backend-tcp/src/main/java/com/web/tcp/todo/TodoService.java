@@ -56,12 +56,12 @@ public class TodoService {
             }
 
             Map<String, String> diff = new HashMap<>();
-            diff.put("diff", todo.getTitle() + "이(가) 생성되었습니다.");
+            diff.put("message", todo.getTitle() + "이(가) 생성되었습니다.");
             TodoRecord todoRecord = TodoRecord.builder()
                     .id(todoRecordId)
                     .diff(diff)
                     .todo_id(todo.getId())
-                    .modify_date(LocalDateTime.now())
+                    .modifyDate(LocalDateTime.now())
                     .build();
 
             todoRecordDao.save(todoRecord);
@@ -150,9 +150,9 @@ public class TodoService {
             todo.changeStatus(todoDto.getStatus());
 
             diff.put("writer", writer);
-            diff.put("beforeStatus", todoTmp.getStatus());
-            diff.put("afterStatus", todoDto.getStatus());
-            diff.put("diff", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+            diff.put("before", todoTmp.getStatus());
+            diff.put("after", todoDto.getStatus());
+            diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
             todoTmp.changeModifyDate();
 
@@ -160,12 +160,12 @@ public class TodoService {
                     .id(todoRecordId)
                     .diff(diff)
                     .todo_id(todoTmp.getId())
-                    .modify_date(LocalDateTime.now())
+                    .modifyDate(LocalDateTime.now())
                     .build();
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
-            alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("diff"), todoDto.getId());
+            alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
@@ -208,8 +208,8 @@ public class TodoService {
             todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
 
             diff.put("writer", writer);
-            diff.put("beforeTeamId", todoTmp.getTeamId());
-            diff.put("afterTeamId", todoDto.getTeamId());
+            diff.put("before", todoTmp.getTeamId());
+            diff.put("after", todoDto.getTeamId());
 
             String changeStr = writer + "님께서 해당 할일의 팀을 " + todoTmp.getTeamId() + "에서 " + todoDto.getTeamId() + "(으)로 변경했습니다.";
 
@@ -219,12 +219,12 @@ public class TodoService {
                 Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
                 String nextWriter = nextMember.getName();
 
-                diff.put("beforeMember", writer);
-                diff.put("afterMember", nextWriter);
+                diff.put("before", writer);
+                diff.put("after", nextWriter);
                 changeStr += "\n할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.";
             }
 
-            diff.put("diff", changeStr);
+            diff.put("message", changeStr);
 
             todoTmp.changeModifyDate();
 
@@ -232,11 +232,12 @@ public class TodoService {
                     .id(todoRecordId)
                     .diff(diff)
                     .todo_id(todoTmp.getId())
-                    .modify_date(LocalDateTime.now())
+                    .modifyDate(LocalDateTime.now())
                     .build();
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
+            alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
@@ -273,27 +274,39 @@ public class TodoService {
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
 
-            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-            String writer = member.getName();
+            String writer = "";
+            if(todoTmp.getMemberId() != null) {
+                Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                writer = member.getName();
+            }
 
             Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
             String nextWriter = nextMember.getName();
 
-            diff.put("beforeMember", writer);
-            diff.put("afterMember", nextWriter);
-            diff.put("diff", "할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.");
+            if(writer.equals("")){
+                diff.put("before", writer);
+                diff.put("after", nextWriter);
+                diff.put("message", "할일의 담당자가 " + nextWriter + "님으로 변경되었습니다.");
+            } else {
+                diff.put("before", writer);
+                diff.put("after", nextWriter);
+                diff.put("message", "할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.");
+            }
 
+            todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
             todoTmp.changeModifyDate();
 
             TodoRecord todoRecord = TodoRecord.builder()
                     .id(todoRecordId)
                     .diff(diff)
                     .todo_id(todoTmp.getId())
-                    .modify_date(LocalDateTime.now())
+                    .modifyDate(LocalDateTime.now())
                     .build();
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
+
+            if(!writer.equals("")) alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
