@@ -29,7 +29,7 @@ public class TodoRecord {
     private String todo_id;
 
     @Column(insertable = false)
-    private LocalDateTime modify_date;
+    private LocalDateTime modifyDate;
 
     @Type(type = "jsonb")
     @Column(name = "diff", columnDefinition = "jsonb", nullable = false)
