@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,4 +28,7 @@ public class TodoRecord {
     @JoinColumn(name = "todo_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Todo todo;
+
+    @Column(name = "modify_date")
+    private LocalDateTime modifyDate;
 }
