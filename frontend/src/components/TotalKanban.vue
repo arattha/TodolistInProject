@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-96">
-    <div class="flex flex-col bg-itemGray rounded-lg shadow-lg w-full">
+    <div class="flex flex-col bg-itemGray rounded-lg shadow-lg w-full h-full">
       <div class="flex justify-between items-center px-5 py-2 my-3">
         <div class="flex border-b-2 w-24 pb-2 border-black text-xl font-black">
           {{ teamInfo.teamName }}
@@ -52,10 +52,17 @@
           <div class="w-1/2">진행중인 일 : {{ teamInfo.progressCnt }}</div>
         </div>
       </div>
-      <div class="flex flex-col overflow-y-auto scroll_type2 h-full">
-        <div class="flex mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
-          <Todo-Card :todoInfo="todoInfo" />
-        </div>
+      <div class="overflow-y-auto overflow-x-hidden scroll_type2 h-full">
+        <draggable
+          class="h-full"
+          :list="teamInfo.todoInfoList"
+          group="todoGroup"
+          v-bind="dragOptions"
+        >
+          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index + 1">
+            <Todo-Card :todoInfo="todoInfo" />
+          </div>
+        </draggable>
       </div>
     </div>
   </div>
@@ -63,15 +70,38 @@
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
+import draggable from 'vuedraggable';
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
+    draggable,
   },
   props: ['teamInfo'],
+  data() {
+    return {
+      drag: false,
+    };
+  },
   methods: {
     todoAdd() {
       console.log('할일 추가');
+    },
+    // draggable 관련 로그를 찍기위한 함수
+    // draggable 컴포넌트에 @change="log"를 추가해서 사용
+    // log(e) {
+    //   console.log(e);
+    //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
+    // },
+  },
+  computed: {
+    dragOptions() {
+      return {
+        animation: 200,
+        group: 'todoGroup',
+        disabled: false,
+        ghostClass: 'ghost',
+      };
     },
   },
 };
