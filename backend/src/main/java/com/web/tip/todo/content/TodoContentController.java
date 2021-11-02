@@ -1,9 +1,10 @@
 package com.web.tip.todo.content;
 
 import com.web.tip.BasicResponse;
+import com.web.tip.todo.TodoRecordDto;
+import com.web.tip.todo.TodoRecordService;
 import com.web.tip.todo.content.request.ContentModifyRequest;
 import com.web.tip.todo.content.request.ContentRequest;
-import com.web.tip.todo.content.url.TodoUrl;
 import com.web.tip.todo.content.url.TodoUrlDto;
 import com.web.tip.todo.content.url.TodoUrlService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 public class TodoContentController {
     private final TodoContentService todoContentService;
     private final TodoUrlService todoUrlService;
+    private final TodoRecordService todoRecordService;
 
     private static final String SUCCESS = "success";
 
@@ -93,4 +95,17 @@ public class TodoContentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/record")
+    public ResponseEntity<Object> getTodoRecords(@RequestParam(value = "id") String todoId) {
+        log.info("todo:{} 에서 todoRecord 요청", todoId);
+        List<TodoRecordDto> todoRecordDtos = todoRecordService.findTodoRecordsByTodoId(todoId);
+        log.info("todoRecord {}개 발견", todoRecordDtos.size());
+
+        BasicResponse result = new BasicResponse();
+        result.status = true;
+        result.data = SUCCESS;
+        result.object = todoRecordDtos;
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
