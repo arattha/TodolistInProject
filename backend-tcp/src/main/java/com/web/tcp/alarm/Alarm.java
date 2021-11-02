@@ -20,4 +20,8 @@ public class Alarm {
     private boolean isShow;
     private String memberId;
     private String todoId;
+
+    public void changeIsShow(){
+        this.isShow = !this.isShow;
+    }
 }

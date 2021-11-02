@@ -1,9 +1,12 @@
 package com.web.tcp.alarm;
 
+import com.web.tcp.error.CustomException;
+import com.web.tcp.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,7 @@ public class AlarmService {
 
     AlarmDao alarmDao;
 
+    @Transactional
     public List<AlarmDto> getAlarmList(String memberId) {
 
         List<AlarmDto> alarmDtoList = new ArrayList<>();
@@ -44,4 +48,17 @@ public class AlarmService {
 
         return alarmDtoList;
     }
+
+    @Transactional
+    public void checkAlarm(String alarmId) {
+
+        Alarm alarm = alarmDao.findAlarmById(alarmId).orElseThrow(() -> new CustomException(ErrorCode.ALARM_NOT_FOUND));
+        alarm.changeIsShow();
+
+        alarmDao.save(alarm);
+
+    }
+
+
+
 }

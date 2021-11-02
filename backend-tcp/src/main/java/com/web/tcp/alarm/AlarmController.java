@@ -25,11 +25,25 @@ public class AlarmController {
     // client가 '/server/getAlarm'경로로 member 아이디 전송
     // 해당 member(client)에게 send
     @MessageMapping(value = "/getAlarm")
-    public void getTodo(String memberId){
+    public void getAlarm(String memberId){
 
         try{
             memberId = (String) StringToJson(memberId).get("memberId");
             template.convertAndSend("/client/alarm/" + memberId, alarmService.getAlarmList(memberId));
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // client가 '/server/getAlarm'경로로 member 아이디 전송
+    // 해당 member(client)에게 send
+    @MessageMapping(value = "/getAlarm")
+    public void getTodo(String memberId, String alarmId){
+
+        try{
+            alarmId = (String) StringToJson(alarmId).get("alarmId");
+            alarmService.checkAlarm(alarmId);
+            template.convertAndSend("/client/alarm/" + memberId, alarmService.getAlarmList(alarmId));
         } catch(Exception e){
             e.printStackTrace();
         }
