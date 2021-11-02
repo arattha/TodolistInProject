@@ -13,6 +13,7 @@
           h-full
           w-36
           mr-5
+          ml-3
           hover:text-white
         "
       >
