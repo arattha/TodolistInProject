@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,6 +78,7 @@ public class TodoContentService {
             todoContentDtos.add(TodoContentDto.entityToDto(todoContent));
         }
 
+        Collections.sort(todoContentDtos, (o1, o2) -> o2.getRegDate().compareTo(o1.getRegDate()));
         return todoContentDtos;
     }
 

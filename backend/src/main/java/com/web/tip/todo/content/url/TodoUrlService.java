@@ -43,6 +43,7 @@ public class TodoUrlService {
                 todoUrlDtos.add(TodoUrlDto.entityToDto(url, writer));
             }
         }
+        Collections.sort(todoUrlDtos, (o1, o2) -> o2.getRegDate().compareTo(o1.getRegDate()));
 
         return todoUrlDtos;
     }
