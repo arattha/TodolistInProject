@@ -23,7 +23,15 @@ public class MemberDetail {
     @Column
     private String phone;
 
+    @Column
+    private String profileImg;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void setProfileImgLink(String profileImg){
+        this.profileImg = profileImg;
+    }
+
 }
