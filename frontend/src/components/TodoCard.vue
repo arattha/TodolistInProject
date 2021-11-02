@@ -11,7 +11,7 @@
       rounded-lg
       cursor-pointer
       shadow-md
-      hover:bg-opacity-50
+      hover:bg-opacity-40
     "
     @click="clicktodo"
   >
@@ -22,53 +22,11 @@
       </div>
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5">
-          <i class="far fa-star"></i>
+          <!-- <i class="far fa-star"></i> -->
+          <i class="fas fa-star text-white"></i>
           <i class="fas fa-star text-yellow-400"></i>
         </div>
-        <div
-          v-if="todoInfo.status === '진행'"
-          class="
-            flex
-            justify-center
-            items-center
-            rounded-2xl
-            bg-progress
-            w-16
-            h-8
-            text-xs
-            font-black
-          "
-        >
-          {{ todoInfo.status }}
-        </div>
-        <div
-          v-if="todoInfo.status === '접수'"
-          class="flex justify-center items-center rounded-2xl bg-add w-16 h-8 text-xs font-black"
-        >
-          {{ todoInfo.status }}
-        </div>
-        <div
-          v-if="todoInfo.status === 'New'"
-          class="
-            flex
-            justify-center
-            items-center
-            rounded-2xl
-            bg-green-500
-            w-16
-            h-8
-            text-xs
-            font-black
-          "
-        >
-          {{ todoInfo.status }}
-        </div>
-        <div
-          v-if="todoInfo.status === '완료'"
-          class="flex justify-center items-center rounded-2xl bg-done w-16 h-8 text-xs font-black"
-        >
-          {{ todoInfo.status }}
-        </div>
+        <Todo-Status :status="todoInfo.status" />
       </div>
     </div>
     <div class="flex justify-between items-center">
@@ -106,8 +64,12 @@
 </template>
 
 <script>
+import TodoStatus from '@/components/TodoStatus.vue';
 export default {
   name: 'TODOCARD',
+  components: {
+    TodoStatus,
+  },
   props: ['todoInfo'],
   methods: {
     todoSend() {
