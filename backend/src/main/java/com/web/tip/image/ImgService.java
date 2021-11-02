@@ -8,6 +8,8 @@ import com.web.tip.mypage.MemberDetail;
 import com.web.tip.mypage.MemberDetailDao;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,17 @@ public class ImgService {
 
     MemberDetailDao memberDetailDao;
 
+    public Resource getFile(final String id) {
+
+        MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Resource img =  new FileSystemResource(".//upload//"+memberDetail.getProfileImg());
+
+        if(!img.exists()){
+            img =  new FileSystemResource(".//upload//default.png");
+        }
+        return img;
+    }
 
 
     @Transactional
