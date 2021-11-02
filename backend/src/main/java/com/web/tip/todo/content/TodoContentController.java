@@ -22,7 +22,8 @@ public class TodoContentController {
     private static final String SUCCESS = "success";
 
     @GetMapping()
-    public ResponseEntity<Object> getTodoContents(@RequestParam String todoId) {
+    public ResponseEntity<Object> getTodoContents(@RequestParam(value = "id") String todoId) {
+        log.info("todo:{} 에서 content 요청", todoId);
         List<TodoContentDto> todoContentDtos = todoContentService.getTodoContents(todoId);
 
         BasicResponse result = new BasicResponse();
@@ -36,36 +37,39 @@ public class TodoContentController {
 
     @PostMapping()
     public ResponseEntity<Object> addTodoContents(@RequestBody ContentRequest request) {
+        log.info("member:{} 가 todo:{} 에 content 추가 요청", request.getMemberId(), request.getTodoId());
         TodoContentDto todoContentDto = todoContentService.addTodoContent(request);
+        log.info("content:{} 가 추가 완료", todoContentDto.getId());
 
         BasicResponse result = new BasicResponse();
         result.status = true;
         result.data = SUCCESS;
-        result.object = todoContentDto;
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping()
     public ResponseEntity<Object> modifyTodoContents(@RequestBody ContentModifyRequest request) {
+        log.info("content:{} 내용 수정 요청", request.getId());
         TodoContentDto todoContentDto = todoContentService.modifyTodoContent(request);
+        log.info("content:{} 내용 수정 완료", todoContentDto.getId());
 
         BasicResponse result = new BasicResponse();
         result.status = true;
         result.data = SUCCESS;
-        result.object = todoContentDto;
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping()
-    public ResponseEntity<Object> deleteTodoContent(@RequestParam String todoContentId) {
+    public ResponseEntity<Object> deleteTodoContent(@RequestParam(value = "id") String todoContentId) {
+        log.info("content:{} 삭제 요청", todoContentId);
         TodoContentDto todoContentDto = todoContentService.deleteTodoContent(todoContentId);
+        log.info("content:{} 삭제 완료", todoContentDto.getId());
 
         BasicResponse result = new BasicResponse();
         result.status = true;
         result.data = SUCCESS;
-        result.object = todoContentDto;
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
