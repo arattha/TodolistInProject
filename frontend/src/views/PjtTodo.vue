@@ -1,57 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <Header />
-    <div class="flex flex-shrink-0 items-center bg-menuGray h-16">
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          mr-5
-          ml-3
-          hover:text-white
-        "
-      >
-        전체 할일
-      </div>
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          mr-5
-          hover:text-white
-        "
-      >
-        내 할일
-      </div>
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          hover:text-white
-        "
-      >
-        진행 상황
-      </div>
-    </div>
-
+    <Header-Todo-Menu :type="'total'" />
     <div class="flex overflow-auto flex-col">
       <div class="flex my-5 mx-8 w-56">
         <button
@@ -111,11 +61,17 @@
 
 <script>
 import Header from '@/components/Header.vue';
+import HeaderTodoMenu from '@/components/HeaderTodoMenu.vue';
 import TotalKanban from '@/components/TotalKanban.vue';
 import { mapActions } from 'vuex';
 
 export default {
   name: 'PJTTODO',
+  components: {
+    Header,
+    TotalKanban,
+    HeaderTodoMenu,
+  },
   data() {
     return {
       teamInfoList: [
@@ -308,10 +264,7 @@ export default {
       ],
     };
   },
-  components: {
-    Header,
-    TotalKanban,
-  },
+
   created() {
     this.set_project_name('프로젝트 명');
   },
