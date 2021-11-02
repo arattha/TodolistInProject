@@ -117,6 +117,39 @@
 
             <p class="text-red-500 font-black text-sm">{{ errors[0] }}</p>
           </ValidationProvider>
+          <!--{required: true, regex: [/^\d{2,3}-\d{3,4}-\d{4}$/]}-->
+          <ValidationProvider
+            class="w-full flex flex-col justify-center items-center"
+            name="이름"
+            rules="required|min:2|max:30|korAlphaNum"
+            v-slot="{ errors }"
+          >
+            <input
+              type="text"
+              autocomplete="off"
+              class="
+                appearance-none
+                border border-transparent
+                h-11
+                w-11/12
+                my-3
+                py-2
+                px-4
+                bg-itemGray
+                text-gray-700
+                placeholder-gray-500
+                shadow-md
+                rounded-sm
+                text-base
+                focus:outline-none focus:ring-2 focus:ring-menuGray focus:border-transparent
+              "
+              placeholder="이름"
+              @keyup.enter="idKeyupEnter()"
+              v-model="user.name"
+            />
+            <p class="text-red-500 font-black text-sm">{{ errors[0] }}</p>
+          </ValidationProvider>
+
           <ValidationProvider
             class="w-full flex flex-col justify-center items-center"
             name="이메일"
@@ -225,6 +258,7 @@
 <script>
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
 import { alpha_num, numeric, email, required, min, max, confirmed } from 'vee-validate/dist/rules';
+import { nicknameCheck, signUpUser } from '@/api/auth.js';
 
 setInteractionMode('eager');
 
@@ -241,6 +275,17 @@ extend('numeric', {
 extend('required', {
   ...required,
   message: '{_field_}를(을) 입력해주세요.',
+});
+
+extend('korAlphaNum', {
+  validate: value => {
+    let regex = /^[가-힣|aA-zZ| ]*$/.test(value);
+    if (!regex) {
+      return '올바른 한글, 영문만 입력해주세요.';
+    } else {
+      return true;
+    }
+  }
 });
 
 extend('min', {
@@ -266,27 +311,20 @@ extend('confirmed', {
 extend('idCheck', {
   validate: async function (value) {
     // 해당 flag를 실제 사용시 false로 바꿔주세요
-    let flag = true;
+    let flag = false;
 
-    // 서버요청을 통해 아이디가 있는지를 검사
-    // 로직 추가 필요
-    // value에 사용자가 입력한 아이디가 넘어오므로
-    // value를 사용해서 아이디 중복을 검사
-    // 예제 (예제 대로 여기에 코드 넣지말고 api폴더로 빼서 임포트해서 쓸것!)
-    /*
-    await axios
-      .get(http://localhost:8078/user/search/${value})
-      .then((response) => {
-        if (response.data == 'ok') {
+    await nicknameCheck(
+      value,
+      (res)=>{
+        if (!res.object) {
           flag = true;
         }
-      })
-      .catch((error) => {
-        console.dir(error);
-        return '서버 오류가 발생했습니다.';
-      });
-    */
-    console.log(value);
+      },
+      (error)=>{
+        alert('문제가 발생했습니다. 다시 시도해주세요.');
+        console.log(error);
+      }
+    );
 
     if (flag) {
       return true;
@@ -308,6 +346,7 @@ export default {
         id: '',
         password: '',
         passwordChk: '',
+        name: '',
         email: '',
         phone: '',
       },
@@ -317,8 +356,35 @@ export default {
     goBack() {
       this.$router.push('/login');
     },
-    signup() {
+    idKeyupEnter() {
+      //this.login();
+    },
+    async signup() {
+
       console.log('회원가입');
+
+      let data = {
+        nickname: this.user.id,
+        password: this.user.password,
+        name: this.user.name,
+        email: this.user.email,
+        phone: this.user.phone
+      };
+
+      await signUpUser(
+        data,
+        (res)=>{
+          if (res.object) {
+            alert('회원가입 성공');
+            this.$router.push('/login');
+          }
+        },
+        (error)=>{
+          alert('문제가 발생했습니다. 다시 시도해주세요.');
+          console.log(error);
+        }
+      );
+
     },
   },
 };
