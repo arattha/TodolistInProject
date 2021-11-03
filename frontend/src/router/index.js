@@ -22,6 +22,12 @@ const routes = [
     name: 'Signup',
     component: () => import('@/views/Signup.vue'),
   },
+
+  {
+    path: '/project',
+    name: 'Project',
+    component: () => import('@/views/TotalProject.vue'),
+  },
   {
     path: '/todo',
     name: 'Todo',
@@ -45,7 +51,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'Home') {
+  if (to.name === 'Project') {
     store.dispatch('set_project_name', '');
   }
 
