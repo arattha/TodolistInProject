@@ -3,7 +3,6 @@ package com.web.tip;
 import com.web.tip.member.Member;
 import com.web.tip.member.MemberService;
 import com.web.tip.member.request.UpdateMemberRequest;
-import com.web.tip.member.response.MyPageResponse;
 import com.web.tip.mypage.MemberDetailDto;
 import com.web.tip.mypage.MemberDetailService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +32,7 @@ public class MypageTest {
                 .email("eqwr")
                 .build();
 
-        MyPageResponse response = memberDetailService.updateMemberDetail(updateMemberRequest);
+        MemberDetailDto response = memberDetailService.updateMemberDetail(updateMemberRequest);
         log.info("response: " + response.toString());
 
         Assertions.assertEquals("eqwr", response.getEmail(), "이메일 업데이트 오류");
@@ -49,7 +48,6 @@ public class MypageTest {
 
         Assertions.assertEquals("eqwr", memberDetailDto.getEmail());
         Assertions.assertEquals("1234", memberDetailDto.getPhone());
-
     }
 
 }
