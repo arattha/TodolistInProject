@@ -18,7 +18,7 @@
     <div class="flex justify-between items-center">
       <div class="flex items-center justify-center">
         <div class="rounded-full w-10 h-10 bg-white mr-3"></div>
-        <div class="text-base font-bold">{{ todoInfo.name }}</div>
+        <div class="text-base font-bold">{{ todoInfo.memberId }}</div>
       </div>
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5">
@@ -31,7 +31,7 @@
     </div>
     <div class="flex justify-between items-center">
       <div class="text-lg font-medium">
-        {{ todoInfo.todoName }}
+        {{ todoInfo.title }}
       </div>
       <button
         class="

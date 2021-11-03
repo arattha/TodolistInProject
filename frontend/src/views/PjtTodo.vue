@@ -102,7 +102,7 @@
 
       <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
         <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamInfoList" :key="index">
-          <Total-Kanban :teamInfo="teamInfo" />
+          <Total-Kanban :teamInfo="teamInfo" :TodoStomp="stompClient"/>
         </div>
       </div>
     </div>
@@ -124,195 +124,6 @@ export default {
       teamInfoList:[],
       todoList:[],
       teamList:[],
-
-      // teamInfoList: [
-      //   {
-      //     teamName: 'OO팀',
-      //     totalCnt: 110,
-      //     addCnt: 10,
-      //     doneCnt: 50,
-      //     progressCnt: 50,
-      //     todoInfoList: [
-      //       {
-      //         status: '진행',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     teamName: 'XX팀',
-      //     totalCnt: 220,
-      //     addCnt: 20,
-      //     doneCnt: 20,
-      //     progressCnt: 20,
-      //     todoInfoList: [
-      //       {
-      //         status: 'New',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //       {
-      //         status: '완료',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     teamName: 'YY팀',
-      //     totalCnt: 330,
-      //     addCnt: 30,
-      //     doneCnt: 30,
-      //     progressCnt: 20,
-      //     todoInfoList: [
-      //       {
-      //         status: '진행',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //       {
-      //         status: '접수',
-      //         name: '최광진',
-      //         todoName: '회원가입',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     teamName: 'AA팀',
-      //     totalCnt: 330,
-      //     addCnt: 30,
-      //     doneCnt: 30,
-      //     progressCnt: 20,
-      //     todoInfoList: [
-      //       {
-      //         status: '진행',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     teamName: 'BB팀',
-      //     totalCnt: 330,
-      //     addCnt: 30,
-      //     doneCnt: 30,
-      //     progressCnt: 20,
-      //     todoInfoList: [
-      //       {
-      //         status: '진행',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     teamName: 'CC팀',
-          // totalCnt: 330,
-          // addCnt: 30,
-          // doneCnt: 30,
-          // progressCnt: 20,
-      //     todoInfoList: [
-      //       {
-      //         status: '진행',
-      //         name: '조용일',
-      //         todoName: '로그인',
-      //       },
-      //     ],
-      //   },
-      // ],
     };
   },
   components: {
@@ -373,6 +184,8 @@ export default {
         var tmp = res.object;
         console.log("tmp", tmp);
 
+        this.teamInfoList = [];
+
         tmp.forEach((value) =>{
           this.teamInfoList.push({
             teamId: value.id,
@@ -394,17 +207,19 @@ export default {
 
       for(var i = 0 ; i < this.todoList.length ; i++){
         var teamId = this.todoList[i].teamId;
-        var status = this.todoList[i].status;
-        var memberName = this.todoList[i].memberId;
-        var title = this.todoList[i].title;
 
         for(var j = 0 ; j < this.teamInfoList.length ; j++){
 
           if(this.teamInfoList[j].teamId == teamId){
             this.teamInfoList[j].todoInfoList.push({
-              status: status,
-              name: memberName,
-              todoName: title,
+              id: this.todoList[i].id,
+              title: this.todoList[i].title,
+              status: this.todoList[i].status,
+              projectId: this.todoList[i].projectId,
+              teamId: teamId,
+              memberId: this.todoList[i].memberId,
+              modifyDate: this.todoList[i].modifyDate,
+              regDate: this.todoList[i].regDate
             })
 
             break;
