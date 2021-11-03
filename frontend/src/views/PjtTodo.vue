@@ -253,13 +253,7 @@ export default {
           addCnt: 30,
           doneCnt: 30,
           progressCnt: 20,
-          todoInfoList: [
-            {
-              status: '진행',
-              name: '조용일',
-              todoName: '로그인',
-            },
-          ],
+          todoInfoList: [],
         },
       ],
     };

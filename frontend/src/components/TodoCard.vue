@@ -26,7 +26,7 @@
           <i class="fas fa-star text-white"></i>
           <i class="fas fa-star text-yellow-400"></i>
         </div>
-        <Todo-Status :status="todoInfo.status" />
+        <Todo-Status :status="todoInfo.status" :isDetail="false" />
       </div>
     </div>
     <div class="flex justify-between items-center">

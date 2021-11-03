@@ -34,6 +34,28 @@ const routes = [
     component: () => import('@/views/PjtTodo.vue'),
   },
   {
+    path: '/detail',
+    name: 'TodoDetail',
+    component: () => import('@/views/TodoDetail.vue'),
+    children: [
+      {
+        path: '/contents',
+        name: 'TodoContents',
+        component: () => import('@/views/TodoContents.vue'),
+      },
+      {
+        path: '/url',
+        name: 'TodoURL',
+        component: () => import('@/views/TodoURL.vue'),
+      },
+      {
+        path: '/history',
+        name: 'TodoHistory',
+        component: () => import('@/views/TodoHistory.vue'),
+      },
+    ],
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
