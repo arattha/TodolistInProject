@@ -5,7 +5,9 @@ import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
+import com.web.tip.member.request.UpdatePasswordRequest;
 import com.web.tip.member.security.Authority;
+import com.web.tip.mypage.MemberDetail;
 import com.web.tip.mypage.MemberDetailService;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
@@ -193,6 +195,25 @@ public class MemberService {
     }
 
     @Transactional
+    public void changePassword(UpdatePasswordRequest request) {
+        Member member = memberDao.findMemberById(request.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Member changedMember = Member.builder()
+                .id(member.getId())
+                .memberDetail(member.getMemberDetail())
+                .authority(member.getAuthority())
+                .nickname(member.getNickname())
+                .isUse(member.isUse())
+                .name(member.getName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
+
+        memberDao.save(changedMember);
+    }
+
+
+    @Transactional
     public boolean existsUserCheck(String nickname) {
         return memberDao.existsByNickname(nickname);
     }
@@ -203,7 +224,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    public Member getMemberById(String id){
+    public Member getMemberById(String id) {
         return memberDao.findMemberById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
