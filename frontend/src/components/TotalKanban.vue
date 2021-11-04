@@ -61,7 +61,7 @@
           @start="setTodoId"
           @add="updateTeam"
         >
-          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
+          <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
             <Todo-Card :todoInfo="todoInfo" />
           </div>
         </draggable>
@@ -79,7 +79,7 @@ export default {
     TodoCard,
     draggable,
   },
-  props: ['teamInfo','TodoStomp'],
+  props: ['teamInfo','TodoStomp','filters'],
   data() {
     return {
       drag: false,
@@ -125,6 +125,18 @@ export default {
     }
   },
   computed: {
+    todoFilter:function(){
+      let filters= this.filters;
+      if(filters == null || filters.status.length == 0){
+        return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
+      } else {
+        return this.teamInfo.todoInfoList.filter(function(todo){
+          if(filters.status.indexOf(todo.status) > -1){
+            return true;
+          }
+        })
+      }
+    },
     dragOptions() {
       return {
         animation: 200,
