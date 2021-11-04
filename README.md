@@ -1,6 +1,6 @@
 # 네이버 기업연계: Tip(Todo list In Project)
 
-## 목차
+## :pushpin: 목차
 
 - [프로젝트 소개](#프로젝트-소개)
 - [프로젝트 명세](#프로젝트-명세)
@@ -8,7 +8,7 @@
   - [핵심 라이브러리](#핵심-라이브러리)
     <br>
 
-## 프로젝트 소개
+## :speech_balloon: 프로젝트 소개
 
 - 서비스명 : Tip
 - 소재 : To do list (PJT 관리) 시스템 동시편집 기능 개발
@@ -18,7 +18,7 @@
   - 할 일에 연관된 세부 설명, URL을 저장할 수 있다.
     <br>
 
-## 프로젝트 명세
+## :clipboard: 프로젝트 명세
 
 ### 개발 환경
 ![image](/uploads/234e5901babe1d77fc4d84e84bc3bb05/image.png)
@@ -26,7 +26,7 @@
 
 ## 기술 스택
 
-###  :computer: ​Back-End
+### :computer: ​Back-End
 
 <details>
     <summary>Back 자세히 살펴보기</summary>
@@ -97,5 +97,5 @@
 
 
 -------------------
-### 핵심 라이브러리
+### :bulb: 핵심 라이브러리
 
