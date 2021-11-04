@@ -12,107 +12,61 @@
 </template>
 
 <script>
-import HeaderPjtMenu from '@/components/HeaderPjtMenu.vue';
-import Header from '@/components/Header.vue';
-import ProjectCard from '@/components/ProjectCard.vue';
+import HeaderPjtMenu from "@/components/HeaderPjtMenu.vue";
+import Header from "@/components/Header.vue";
+import ProjectCard from "@/components/ProjectCard.vue";
+import { getProjectList } from "@/api/project.js";
+import { formatDate } from "@/api/utils.js";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'TOTALPJT',
+  name: "TOTALPJT",
   components: {
     HeaderPjtMenu,
     Header,
     ProjectCard,
   },
+  created() {
+    let id = "0564293048818";
+    getProjectList(
+      true,
+      id,
+      (res) => {
+        console.log(res);
+        this.pjtInfoList = [];
+        if (res.object) {
+          for (let i = 0; i < res.object.length; i++) {
+            let item = res.object[i];
+            console.log(item["startDate"]);
+            let temp = {};
+            temp["pjt"] = {
+              id: item["id"],
+              name: item["name"],
+              desc: item["desc"],
+              startDate: formatDate(item["startDate"]),
+              endDate: formatDate(item["endDate"]),
+            };
+            temp["totalCnt"] = item["totalCnt"];
+            temp["progressCnt"] = item["progressCnt"];
+            temp["doneCnt"] = item["doneCnt"];
+
+            this.pjtInfoList.push(temp);
+          }
+        }
+      },
+      (error) => {
+        alert("프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!");
+        console.log(error);
+      }
+    );
+  },
+  mounted() {},
   data() {
     return {
-      pjtInfoList: [
-        {
-          pjt: {
-            id: 1,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다. 이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다. 이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-
-        {
-          pjt: {
-            id: 2,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-        {
-          pjt: {
-            id: 3,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-        {
-          pjt: {
-            id: 4,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-        {
-          pjt: {
-            id: 5,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-        {
-          pjt: {
-            id: 6,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-        {
-          pjt: {
-            id: 7,
-            name: 'OO프로젝트',
-            startDate: '2021-10-10',
-            endDate: '2021-11-11',
-            desc: '이 프로젝트는 OO를 개발하며 XXX를 목표로 하는 프로젝트입니다.',
-          },
-          totalCnt: 100,
-          progressCnt: 200,
-          doneCnt: 300,
-        },
-      ],
+      ...mapGetters(["isLogin", "id", "nickname"]),
+      pjtInfoList: [],
     };
   },
+  methods: {},
 };
 </script>

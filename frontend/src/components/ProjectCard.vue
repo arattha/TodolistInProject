@@ -47,13 +47,17 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
-  name: 'PROJECTCARD',
-  props: ['pjtInfo'],
+  name: "PROJECTCARD",
+  props: ["pjtInfo"],
   methods: {
+    ...mapActions(["set_project_id", "set_project_name"]),
     goPjtTodo() {
-      console.log(this.pjtInfo.pjt.id);
-      // this.$router.push('/todo');
+      console.log(this.pjtInfo.pjt);
+      this.set_project_id(this.pjtInfo.pjt.id);
+      this.set_project_name(this.pjtInfo.pjt.name);
+      this.$router.push("/todo");
     },
   },
 };
