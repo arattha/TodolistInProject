@@ -142,7 +142,6 @@ export default {
     ...mapActions(['set_project_name', 'set_project_id']),
     connect(){
       
-      console.log("pid : ", this.projectId);
       const serverURL = "http://localhost:8082/todo";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
@@ -164,7 +163,6 @@ export default {
 
           // subscribe 로 alarm List 가져오기
           this.stompClient.subscribe("/client/todo/" + this.projectId, (res) => {
-            console.log(JSON.parse(res.body));
             this.todoList = JSON.parse(res.body);
             this.getTeamList();
           });
@@ -179,10 +177,8 @@ export default {
       getTeam(this.projectId, 
       (res) => {
         // team 가져옴
-        console.log("team 가져오기 성공", res);
 
         var tmp = res.object;
-        console.log("tmp", tmp);
 
         this.teamInfoList = [];
 
@@ -218,6 +214,7 @@ export default {
               projectId: this.todoList[i].projectId,
               teamId: teamId,
               memberId: this.todoList[i].memberId,
+              memberName: this.todoList[i].memberName,
               modifyDate: this.todoList[i].modifyDate,
               regDate: this.todoList[i].regDate
             })
@@ -227,7 +224,6 @@ export default {
         }
         
       }
-      console.log("hererereer",this.teamInfoList);
     },
     horizontalScroll() {
       console.log('hi', this);

@@ -18,7 +18,7 @@
     <div class="flex justify-between items-center">
       <div class="flex items-center justify-center">
         <div class="rounded-full w-10 h-10 bg-white mr-3"></div>
-        <div class="text-base font-bold">{{ todoInfo.memberId }}</div>
+        <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
       </div>
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5">
@@ -71,6 +71,9 @@ export default {
     TodoStatus,
   },
   props: ['todoInfo'],
+  created(){
+    console.log("asd",this.todoInfo);
+  },
   methods: {
     todoSend() {
       console.log('보내기');

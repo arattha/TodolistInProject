@@ -61,7 +61,7 @@
           @start="setTodoId"
           @add="updateTeam"
         >
-          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index + 1">
+          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
             <Todo-Card :todoInfo="todoInfo" />
           </div>
         </draggable>
@@ -105,7 +105,7 @@ export default {
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
     updateTeam(e){
-      console.log("todo!!!",this.teamInfo.todoInfoList[e.newIndex]);
+      
       this.TodoStomp.send(
             "/server/moveTodo/team",
             JSON.stringify({
@@ -115,6 +115,7 @@ export default {
               projectId:this.teamInfo.todoInfoList[e.newIndex].projectId,
               teamId:this.teamId,
               memberId:this.teamInfo.todoInfoList[e.newIndex].memberId,
+              memberName:this.teamInfo.todoInfoList[e.newIndex].memberName,
               modifyDate:this.teamInfo.todoInfoList[e.newIndex].modifyDate,
               regDate:this.teamInfo.todoInfoList[e.newIndex].regDate
             }),

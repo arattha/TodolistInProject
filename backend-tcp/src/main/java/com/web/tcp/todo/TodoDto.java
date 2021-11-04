@@ -20,6 +20,7 @@ public class TodoDto {
     private String status;
     private String projectId;
     private String memberId;
+    private String memberName;
     private String teamId;
 
     private LocalDateTime modifyDate;
