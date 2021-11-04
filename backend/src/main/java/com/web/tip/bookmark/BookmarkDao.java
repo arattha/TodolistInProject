@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface BookmarkDao extends JpaRepository<Bookmark, String> {
     Optional<Bookmark> findBookmarksByMemberIdAndTodoIdAndIsUse(String memberId, String todoId, boolean isUse);
+    List<Bookmark> findBookmarksByMemberIdAndTodoIdInAndIsUse(String memberId, List<String> todoId, boolean isUse);
 }
 

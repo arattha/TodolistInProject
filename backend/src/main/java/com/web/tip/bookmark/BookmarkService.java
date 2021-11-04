@@ -4,16 +4,38 @@ import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.error.JpaErrorCode;
 import com.web.tip.error.JpaException;
+import com.web.tip.todo.Todo;
+import com.web.tip.todo.TodoDao;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class BookmarkService {
 
     BookmarkDao bookmarkDao;
+    TodoDao todoDao;
+
+    public Object getBookmark(String projectId, String memberId) {
+
+        List<Todo> todoList= todoDao.findTodosByProjectIdAndMemberId(projectId,memberId);
+        List<String> todoIdList = new ArrayList<>();
+        todoList.forEach(v -> todoIdList.add(v.getId()));
+
+        List<Bookmark> bookmarkList = bookmarkDao.findBookmarksByMemberIdAndTodoIdInAndIsUse(memberId,todoIdList,true);
+        List<BookmarkDto> result = new ArrayList<>();
+
+        bookmarkList.forEach(v -> result.add(
+                new BookmarkDto(v.getMemberId(),v.getTodoId())
+        ));
+
+        return result;
+    }
 
     public boolean addBookmark(BookmarkDto bookmarkDto) {
 
