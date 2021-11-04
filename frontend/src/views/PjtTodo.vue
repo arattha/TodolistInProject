@@ -59,7 +59,7 @@
           v-for="(teamInfo, index) in teamFilter"
           :key="index"
         >
-          <Total-Kanban :teamInfo="teamInfo" :TodoStomp="stompClient" />
+          <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" />
         </div>
       </div>
     </div>
