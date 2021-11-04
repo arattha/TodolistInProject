@@ -103,7 +103,7 @@ export default {
     connect() {
       const serverURL = "http://localhost:8082/todo";
       let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket);
+      this.stompClient = Stomp.over(socket, { debug : false});
       this.stompClient.connect(
         {},
         () => {

@@ -118,7 +118,7 @@ export default {
         },
         (res) => {
           if (res.object.member) {
-            this.set_id(res.object.id);
+            this.set_id(res.object.mid);
             this.set_nickname(res.object.nickname);
             this.toggle_isLogin(true);
 

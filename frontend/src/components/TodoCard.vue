@@ -71,9 +71,6 @@ export default {
     TodoStatus,
   },
   props: ['todoInfo'],
-  created(){
-    console.log("asd",this.todoInfo);
-  },
   methods: {
     todoSend() {
       console.log('보내기');
