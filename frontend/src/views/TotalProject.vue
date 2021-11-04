@@ -17,7 +17,7 @@ import Header from "@/components/Header.vue";
 import ProjectCard from "@/components/ProjectCard.vue";
 import { getProjectList } from "@/api/project.js";
 import { formatDate } from "@/api/utils.js";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "TOTALPJT",
