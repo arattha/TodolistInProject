@@ -58,8 +58,10 @@
           :list="teamInfo.todoInfoList"
           group="todoGroup"
           v-bind="dragOptions"
+          @start="setTodoId"
+          @add="updateTeam"
         >
-          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index + 1">
+          <div class="mb-6" v-for="(todoInfo, index) in teamInfo.todoInfoList" :key="index">
             <Todo-Card :todoInfo="todoInfo" />
           </div>
         </draggable>
@@ -77,11 +79,16 @@ export default {
     TodoCard,
     draggable,
   },
-  props: ['teamInfo'],
+  props: ['teamInfo','TodoStomp'],
   data() {
     return {
       drag: false,
+      teamId: "",
+      todoId: "",
     };
+  },
+  created(){
+    this.teamId = this.teamInfo.teamId;
   },
   methods: {
     todoAdd() {
@@ -93,6 +100,29 @@ export default {
     //   console.log(e);
     //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
     // },
+    setTodoId(e){
+      // console.log("setTodoId :", e.oldIndex);
+      this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
+    },
+    updateTeam(e){
+      
+      this.TodoStomp.send(
+            "/server/moveTodo/team",
+            JSON.stringify({
+              id:this.teamInfo.todoInfoList[e.newIndex].id,
+              title:this.teamInfo.todoInfoList[e.newIndex].title,
+              status:this.teamInfo.todoInfoList[e.newIndex].status,
+              projectId:this.teamInfo.todoInfoList[e.newIndex].projectId,
+              teamId:this.teamId,
+              memberId:this.teamInfo.todoInfoList[e.newIndex].memberId,
+              memberName:this.teamInfo.todoInfoList[e.newIndex].memberName,
+              modifyDate:this.teamInfo.todoInfoList[e.newIndex].modifyDate,
+              regDate:this.teamInfo.todoInfoList[e.newIndex].regDate
+            }),
+            {}
+          );
+      
+    }
   },
   computed: {
     dragOptions() {
