@@ -35,23 +35,22 @@ const routes = [
   },
   {
     path: '/detail',
-    name: 'TodoDetail',
     component: () => import('@/views/TodoDetail.vue'),
     children: [
       {
-        path: '/contents',
+        path: '',
         name: 'TodoContents',
-        component: () => import('@/views/TodoContents.vue'),
+        component: () => import('@/views/todoDetail/TodoContents.vue'),
       },
       {
-        path: '/url',
+        path: '/detail/url',
         name: 'TodoURL',
-        component: () => import('@/views/TodoURL.vue'),
+        component: () => import('@/views/todoDetail/TodoURL.vue'),
       },
       {
-        path: '/history',
+        path: '/detail/history',
         name: 'TodoHistory',
-        component: () => import('@/views/TodoHistory.vue'),
+        component: () => import('@/views/todoDetail/TodoHistory.vue'),
       },
     ],
   },

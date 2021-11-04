@@ -3,14 +3,24 @@
     <div
       v-if="status === 'New' || isDetail"
       class="flex justify-center items-center rounded-2xl bg-green-500 w-16 h-8 text-sm font-black"
-      :class="{ 'opacity-30': isDetail && status !== 'New', 'mr-3': isDetail }"
+      :class="{
+        'opacity-30': isDetail && status !== 'New',
+        'mr-3': isDetail,
+        'cursor-pointer': isDetail,
+      }"
+      @click="changeStatus('New')"
     >
       New
     </div>
     <div
       v-if="status === '접수' || isDetail"
       class="flex justify-center items-center rounded-2xl bg-add w-16 h-8 text-sm font-black"
-      :class="{ 'opacity-30': isDetail && status !== '접수', 'mr-3': isDetail }"
+      :class="{
+        'opacity-30': isDetail && status !== '접수',
+        'mr-3': isDetail,
+        'cursor-pointer': isDetail,
+      }"
+      @click="changeStatus('접수')"
     >
       접수
     </div>
@@ -20,7 +30,9 @@
       :class="{
         'opacity-30': isDetail && status !== '진행',
         'mr-3': isDetail,
+        'cursor-pointer': isDetail,
       }"
+      @click="changeStatus('진행')"
     >
       진행
     </div>
@@ -30,7 +42,9 @@
       :class="{
         'opacity-30': isDetail && status !== '완료',
         'mr-3': isDetail,
+        'cursor-pointer': isDetail,
       }"
+      @click="changeStatus('완료')"
     >
       완료
     </div>
@@ -50,7 +64,9 @@
       "
       :class="{
         'opacity-30': isDetail && status !== '진행하지않음',
+        'cursor-pointer': isDetail,
       }"
+      @click="changeStatus('진행하지않음')"
     >
       진행하지 <br />
       않음
@@ -62,5 +78,10 @@
 export default {
   name: 'TODOSTATUS',
   props: ['status', 'isDetail'],
+  methods: {
+    changeStatus(status) {
+      this.$emit('changeStatus', status);
+    },
+  },
 };
 </script>

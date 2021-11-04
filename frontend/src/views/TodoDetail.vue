@@ -8,17 +8,30 @@
           <div class="font-black text-6xl">
             {{ todoInfo.todoName }}
           </div>
-          <div class="flex items-end justify-center">
-            <i class="fas fa-star text-white"></i>
-            <i class="fas fa-star text-yellow-400"></i>
+          <div class="flex items-end justify-center text-3xl ml-5">
+            <i
+              class="fas fa-star text-white cursor-pointer"
+              v-if="!todoInfo.userInfo.isBookmark"
+              @click="toggleBookmark()"
+            ></i>
+            <i
+              class="fas fa-star text-yellow-400 cursor-pointer"
+              v-if="todoInfo.userInfo.isBookmark"
+              @click="toggleBookmark()"
+            ></i>
           </div>
         </div>
         <div class="mb-5">
-          <Todo-Status class="flex" :status="'진행'" :isDetail="true" />
+          <Todo-Status
+            class="flex"
+            :status="todoInfo.status"
+            :isDetail="true"
+            @changeStatus="changeStatus"
+          />
         </div>
-        <div class="flex justify-between">
-          <div>생성일 : {{ todoInfo.regDate }}</div>
-          <div>변경일 : {{ todoInfo.modifyDate }}</div>
+        <div class="flex lg:flex-col">
+          <div class="text-sm mr-10 lg:mr-10 lg:mb-2">생성일 : {{ todoInfo.regDate }}</div>
+          <div class="text-sm">변경일 : {{ todoInfo.modifyDate }}</div>
         </div>
       </div>
       <div class="flex justify-end lg:justify-start items-center my-8 mr-5 h-16">
@@ -42,7 +55,7 @@
               focus:ring-offset-2
               focus:ring-offset-purple-200
             "
-            @click="teamAdd()"
+            @click="modifyManager()"
           >
             담당자 변경
           </button>
@@ -54,12 +67,12 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col items-center w-full h-full px-10 lg:px-20">
-      <div class="flex justify-end w-full">
-        <div class="flex h-16 lg:w-24">
+    <div class="flex flex-col items-center w-full h-full px-10 lg:px-16 overflow-auto">
+      <div class="flex justify-end w-full h-12 lg:h-16">
+        <div class="flex items-center justify-center w-20 h-12 lg:w-24">
           <button
             class="
-              my-auto
+              lg:my-auto
               bg-itemGray
               text-black text-sm
               font-semibold
@@ -77,22 +90,29 @@
               focus:ring-offset-2
               focus:ring-offset-purple-200
             "
-            @click="teamAdd()"
+            @click="todoContentAdd()"
           >
             추가
           </button>
         </div>
-        <div class="flex bg-buttonGray rounded-t-lg w-9/12 lg:w-1/4">
+        <div class="flex bg-buttonGray rounded-t-lg w-9/12 lg:w-1/3">
           <div
             class="
               flex
               justify-center
               items-center
               w-1/3
-              hover:opacity-30
+              h-full
+              rounded-tl-lg
+              hover:bg-bg-itemGray
               cursor-pointer
               font-black
+              border border-b-0 border-menuGray
             "
+            @click="goDetail()"
+            :class="{
+              'bg-itemGray': curPage === 0,
+            }"
           >
             상세내용
           </div>
@@ -102,10 +122,15 @@
               justify-center
               items-center
               w-1/3
-              hover:opacity-30
+              hover:bg-itemGray
               cursor-pointer
               font-black
+              border-t border-menuGray
             "
+            @click="goURL()"
+            :class="{
+              'bg-itemGray': curPage === 1,
+            }"
           >
             URL
           </div>
@@ -115,18 +140,38 @@
               justify-center
               items-center
               w-1/3
-              hover:opacity-30
+              rounded-tr-lg
+              hover:bg-itemGray
               cursor-pointer
               font-black
+              border border-b-0 border-menuGray
             "
+            @click="goHistory()"
+            :class="{
+              'bg-itemGray': curPage === 2,
+            }"
           >
             히스토리
           </div>
         </div>
       </div>
-      <div class="flex justify-center items-center bg-itemGray w-full h-full mb-5">
-        <Todo-Detail-Contents />
-      </div>
+      <router-view
+        class="
+          flex flex-col
+          items-center
+          bg-itemGray
+          overflow-auto
+          scroll_type2
+          w-full
+          h-full
+          pt-3
+          mb-5
+          border-t border-buttonGray
+          rounded-tl-lg rounded-b-lg
+          shadow-lg
+        "
+      >
+      </router-view>
     </div>
   </div>
 </template>
@@ -135,7 +180,6 @@
 import Header from '@/components/Header.vue';
 import HeaderTodoMenu from '@/components/HeaderTodoMenu.vue';
 import TodoStatus from '@/components/TodoStatus.vue';
-import TodoDetailContents from '@/components/TodoDetailContents.vue';
 
 export default {
   name: 'TODODETAIL',
@@ -143,10 +187,10 @@ export default {
     Header,
     HeaderTodoMenu,
     TodoStatus,
-    TodoDetailContents,
   },
   data() {
     return {
+      curPage: 0,
       todoInfo: {
         status: '접수',
         userInfo: {
@@ -158,20 +202,30 @@ export default {
         todoName: '회원가입',
         regDate: '2021-10-14',
         modifyDate: '2021-10-15',
-        detailList: [
-          {
-            name: '조용일',
-            content: '회원가입 디자인 견본입니다. https://www.naver.com/',
-            regDate: '2021-10-21',
-          },
-          {
-            name: '최광진',
-            content: '코멘트입니다. [코멘트](https://www.naver.com/)',
-            regDate: '2021-10-18',
-          },
-        ],
       },
     };
+  },
+  methods: {
+    changeStatus(status) {
+      this.todoInfo.status = status;
+    },
+    modifyManager() {},
+    todoContentAdd() {},
+    toggleBookmark() {
+      this.todoInfo.userInfo.isBookmark = !this.todoInfo.userInfo.isBookmark;
+    },
+    goDetail() {
+      this.curPage = 0;
+      this.$router.push('/detail');
+    },
+    goURL() {
+      this.curPage = 1;
+      this.$router.push('/detail/url');
+    },
+    goHistory() {
+      this.curPage = 2;
+      this.$router.push('/detail/history');
+    },
   },
 };
 </script>
