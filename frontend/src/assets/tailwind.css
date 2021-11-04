@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.todo-content a {
+  color: #0000ff;
+}
+
 .list-group {
   min-height: 5em;
 }
