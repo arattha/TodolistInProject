@@ -1,11 +1,15 @@
 <template>
     <div>
-
+        <div v-for="(alarm, index) in alarmList" :key="index">
+            <div>
+                {{alarm}}
+            </div>
+            <button @click="check(alarm.id)">click!</button>
+        </div>
     </div>
 </template>
 
 <script>
-import { removeAlarm, removeAllAlarm } from "@/api/alarm.js";
 import { mapGetters } from "vuex";
 
 export default {
@@ -17,6 +21,7 @@ export default {
     },
     created(){
         this.alarmList = this.$route.params.alarmList;
+        console.log(this.alarmList);
     },
     computed:{
         ...mapGetters(["id"])
@@ -24,29 +29,35 @@ export default {
     methods:{
         check(alarmId){
             
-            removeAlarm(
-                alarmId,
-                () => {
-                    alert("삭제되었습니다.");
-                },
-                () => {}
-            );
+            this.$route.params.alarmStomp.send(
+                "/server/checkAlarm",
+                JSON.stringify({
+                    memberId: this.id,
+                    alarmId:alarmId
+                }),
+                {}
+            )
+
+            this.alarmList = this.alarmList.filter(x => x.id != alarmId);
 
         },
         checkAll(){
             
-            removeAllAlarm(
-                this.id,
-                () => {
-                    alert("모두 삭제되었습니다.");
-                },
-                () => {}
-            );
+            this.$route.params.alarmStomp.send(
+                "/server/checkAll",
+                JSON.stringify({
+                    memberId: this.id
+                }),
+                {}
+            )
+
+            this.alarmList = [];
 
         },
         goTodo(todoId){
             // 해당 Todo의 상세 페이지로 이동
             // this.$route.push("/todoInfo");
+            console.log("go to",todoId);
         }
     }
 }
