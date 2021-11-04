@@ -277,7 +277,7 @@ extend('required', {
   message: '{_field_}를(을) 입력해주세요.',
 });
 
-extend('korAlphaNum', {
+extend('korAlpha', {
   validate: value => {
     let regex = /^[가-힣|aA-zZ| ]*$/.test(value);
     if (!regex) {
