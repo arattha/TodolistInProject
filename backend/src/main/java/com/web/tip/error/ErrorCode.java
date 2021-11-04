@@ -21,6 +21,7 @@ public enum ErrorCode {
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로젝트를 찾을 수 없습니다."),
     TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 할 일을 찾을 수 없습니다."),
     TODO_CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 세부 사항을 찾을 수 없습니다."),
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 중복된 데이터 존재 */
     MEMBER_DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 가입된 유저입니다."),
