@@ -4,8 +4,6 @@ import com.web.tip.BasicResponse;
 import com.web.tip.member.Member;
 import com.web.tip.member.MemberService;
 import com.web.tip.member.request.UpdateMemberRequest;
-import com.web.tip.member.response.MyPageResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,24 +27,22 @@ public class MyPageController {
         Member member = memberService.getMemberById(memberId);
         MemberDetailDto memberDetail = memberDetailService.findMemberDetail(member);
 
-        MyPageResponse myPageResponse = MyPageResponse.entityToResponse(member, memberDetail);
-
         BasicResponse result = new BasicResponse();
         result.status = true;
         result.data = SUCCESS;
-        result.object = myPageResponse;
+        result.object = memberDetail;
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Object> updateMypage(UpdateMemberRequest updateMemberRequest){
-        MyPageResponse myPageResponse = memberDetailService.updateMemberDetail(updateMemberRequest);
+        MemberDetailDto memberDetail = memberDetailService.updateMemberDetail(updateMemberRequest);
 
         BasicResponse result = new BasicResponse();
         result.status = true;
         result.data = SUCCESS;
-        result.object = myPageResponse;
+        result.object = memberDetail;
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

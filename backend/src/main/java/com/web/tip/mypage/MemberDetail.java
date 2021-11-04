@@ -26,7 +26,7 @@ public class MemberDetail {
     @Column
     private String profileImg;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

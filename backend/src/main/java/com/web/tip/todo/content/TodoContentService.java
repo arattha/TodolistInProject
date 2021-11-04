@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +41,7 @@ public class TodoContentService {
     private static final String REGEX = "\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
     private static final String ALIAS_REGEX = "(\\[.*\\])\\(([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*)(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]\\)";
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public TodoContentDto addTodoContent(ContentRequest request) {
         Todo todo = todoDao.findById(request.getTodoId())
                 .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
@@ -81,6 +78,7 @@ public class TodoContentService {
             todoContentDtos.add(TodoContentDto.entityToDto(todoContent));
         }
 
+        Collections.sort(todoContentDtos, (o1, o2) -> o2.getRegDate().compareTo(o1.getRegDate()));
         return todoContentDtos;
     }
 

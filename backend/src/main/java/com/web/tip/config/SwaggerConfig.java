@@ -38,6 +38,8 @@ public class SwaggerConfig {
                 .securityReferences(defaultAuth())
                 .forPaths(PathSelectors.any())
                 .forPaths(Predicates.not(PathSelectors.ant("/member/login")))
+                .forPaths(Predicates.not(PathSelectors.ant("/member/ncheck")))
+                .forPaths(Predicates.not(PathSelectors.ant("/member/signup")))
                 .build();
     }
 

@@ -1,58 +1,8 @@
 <template>
   <div class="flex flex-col h-full">
     <Header />
-    <div class="flex flex-shrink-0 items-center bg-menuGray h-16">
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          mr-5
-          ml-3
-          hover:text-white
-        "
-      >
-        전체 할일
-      </div>
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          mr-5
-          hover:text-white
-        "
-      >
-        내 할일
-      </div>
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          hover:text-white
-        "
-      >
-        진행 상황
-      </div>
-    </div>
-
-    <div class="flex overflow-auto flex-col h-full">
+    <Header-Todo-Menu :type="'total'" />
+    <div class="flex overflow-auto flex-col">
       <div class="flex my-5 mx-8 w-56">
         <button
           class="
@@ -111,6 +61,7 @@
 
 <script>
 import Header from '@/components/Header.vue';
+import HeaderTodoMenu from '@/components/HeaderTodoMenu.vue';
 import TotalKanban from '@/components/TotalKanban.vue';
 import { mapGetters, mapActions } from 'vuex';
 import Stomp from "webstomp-client";
@@ -119,6 +70,11 @@ import { getTeam } from "@/api/team.js";
 
 export default {
   name: 'PJTTODO',
+  components: {
+    Header,
+    TotalKanban,
+    HeaderTodoMenu,
+  },
   data() {
     return {
       teamInfoList:[],
@@ -126,10 +82,7 @@ export default {
       teamList:[],
     };
   },
-  components: {
-    Header,
-    TotalKanban,
-  },
+
   created() {
     this.set_project_id('1231231231231');
     this.connect();
