@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full">
     <Header />
     <Header-Todo-Menu :type="'total'" />
-    <div class="flex overflow-auto flex-col">
+    <div class="flex overflow-auto flex-col h-full">
       <div class="flex my-5 mx-8 w-56">
         <button
           class="
