@@ -71,6 +71,24 @@ public class AlarmService {
     }
 
     @Transactional
+    public boolean checkAll(String memberId) {
+
+        try{
+            List<Alarm> alarmList = alarmDao.findAlarmByMemberId(memberId);
+
+            for(Alarm alarm : alarmList){
+                alarm.changeIsShow();
+                alarmDao.save(alarm);
+            }
+
+            return true;
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Transactional
     public boolean addAlarm(String content, String todoId) {
 
         IdGenerator idGenerator = new IdGenerator();
