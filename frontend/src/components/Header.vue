@@ -55,8 +55,9 @@
               text-white text-xs
               font-bold
             "
+            v-if="this.cnt != ''"
           >
-            9+
+            {{this.cnt}}
           </div>
         </div>
 
@@ -90,6 +91,7 @@ export default {
     return {
       showAlert: false,
       alarmList: [],
+      cnt: 0,
     };
   },
   components: {},
@@ -114,8 +116,16 @@ export default {
         );
 
         this.stompClient.subscribe("/client/alarm/" + this.id, (res) => {
+          
           this.alarmList = JSON.parse(res.body);
+          
+          var alarmCnt = this.alarmList.length;
+          if(alarmCnt > 9) this.cnt = "9+";
+          else if(alarmCnt == 0) this.cnt = "";
+          else this.cnt = alarmCnt;
+
         });
+
       });
     },
     goMain() {
