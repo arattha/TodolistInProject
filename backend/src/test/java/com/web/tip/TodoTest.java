@@ -1,5 +1,7 @@
 package com.web.tip;
 
+import com.web.tip.error.CustomException;
+import com.web.tip.error.ErrorCode;
 import com.web.tip.member.Member;
 import com.web.tip.member.MemberDao;
 import com.web.tip.project.Project;
@@ -18,8 +20,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.parameters.P;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @SpringBootTest
@@ -60,5 +65,15 @@ public class TodoTest {
 
         Todo savedTodo = todoDao.save(todo);
         Assertions.assertEquals(savedTodo.getId(), todo.getId());
+    }
+
+    @Test
+    void testTodoCount(){
+        Project project = projectDao.findProjectById("1013795406242")
+                .orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
+
+        List<String> status = todoDao.findStatusByProject(project);
+        System.out.println(status.get(0));
+        Assertions.assertEquals(status.size(), 0);
     }
 }
