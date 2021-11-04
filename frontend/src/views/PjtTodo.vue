@@ -48,22 +48,21 @@
         >
           필터
         </button>
-        
       </div>
+
       <div
         id="scroll_div"
         class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full"
       >
         <div
           class="flex pb-3 mr-8"
-          v-for="(teamInfo, index) in teamFilter"
+          v-for="(teamInfo, index) in teamInfoList"
           :key="index"
         >
-          <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" />
+          <Total-Kanban :teamInfo="teamInfo" :TodoStomp="stompClient" />
         </div>
       </div>
     </div>
-    <TodoFilter v-if="isShow" @closeModal="closeModal" @cleanFilter="cleanFilter" @applyFilter="applyFilter" :teamInfoList="teamInfoList"/>
   </div>
 </template>
 
@@ -71,7 +70,6 @@
 import Header from "@/components/Header.vue";
 import HeaderTodoMenu from "@/components/HeaderTodoMenu.vue";
 import TotalKanban from "@/components/TotalKanban.vue";
-import TodoFilter from '@/components/TodoFilter.vue';
 import { mapGetters, mapActions } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
@@ -83,37 +81,22 @@ export default {
     Header,
     TotalKanban,
     HeaderTodoMenu,
-    TodoFilter
   },
   data() {
     return {
       teamInfoList: [],
       todoList: [],
       teamList: [],
-      isShow: false,
-      filters: null,
     };
   },
+
   created() {
     this.set_project_id("1231231231231");
     this.connect();
     this.set_project_name("프로젝트 명");
-    this.isShow = false;
   },
   computed: {
     ...mapGetters(["projectId"]),
-    teamFilter:function(){
-      let filters = this.filters;
-      if(filters == null || filters.team.length == 0){
-        return this.teamInfoList; //filter가 없을 때는 원본 반환
-      } else {
-        return this.teamInfoList.filter(function(team){
-          if(filters.team.indexOf(team.teamName) > -1){
-            return true;
-          }
-        })
-      }
-    }
   },
   methods: {
     ...mapActions(["set_project_name", "set_project_id"]),
@@ -207,7 +190,8 @@ export default {
       console.log("hi", this);
     },
     onWheel(e) {
-      let item = document.getElementById('scroll_div');
+      let item = document.getElementById("scroll_div");
+
       if (e.deltaY > 0) item.scrollLeft += 100;
       else item.scrollLeft -= 100;
     },
@@ -215,19 +199,8 @@ export default {
       console.log("팀추가");
     },
     todoFilter() {
-      this.isShow = true;
+      console.log("할일 필터");
     },
-    closeModal(){
-      this.isShow = false;
-    },
-    applyFilter(filters){
-      this.filters = filters;
-      this.isShow = false;
-    },
-    cleanFilter(){
-      this.filters = null;
-      this.isShow = false;
-    }
   },
-}
+};
 </script>
