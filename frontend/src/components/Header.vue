@@ -37,7 +37,7 @@
             mr-2
             hover:opacity-50
           "
-          @click="goAlert()"
+          @click="goAlarm()"
         >
           <i class="fas fa-bell text-white text-lg" />
           <div
@@ -131,8 +131,8 @@ export default {
     goMain() {
       this.$router.push("/");
     },
-    goAlert() {
-      this.$router.push("/alert", { params: { alarmList: this.alarmList } });
+    goAlarm() {
+      this.$router.push({name:"Alarm", params: { alarmList: this.alarmList } });
     },
     goProfile() {
       this.$router.push("/profile");
