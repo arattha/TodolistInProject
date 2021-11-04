@@ -4,6 +4,7 @@ import com.web.tip.BasicResponse;
 import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.LoginRequest;
 import com.web.tip.member.request.SignUpRequest;
+import com.web.tip.member.request.UpdatePasswordRequest;
 import com.web.tip.member.response.LoginResponse;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,19 @@ public class MemberController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PutMapping("/update_password")
+    @ApiOperation(value = "패스워드 변경")
+    public ResponseEntity<Object> updatePassword(@RequestBody UpdatePasswordRequest request) {
+        log.info("member:{} 의 패스워드 변경");
+        memberService.changePassword(request);
+
+        final BasicResponse result = new BasicResponse();
+        result.status = true;
+        result.data = "Success";
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @PostMapping("/login")
     @ApiOperation(value = "일반 로그인")
     public Object login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -63,7 +77,7 @@ public class MemberController {
 
         // 로그인을 처리하기 위한 토큰을 발급받고 쿠키에 담는다.
         Optional<TokenDto> tokenDtoOptional = memberService.login(loginRequest.getPassword(), loginRequest.getNickname());
-        if(tokenDtoOptional.isPresent()){
+        if (tokenDtoOptional.isPresent()) {
             // 현재 mid의 Member 정보를 가져와 반환 객체인 loginResponse에 필요한 내용을 담는다.
             Member member = memberService.getMemberByNickName(loginRequest.getNickname());
 
@@ -127,11 +141,10 @@ public class MemberController {
         result.data = SUCCESS;
 
         String accessToken = getAccessTokenToCookie(request);
-        
+
         if (accessToken == null || "".equals(accessToken) || accessToken.length() <= 0) {
             result.object = false;
-        }
-        else {
+        } else {
             result.object = true;
 
             Optional<TokenDto> getToken = memberService.reissuance(mid, accessToken);
@@ -142,7 +155,7 @@ public class MemberController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
     private String getAccessTokenToCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -152,21 +165,20 @@ public class MemberController {
                 }
             }
         }
-        
+
         return "";
     }
-    
+
     private Cookie getAuthCookie(Optional<TokenDto> optionalTokenDto) {
         Cookie cookie = null;
-        
+
         if (optionalTokenDto.isPresent()) {
             TokenDto tokenDto = optionalTokenDto.get();
 
             cookie = new Cookie(ACCESS_TOKEN, tokenDto.getAccessToken());
             // 일주일로 설정
             cookie.setMaxAge(60 * 60 * 24 * 7);
-        }
-        else {
+        } else {
             cookie = new Cookie(ACCESS_TOKEN, "logout");
             // 일주일로 설정
             cookie.setMaxAge(0);
@@ -175,7 +187,7 @@ public class MemberController {
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        
+
         return cookie;
     }
 }

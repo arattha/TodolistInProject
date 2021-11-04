@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full">
     <Header />
     <Header-Todo-Menu :type="'total'" />
-    <div class="flex overflow-auto flex-col">
+    <div class="flex overflow-auto flex-col h-full">
       <div class="flex my-5 mx-8 w-56">
         <button
           class="
@@ -50,235 +50,186 @@
         </button>
       </div>
 
-      <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1">
-        <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamInfoList" :key="index">
-          <Total-Kanban :teamInfo="teamInfo" />
+      <div
+        id="scroll_div"
+        class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full"
+      >
+        <div
+          class="flex pb-3 mr-8"
+          v-for="(teamInfo, index) in teamFilter"
+          :key="index"
+        >
+          <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" />
         </div>
       </div>
     </div>
+    <TodoFilter v-if="isShow" @closeModal="closeModal" @cleanFilter="cleanFilter" @applyFilter="applyFilter" :teamInfoList="teamInfoList"/>
   </div>
 </template>
 
 <script>
-import Header from '@/components/Header.vue';
-import HeaderTodoMenu from '@/components/HeaderTodoMenu.vue';
-import TotalKanban from '@/components/TotalKanban.vue';
-import { mapActions } from 'vuex';
+import Header from "@/components/Header.vue";
+import HeaderTodoMenu from "@/components/HeaderTodoMenu.vue";
+import TotalKanban from "@/components/TotalKanban.vue";
+import TodoFilter from '@/components/TodoFilter.vue';
+import { mapGetters, mapActions } from "vuex";
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
+import { getTeam } from "@/api/team.js";
 
 export default {
-  name: 'PJTTODO',
+  name: "PJTTODO",
   components: {
     Header,
     TotalKanban,
     HeaderTodoMenu,
+    TodoFilter
   },
   data() {
     return {
-      teamInfoList: [
-        {
-          teamName: 'OO팀',
-          totalCnt: 110,
-          addCnt: 10,
-          doneCnt: 50,
-          progressCnt: 50,
-          todoInfoList: [
-            {
-              status: '진행',
-              name: '조용일',
-              todoName: '로그인',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-          ],
-        },
-        {
-          teamName: 'XX팀',
-          totalCnt: 220,
-          addCnt: 20,
-          doneCnt: 20,
-          progressCnt: 20,
-          todoInfoList: [
-            {
-              status: 'New',
-              name: '조용일',
-              todoName: '로그인',
-            },
-            {
-              status: '완료',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-          ],
-        },
-        {
-          teamName: 'YY팀',
-          totalCnt: 330,
-          addCnt: 30,
-          doneCnt: 30,
-          progressCnt: 20,
-          todoInfoList: [
-            {
-              status: '진행',
-              name: '조용일',
-              todoName: '로그인',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-            {
-              status: '접수',
-              name: '최광진',
-              todoName: '회원가입',
-            },
-          ],
-        },
-        {
-          teamName: 'AA팀',
-          totalCnt: 330,
-          addCnt: 30,
-          doneCnt: 30,
-          progressCnt: 20,
-          todoInfoList: [
-            {
-              status: '진행',
-              name: '조용일',
-              todoName: '로그인',
-            },
-          ],
-        },
-        {
-          teamName: 'BB팀',
-          totalCnt: 330,
-          addCnt: 30,
-          doneCnt: 30,
-          progressCnt: 20,
-          todoInfoList: [
-            {
-              status: '진행',
-              name: '조용일',
-              todoName: '로그인',
-            },
-          ],
-        },
-        {
-          teamName: 'CC팀',
-          totalCnt: 330,
-          addCnt: 30,
-          doneCnt: 30,
-          progressCnt: 20,
-          todoInfoList: [],
-        },
-      ],
+      teamInfoList: [],
+      todoList: [],
+      teamList: [],
+      isShow: false,
+      filters: null,
     };
   },
 
   created() {
-    this.set_project_name('프로젝트 명');
+    this.isShow = false;
+    this.set_project_id("1231231231231");
+    this.connect();
+    this.set_project_name("프로젝트 명");
+  },
+  computed: {
+    ...mapGetters(["projectId"]),
+    teamFilter:function(){
+      let filters = this.filters;
+      if(filters == null || filters.team.length == 0){
+        return this.teamInfoList; //filter가 없을 때는 원본 반환
+      } else {
+        return this.teamInfoList.filter(function(team){
+          if(filters.team.indexOf(team.teamName) > -1){
+            return true;
+          }
+        })
+      }
+    }
   },
   methods: {
-    ...mapActions(['set_project_name']),
+    ...mapActions(["set_project_name", "set_project_id"]),
+    connect() {
+      const serverURL = "http://localhost:8082/todo";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug : false});
+      this.stompClient.connect(
+        {},
+        () => {
+          // 소켓 연결 성공
+          this.connected = true;
+
+          this.stompClient.debug = () => {};
+
+          this.stompClient.send(
+            "/server/getTodo",
+            JSON.stringify({
+              projectId: this.projectId,
+            }),
+            {}
+          );
+
+          // subscribe 로 alarm List 가져오기
+          this.stompClient.subscribe(
+            "/client/todo/" + this.projectId,
+            (res) => {
+              this.todoList = JSON.parse(res.body);
+              this.getTeamList();
+            }
+          );
+        },
+        (error) => {
+          // 소켓 연결 실패
+          console.log("소켓 연결 실패", error);
+        }
+      );
+    },
+    getTeamList() {
+      getTeam(
+        this.projectId,
+        (res) => {
+          // team 가져옴
+
+          var tmp = res.object;
+
+          this.teamInfoList = [];
+
+          tmp.forEach((value) => {
+            this.teamInfoList.push({
+              teamId: value.id,
+              teamName: value.name,
+              totalCnt: 330,
+              addCnt: 30,
+              doneCnt: 30,
+              progressCnt: 20,
+              todoInfoList: [],
+            });
+          });
+          this.updateList();
+        },
+        () => {
+          console.log("team 가져오기 실패");
+        }
+      );
+    },
+    updateList() {
+      for (var i = 0; i < this.todoList.length; i++) {
+        var teamId = this.todoList[i].teamId;
+
+        for (var j = 0; j < this.teamInfoList.length; j++) {
+          if (this.teamInfoList[j].teamId == teamId) {
+            this.teamInfoList[j].todoInfoList.push({
+              id: this.todoList[i].id,
+              title: this.todoList[i].title,
+              status: this.todoList[i].status,
+              projectId: this.todoList[i].projectId,
+              teamId: teamId,
+              memberId: this.todoList[i].memberId,
+              memberName: this.todoList[i].memberName,
+              modifyDate: this.todoList[i].modifyDate,
+              regDate: this.todoList[i].regDate,
+            });
+
+            break;
+          }
+        }
+      }
+    },
     horizontalScroll() {
-      console.log('hi', this);
+      console.log("hi", this);
     },
     onWheel(e) {
-      let item = document.getElementById('scroll_div');
+      let item = document.getElementById("scroll_div");
 
       if (e.deltaY > 0) item.scrollLeft += 100;
       else item.scrollLeft -= 100;
     },
     teamAdd() {
-      console.log('팀추가');
+      console.log("팀추가");
     },
     todoFilter() {
-      console.log('할일 필터');
+      this.isShow = true;
     },
+    closeModal(){
+      this.isShow = false;
+    },
+    applyFilter(filters){
+      this.filters = filters;
+      this.isShow = false;
+    },
+    cleanFilter(){
+      this.filters = null;
+      this.isShow = false;
+    }
   },
 };
 </script>

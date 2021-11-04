@@ -118,12 +118,12 @@ export default {
         },
         (res) => {
           if (res.object.member) {
-            this.set_id(res.object.id);
+            this.set_id(res.object.mid);
             this.set_nickname(res.object.nickname);
             this.toggle_isLogin(true);
 
             alert('로그인 성공');
-            this.$router.push('Main');
+            this.$router.push('Project');
           } else {
             console.log(res.object);
             alert('회원가입이 필요합니다. \n회원가입 페이지로 이동합니다.');

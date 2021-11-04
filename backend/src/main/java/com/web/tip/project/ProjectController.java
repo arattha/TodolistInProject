@@ -1,6 +1,7 @@
 package com.web.tip.project;
 
 import com.web.tip.BasicResponse;
+import com.web.tip.project.response.ProjectResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -34,7 +35,7 @@ public class ProjectController {
     public Object getProject(@RequestParam String memberId, @RequestParam boolean isDone) {
         log.info((isDone ? "완료된 " : "진행 중인 ") + "프로젝트 목록 반환");
 
-        List<ProjectDto> projectList = projectService.getProjectList(memberId, isDone);
+        List<ProjectResponse> projectList = projectService.getProjectList(memberId, isDone);
         final BasicResponse result = new BasicResponse();
 
         if (projectList != null) {

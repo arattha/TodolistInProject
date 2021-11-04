@@ -23,7 +23,7 @@ public class TodoTests {
     @Test
     void createTodo(){
         Assertions.assertTrue(todoService.addTodo(TodoDto.builder()
-                .title("test4")
+                .title("test3")
                 .status("접수")
                 .projectId("1231231231231")
                 .teamId("1231231231231")

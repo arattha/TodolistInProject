@@ -83,7 +83,7 @@ public class TodoService {
 
             List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
             for(Todo todo : todoList) {
-
+                Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
                 todoDto = todoDto.builder()
                         .id(todo.getId())
                         .title(todo.getTitle())
@@ -91,6 +91,7 @@ public class TodoService {
                         .projectId(todo.getProjectId())
                         .teamId(todo.getTeamId())
                         .memberId(todo.getMemberId())
+                        .memberName(member.getName())
                         .modifyDate(todo.getModifyDate())
                         .regDate(todo.getRegDate())
                         .build();
