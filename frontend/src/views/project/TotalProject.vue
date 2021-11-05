@@ -15,19 +15,22 @@ export default {
   components: {
     ProjectCard,
   },
+  data() {
+    return {
+      pjtInfoList: [],
+    };
+  },
   created() {
-    let id = '0564293048818';
     this.pjtInfoList = [];
     getProjectList(
-      true,
-      id,
+      false,
+      this.id,
       (res) => {
-        console.log(res);
         this.pjtInfoList = [];
         if (res.object) {
           for (let i = 0; i < res.object.length; i++) {
             let item = res.object[i];
-            console.log(item['startDate']);
+            
             let temp = {};
             temp['pjt'] = {
               id: item['id'],
@@ -50,11 +53,8 @@ export default {
       }
     );
   },
-  data() {
-    return {
-      ...mapGetters(['isLogin', 'id', 'nickname']),
-      pjtInfoList: [],
-    };
-  },
+  computed:{
+    ...mapGetters(['isLogin', 'id', 'nickname']),
+  }
 };
 </script>
