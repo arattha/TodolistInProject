@@ -1,8 +1,8 @@
-import { axiosService } from '@/api/index.js';
+import { axiosServiceWithAuth } from '@/api/index.js';
 
 function getTeam(projectId, callback, errorCallback) {
     
-    axiosService
+    axiosServiceWithAuth
         .get('/team', { params: { projectId: projectId } })
         .then((res) => {
             callback(res.data);
