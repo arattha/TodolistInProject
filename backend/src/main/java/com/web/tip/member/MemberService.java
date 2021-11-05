@@ -94,7 +94,7 @@ public class MemberService {
             redisTemplate.opsForHash().put(key, "at", tokenDto.getAccessToken());
 
             long diffTime = tokenDto.getRefreshTokenExpiresIn() - (new Date()).getTime();
-            redisTemplate.expire(key, diffTime, TimeUnit.SECONDS);
+            redisTemplate.expire(key, diffTime, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
@@ -119,7 +119,6 @@ public class MemberService {
     public Optional<TokenDto> reissuance(String mid, String at) {
         // Access Token에서 Member ID 가져오기
         Authentication authentication = tokenProvider.getAuthentication(at);
-
         String key = mid;
         TokenDto tokenDto = null;
         try {
@@ -133,8 +132,7 @@ public class MemberService {
             String getAccessToken = (String) redisTemplate.opsForHash().get(key, "at");
 
             // Token 검증
-            if (!tokenProvider.validateToken(getRefreshToken) || !tokenProvider.validateToken(getAccessToken)
-                    || !at.equals(getAccessToken)) {
+            if (!tokenProvider.validateToken(getRefreshToken) || !at.equals(getAccessToken)) {
                 return Optional.empty();
             }
 
@@ -146,7 +144,7 @@ public class MemberService {
             redisTemplate.opsForHash().put(key, "at", tokenDto.getAccessToken());
             long diffTime = tokenDto.getRefreshTokenExpiresIn() - (new Date()).getTime();
 
-            redisTemplate.expire(key, diffTime, TimeUnit.SECONDS);
+            redisTemplate.expire(key, diffTime, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
