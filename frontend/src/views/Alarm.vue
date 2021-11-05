@@ -6,6 +6,7 @@
       <button @click="goTodo(alarm.todoId)">이동</button>
     </div>
     <button @click="check">선택한 알림 삭제</button>
+    <button @click="checkAll">모든 알림 삭제</button>
   </div>
 </template>
 
@@ -86,14 +87,12 @@ export default {
     },
     checkAll() {
       removeAllAlarm(
-        {
-          memberId: this.id,
-        },
+        this.id,
         () => {
           this.alarmList = [];
 
           this.$route.params.alarmStomp.send(
-            "/server/checkAll",
+            "/server/getAlarm",
             JSON.stringify({
               memberId: this.id,
             }),
