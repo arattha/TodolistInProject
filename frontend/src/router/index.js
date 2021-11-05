@@ -34,6 +34,11 @@ const routes = [
     component: () => import('@/views/PjtTodo.vue'),
   },
   {
+    path: '/alarm',
+    name: 'Alarm',
+    component: () => import('@/views/Alarm.vue'),
+  },
+  {
     path: '/detail',
     component: () => import('@/views/TodoDetail.vue'),
     children: [
