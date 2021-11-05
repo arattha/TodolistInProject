@@ -1,10 +1,8 @@
 <template>
   <div class="flex flex-col h-full">
-    <Header />
-    <Header-Todo-Menu />
-    <div class="flex w-full flex-col lg:flex-row ite lg:justify-between px-10 lg:px-20">
+    <div class="flex w-full flex-col lg:flex-row ite lg:justify-between px-10 lg:px-20 my-3">
       <div class="flex flex-col">
-        <div class="flex my-8">
+        <div class="flex my-3">
           <div class="font-black text-6xl">
             {{ todoInfo.todoName }}
           </div>
@@ -21,7 +19,7 @@
             ></i>
           </div>
         </div>
-        <div class="mb-5">
+        <div class="my-5">
           <Todo-Status
             class="flex"
             :status="todoInfo.status"
@@ -29,41 +27,47 @@
             @changeStatus="changeStatus"
           />
         </div>
-        <div class="flex lg:flex-col">
-          <div class="text-sm mr-10 lg:mr-10 lg:mb-2">생성일 : {{ todoInfo.regDate }}</div>
-          <div class="text-sm">변경일 : {{ todoInfo.modifyDate }}</div>
-        </div>
       </div>
-      <div class="flex justify-end lg:justify-start items-center my-8 mr-5 h-16">
-        <div class="flex items-center">
-          <button
-            class="
-              bg-itemGray
-              text-black text-xs
-              font-semibold
-              h-9
-              w-24
-              py-2
-              px-2
-              mr-8
-              rounded-lg
-              shadow-md
-              hover:bg-menuGray
-              focus:outline-none
-              focus:ring-2
-              focus:ring-headerGray
-              focus:ring-offset-2
-              focus:ring-offset-purple-200
-            "
-            @click="modifyManager()"
-          >
-            담당자 변경
-          </button>
-        </div>
-        <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3"></div>
-        <div class="flex flex-col justify-center">
-          <div class="lg:text-2xl">OOO</div>
-          <div class="text-sm lg:text-base">XXX</div>
+      <div class="flex justify-end lg:justify-center lg:items-center mr-5">
+        <div class="flex flex-col">
+          <div class="flex justify-end lg:justify-start items-center">
+            <button
+              class="
+                bg-itemGray
+                text-black text-xs
+                font-semibold
+                h-9
+                w-24
+                py-2
+                px-2
+                mr-8
+                rounded-lg
+                shadow-md
+                hover:bg-menuGray
+                focus:outline-none
+                focus:ring-2
+                focus:ring-headerGray
+                focus:ring-offset-2
+                focus:ring-offset-purple-200
+              "
+              @click="modifyManager()"
+            >
+              담당자 변경
+            </button>
+            <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3"></div>
+            <div class="flex flex-col">
+              <div class="lg:text-2xl">OOO</div>
+              <div class="text-sm lg:text-base">XXX</div>
+            </div>
+          </div>
+          <div class="flex lg:flex-col mt-2 lg:mt-8">
+            <div class="flex justify-start lg:justify-end lg:items-center text-sm mr-5 lg:mr-0">
+              생성일 : {{ todoInfo.regDate }}
+            </div>
+            <div class="flex lg:justify-end lg:items-center text-sm">
+              변경일 : {{ todoInfo.modifyDate }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -177,15 +181,11 @@
 </template>
 
 <script>
-import Header from '@/components/Header.vue';
-import HeaderTodoMenu from '@/components/HeaderTodoMenu.vue';
 import TodoStatus from '@/components/TodoStatus.vue';
 
 export default {
   name: 'TODODETAIL',
   components: {
-    Header,
-    HeaderTodoMenu,
     TodoStatus,
   },
   data() {
@@ -205,6 +205,11 @@ export default {
       },
     };
   },
+  created() {
+    if (this.$route.path === '/todo/detail') {
+      this.curPage = 0;
+    }
+  },
   methods: {
     changeStatus(status) {
       this.todoInfo.status = status;
@@ -216,15 +221,21 @@ export default {
     },
     goDetail() {
       this.curPage = 0;
-      this.$router.push('/detail');
+      if (this.$route.path !== '/todo/detail') {
+        this.$router.push('/todo/detail');
+      }
     },
     goURL() {
       this.curPage = 1;
-      this.$router.push('/detail/url');
+      if (this.$route.path !== '/todo/detail/url') {
+        this.$router.push('/todo/detail/url');
+      }
     },
     goHistory() {
       this.curPage = 2;
-      this.$router.push('/detail/history');
+      if (this.$route.path !== '/todo/detail/history') {
+        this.$router.push('/todo/detail/history');
+      }
     },
   },
 };
