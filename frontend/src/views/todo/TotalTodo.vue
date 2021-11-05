@@ -135,7 +135,7 @@ export default {
   methods: {
     ...mapActions(['set_project_name', 'set_project_id']),
     connect() {
-      const serverURL = 'http://localhost:8082/todo';
+      const serverURL = 'https://localhost:8082/todo';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect(
@@ -228,6 +228,7 @@ export default {
     },
     teamAdd() {
       console.log('팀추가');
+      this.$router.push('/todo/detail');
     },
     todoFilter() {
       this.isShow = true;
