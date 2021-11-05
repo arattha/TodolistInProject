@@ -1,29 +1,35 @@
 <template>
-  <div>test</div>
+  <div>
+    <Todo-History-Card
+      v-for="(history, index) in todoHistoryList"
+      :key="index"
+      :todoHistory="history"
+    />
+  </div>
 </template>
 
 <script>
+import TodoHistoryCard from '@/components/TodoHistoryCard.vue';
 import { getTodoRecords } from '@/api/todo.js';
 import { formatDate } from '@/api/utils.js';
 import { mapGetters } from 'vuex';
 export default {
   name: 'TODOHISTORY',
-
+  components: {
+    TodoHistoryCard,
+  },
   watch: {
     todoId: {
       handler(id) {
         if (id) {
-          console.log('todoId: ' + id);
           getTodoRecords(
             id,
             (res) => {
-              console.log(res);
               for (let i = 0; i < res.object.length; i++) {
                 let item = res.object[i];
                 let temp = {
                   id: item['id'],
-                  writer: item['diff']['writer'],
-                  url: item['url'],
+                  isContent: item['content'],
                   diff: item['diff'],
                   modifyDate: formatDate(item['modifyDate']),
                 };

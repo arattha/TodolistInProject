@@ -19,11 +19,9 @@ export default {
     todoId: {
       handler(id) {
         if (id) {
-          console.log('todoId: ' + id);
           getTodoContent(
             id,
             (res) => {
-              console.log(res);
               this.detailList = [];
               for (let i = 0; i < res.object.length; i++) {
                 let item = res.object[i];

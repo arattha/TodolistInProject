@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <Todo-url-card v-for="(todoUrl, index) in todoUrlList" :key="index" :todoUrl="todoUrl" /> -->
+    <Todo-url-card v-for="(todoUrl, index) in todoUrlList" :key="index" :todoUrl="todoUrl" />
   </div>
 </template>
 
@@ -8,21 +8,19 @@
 import { getTodoUrls } from '@/api/todo.js';
 import { formatDate } from '@/api/utils.js';
 import { mapGetters } from 'vuex';
-// import TodoUrlCard from '@/components/TodoUrlCard.vue';
+import TodoUrlCard from '@/components/TodoUrlCard.vue';
 export default {
   name: 'TODOURL',
   components: {
-    // TodoUrlCard,
+    TodoUrlCard,
   },
   watch: {
     todoId: {
       handler(id) {
         if (id) {
-          console.log('todoId: ' + id);
           getTodoUrls(
             id,
             (res) => {
-              console.log(res);
               for (let i = 0; i < res.object.length; i++) {
                 let item = res.object[i];
                 let temp = {
