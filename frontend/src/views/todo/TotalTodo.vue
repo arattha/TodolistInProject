@@ -228,6 +228,7 @@ export default {
     },
     teamAdd() {
       console.log('팀추가');
+      this.$router.push('/todo/detail');
     },
     todoFilter() {
       this.isShow = true;
