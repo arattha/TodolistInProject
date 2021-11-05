@@ -37,7 +37,7 @@
             mr-2
             hover:opacity-50
           "
-          @click="goAlert()"
+          @click="goAlarm()"
         >
           <i class="fas fa-bell text-white text-lg" />
           <div
@@ -55,8 +55,9 @@
               text-white text-xs
               font-bold
             "
+            v-if="this.cnt != ''"
           >
-            9+
+            {{this.cnt}}
           </div>
         </div>
 
@@ -90,6 +91,7 @@ export default {
     return {
       showAlert: false,
       alarmList: [],
+      cnt: 0,
     };
   },
   components: {},
@@ -114,15 +116,23 @@ export default {
         );
 
         this.stompClient.subscribe("/client/alarm/" + this.id, (res) => {
+          
           this.alarmList = JSON.parse(res.body);
+          
+          var alarmCnt = this.alarmList.length;
+          if(alarmCnt > 9) this.cnt = "9+";
+          else if(alarmCnt == 0) this.cnt = "";
+          else this.cnt = alarmCnt;
+
         });
+
       });
     },
     goMain() {
       this.$router.push("/");
     },
-    goAlert() {
-      this.$router.push("/alert", { params: { alarmList: this.alarmList } });
+    goAlarm() {
+      this.$router.push({name:"Alarm", params: { alarmList: this.alarmList, alarmStomp: this.stompClient } });
     },
     goProfile() {
       this.$router.push("/profile");

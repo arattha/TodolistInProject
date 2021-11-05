@@ -30,7 +30,7 @@
         </div>
         <div class="grid items-center justify-items-center">
           <input
-            type="text"
+            type="password"
             class="
               appearance-none
               border border-transparent
