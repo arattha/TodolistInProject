@@ -33,9 +33,11 @@ public class TodoContentTest {
 
     @Test
     void testCreateTodoContent(){
-        String todoId = "3204607363899";
-        String contents = "";
-        String memberId = "4167307411326";
+        String todoId = "1";
+        String contents = "https://www.google.com/\n" +
+                "\n" +
+                "[hi](http://www.naver.com)";
+        String memberId = "8479097887171";
 
         TodoContentDto todoContentDto = todoContentService.addTodoContent(ContentRequest.builder()
                 .todoId(todoId)
@@ -46,7 +48,7 @@ public class TodoContentTest {
 
     @Test
     void testModifyTodoContent(){
-        String todoContentId = "3178101103097";
+        String todoContentId = "9341798090894";
         String contents = "https://www.google.com/\n" +
                 "\n" +
                 "[hi](http://www.naver.com)";
@@ -54,6 +56,7 @@ public class TodoContentTest {
         TodoContentDto todoContentDto = todoContentService.modifyTodoContent(ContentModifyRequest.builder()
                 .id(todoContentId)
                 .contents(contents)
+                .memberId("8479097887171")
                 .build());
 
         List<TodoUrl> todoUrls = todoUrlDao.findTodoUrlsByTodoContent(TodoContent.builder().id(todoContentId).build());
