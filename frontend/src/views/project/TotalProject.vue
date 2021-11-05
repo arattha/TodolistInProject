@@ -26,7 +26,6 @@ export default {
       false,
       this.id,
       (res) => {
-        
         this.pjtInfoList = [];
         if (res.object) {
           for (let i = 0; i < res.object.length; i++) {
