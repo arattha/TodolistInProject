@@ -22,43 +22,70 @@ const routes = [
     name: 'Signup',
     component: () => import('@/views/Signup.vue'),
   },
-
-  {
-    path: '/project',
-    name: 'Project',
-    component: () => import('@/views/TotalProject.vue'),
-  },
-  {
-    path: '/todo',
-    name: 'Todo',
-    component: () => import('@/views/PjtTodo.vue'),
-  },
   {
     path: '/alarm',
     name: 'Alarm',
     component: () => import('@/views/Alarm.vue'),
   },
   {
-    path: '/detail',
-    component: () => import('@/views/TodoDetail.vue'),
+    path: '/project',
+    component: () => import('@/views/Project.vue'),
     children: [
       {
         path: '',
-        name: 'TodoContents',
-        component: () => import('@/views/todoDetail/TodoContents.vue'),
+        name: 'TotalProject',
+        component: () => import('@/views/project/TotalProject.vue'),
       },
       {
-        path: '/detail/url',
-        name: 'TodoURL',
-        component: () => import('@/views/todoDetail/TodoURL.vue'),
-      },
-      {
-        path: '/detail/history',
-        name: 'TodoHistory',
-        component: () => import('@/views/todoDetail/TodoHistory.vue'),
+        path: '/project/done',
+        name: 'DoneProject',
+        component: () => import('@/views/project/DoneProject.vue'),
       },
     ],
   },
+  {
+    path: '/todo',
+    component: () => import('@/views/Todo.vue'),
+    children: [
+      {
+        path: '',
+        name: 'TotalTodo',
+        component: () => import('@/views/todo/TotalTodo.vue'),
+      },
+      {
+        path: '/todo/my',
+        name: 'MyTodo',
+        component: () => import('@/views/todo/MyTodo.vue'),
+      },
+      {
+        path: '/todo/progress',
+        name: 'TodoProgress',
+        component: () => import('@/views/todo/TodoProgress.vue'),
+      },
+      {
+        path: '/todo/detail',
+        component: () => import('@/views/TodoDetail.vue'),
+        children: [
+          {
+            path: '',
+            name: 'TodoContents',
+            component: () => import('@/views/todoDetail/TodoContents.vue'),
+          },
+          {
+            path: '/todo/detail/url',
+            name: 'TodoURL',
+            component: () => import('@/views/todoDetail/TodoURL.vue'),
+          },
+          {
+            path: '/todo/detail/history',
+            name: 'TodoHistory',
+            component: () => import('@/views/todoDetail/TodoHistory.vue'),
+          },
+        ],
+      },
+    ],
+  },
+
   {
     path: '/about',
     name: 'About',
