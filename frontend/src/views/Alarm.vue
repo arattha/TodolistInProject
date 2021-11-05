@@ -1,16 +1,14 @@
 <template>
   <div>
     <div v-for="(alarm, index) in alarmList" :key="index">
-      <div>
-        {{ alarm }}
-      </div>
-      <button @click="check(alarm.id)"></button>
+        <input type="checkbox" v-model="checkList" :value="alarm.id">{{alarm.content}}
+      <button @click="goTodo(alarm.todoId)">이동</button>
     </div>
   </div>
 </template>
 
 <script>
-import { removeAll, removeAlarm } from "@/api/alarm.js";
+import { removeAllAlarm, removeAlarm } from "@/api/alarm.js";
 import { mapGetters } from "vuex";
 
 export default {
@@ -18,6 +16,7 @@ export default {
   data() {
     return {
       alarmList: [],
+      checkList: [],
     };
   },
   created() {
@@ -27,29 +26,43 @@ export default {
     ...mapGetters(["id"]),
   },
   methods: {
-    check(alarmId) {
-      removeAlarm(
-        {
-          memberId: this.id,
-          alarmId: alarmId,
-        },
-        (res) => {
-          this.alarmList = res.object;
+    selectAlarm(e){
+        this.checkList = [];
+        for(let i=0; i < e.options.length; i++) {
+            const option = e.options[i];
+            if(option.selected) {
+                this.checkList.push(option.value);
+            }
+        }
+    },
+    check() {
 
-          this.$route.params.alarmStomp.send(
-            "/server/checkAlarm",
-            JSON.stringify({
-              memberId: this.id,
-              alarmId: alarmId,
-            }),
-            {}
-          );
-        },
-        () => {}
-      );
+        for(var alarmId in this.checkList){
+            removeAlarm(
+              {
+                memberId: this.id,
+                alarmId: alarmId,
+              },
+              (res) => {
+                this.alarmList = res.object;
+      
+                this.$route.params.alarmStomp.send(
+                  "/server/checkAlarm",
+                  JSON.stringify({
+                    memberId: this.id,
+                    alarmId: alarmId,
+                  }),
+                  {}
+                );
+              },
+              () => {}
+            );
+
+        }
+
     },
     checkAll() {
-      removeAll(
+      removeAllAlarm(
         {
           memberId: this.id,
         },
