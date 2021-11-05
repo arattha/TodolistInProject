@@ -1,7 +1,7 @@
-import { axiosService } from '@/api/index.js';
+import { axiosServiceWithAuth } from '@/api/index.js';
 
 function removeAlarm(data, callback, errorCallback) {
-    axiosService
+    axiosServiceWithAuth
         .put('/alarm/check/', Object.values(data.checkList),
         )
         .then((res) => {
@@ -15,7 +15,7 @@ function removeAlarm(data, callback, errorCallback) {
 
 function removeAllAlarm(memberId, callback, errorCallback) {
     
-    axiosService
+    axiosServiceWithAuth
         .put('/alarm/checkAll/' + memberId)
         .then((res) => {
             callback(res.data);

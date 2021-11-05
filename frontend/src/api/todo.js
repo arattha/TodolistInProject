@@ -1,7 +1,7 @@
-import { axiosService } from '@/api/index.js';
+import { axiosServiceWithAuth } from '@/api/index.js';
 
 function getTodoContent(todoId, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .get('/todo_content', { params: { id: todoId } })
     .then((res) => {
       callback(res.data);
@@ -12,7 +12,7 @@ function getTodoContent(todoId, callback, errorCallback) {
 }
 
 function deleteTodoContent(todoId, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .delete('/todo_content', { params: { id: todoId } })
     .then((res) => {
       callback(res.data);
@@ -23,7 +23,7 @@ function deleteTodoContent(todoId, callback, errorCallback) {
 }
 
 function modifyTodoContent(todo_content, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .put('/todo_content', { id: todo_content.id, contents: todo_content.contents })
     .then((res) => {
       callback(res.data);
@@ -34,7 +34,7 @@ function modifyTodoContent(todo_content, callback, errorCallback) {
 }
 
 function createTodoContent(todo_content, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .put('/todo_content', {
       todoId: todo_content.todoId,
       memberId: todo_content.memberId,
@@ -49,7 +49,7 @@ function createTodoContent(todo_content, callback, errorCallback) {
 }
 
 function getTodoUrls(todoId, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .get('/todo_content/url', { params: { id: todoId } })
     .then((res) => {
       callback(res.data);
@@ -60,7 +60,7 @@ function getTodoUrls(todoId, callback, errorCallback) {
 }
 
 function getTodoRecords(todoId, callback, errorCallback) {
-  axiosService
+  axiosServiceWithAuth
     .get('/todo_content/record', { params: { id: todoId } })
     .then((res) => {
       callback(res.data);
