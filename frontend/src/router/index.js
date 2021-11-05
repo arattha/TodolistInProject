@@ -2,9 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '../store';
 import Home from '../views/Home.vue';
-import Project from '@/views/Project.vue';
-import TotalProject from '@/views/project/TotalProject.vue';
-import DoneProject from '@/views/project/DoneProject.vue';
 // import store from '@/store/index';
 
 Vue.use(VueRouter);
@@ -32,17 +29,17 @@ const routes = [
   },
   {
     path: '/project',
-    component: Project,
+    component: () => import('@/views/Project.vue'),
     children: [
       {
         path: '',
         name: 'TotalProject',
-        component: TotalProject,
+        component: () => import('@/views/project/TotalProject.vue'),
       },
       {
-        path: '/project/done',
+        path: 'done',
         name: 'DoneProject',
-        component: DoneProject,
+        component: () => import('@/views/project/DoneProject.vue'),
       },
     ],
   },
@@ -56,17 +53,17 @@ const routes = [
         component: () => import('@/views/todo/TotalTodo.vue'),
       },
       {
-        path: '/todo/my',
+        path: 'my',
         name: 'MyTodo',
         component: () => import('@/views/todo/MyTodo.vue'),
       },
       {
-        path: '/todo/progress',
+        path: 'progress',
         name: 'TodoProgress',
         component: () => import('@/views/todo/TodoProgress.vue'),
       },
       {
-        path: '/todo/detail',
+        path: 'detail',
         component: () => import('@/views/TodoDetail.vue'),
         children: [
           {
@@ -75,12 +72,12 @@ const routes = [
             component: () => import('@/views/todoDetail/TodoContents.vue'),
           },
           {
-            path: '/todo/detail/url',
+            path: 'url',
             name: 'TodoURL',
             component: () => import('@/views/todoDetail/TodoURL.vue'),
           },
           {
-            path: '/todo/detail/history',
+            path: 'history',
             name: 'TodoHistory',
             component: () => import('@/views/todoDetail/TodoHistory.vue'),
           },
