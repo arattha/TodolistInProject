@@ -6,36 +6,51 @@
 
 <script>
 import TodoDetailContents from '@/components/TodoDetailContents.vue';
+import { getTodoContent } from '@/api/todo.js';
+import { formatDate } from '@/api/utils.js';
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'TODOCONTENTS',
   components: {
     TodoDetailContents,
   },
+  watch: {
+    todoId: {
+      handler(id) {
+        if (id) {
+          getTodoContent(
+            id,
+            (res) => {
+              this.detailList = [];
+              for (let i = 0; i < res.object.length; i++) {
+                let item = res.object[i];
+                let temp = {
+                  id: item['id'],
+                  name: item['writer'],
+                  content: item['contents'],
+                  regDate: formatDate(item['regDate']),
+                  profileImg: item['profileImg'],
+                };
+                this.detailList.push(temp);
+              }
+            },
+            (error) => {
+              alert('Todo 상세 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+              console.log(error);
+            }
+          );
+        }
+      },
+      immediate: true,
+    },
+  },
+  computed: {
+    ...mapGetters(['todoId']),
+  },
   data() {
     return {
-      detailList: [
-        {
-          name: '조용일',
-          content:
-            '회원가입 디자인 견본입니다. https://www.naver.com/ <a href="www.naver.com">Hi</a>회원가입 디자인 견본입니다. https://www.naver.com/ <a href="www.naver.com">Hi</a>회원가입 디자인 견본입니다. https://www.naver.com/ <a href="www.naver.com">Hi</a>회원가입 디자인 견본입니다. https://www.naver.com/ <a href="www.naver.com">Hi</a>회원가입 디자인 견본입니다. https://www.naver.com/ <a href="www.naver.com">Hi</a> scroll_type2 scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2scroll_type2',
-          regDate: '2021-10-21',
-        },
-        {
-          name: '최광진',
-          content: '# 코멘트입니다. [코멘트](https://www.naver.com/)',
-          regDate: '2021-10-18',
-        },
-        {
-          name: '최광진',
-          content: '<div><h1 id="text">으악</h1></div>',
-          regDate: '2021-10-18',
-        },
-        {
-          name: '최광진',
-          content: 'console.log(this.$router.Header)',
-          regDate: '2021-10-18',
-        },
-      ],
+      detailList: [],
     };
   },
 };

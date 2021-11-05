@@ -24,8 +24,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.web.tip.error.ErrorCode.TODO_CONTENT_NOT_FOUND;
-import static com.web.tip.error.ErrorCode.TODO_NOT_FOUND;
+import static com.web.tip.error.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -86,6 +85,8 @@ public class TodoContentService {
     public TodoContentDto modifyTodoContent(ContentModifyRequest request) {
         TodoContent todoContent = todoContentDao.findById(request.getId())
                 .orElseThrow(() -> new CustomException(TODO_CONTENT_NOT_FOUND));
+        Member member = memberDao.findMemberById(request.getMemberId())
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
         if (!todoContent.isUse()) {
             throw new CustomException(TODO_CONTENT_NOT_FOUND);
         }
@@ -103,7 +104,7 @@ public class TodoContentService {
         TodoContent savedContent = todoContentDao.save(modifiedContent);
 
         modifyTodoUrls(savedContent);
-        saveTodoContentRecord(savedContent, beforeContents);
+        saveTodoContentRecord(member, savedContent, beforeContents);
 
         return TodoContentDto.entityToDto(savedContent);
     }
@@ -129,13 +130,15 @@ public class TodoContentService {
         return TodoContentDto.entityToDto(todoContentDao.save(removedTodoContent));
     }
 
-    private void saveTodoContentRecord(TodoContent todoContent, String before) {
+    private void saveTodoContentRecord(Member writer, TodoContent todoContent, String before) {
         String id = idGenerator.generateId();
         while (todoContentRecordDao.existsById(id)) {
             id = idGenerator.generateId();
         }
 
         Map<String, String> diff = new HashMap<>();
+        diff.put("writer", writer.getName());
+        diff.put("message", "\"" + writer.getName() + "\"가 " + todoContent.getTodo().getTitle() +"의 상세 정보를 변경했습니다.");
         diff.put("before", before);
         diff.put("after", todoContent.getContents());
 

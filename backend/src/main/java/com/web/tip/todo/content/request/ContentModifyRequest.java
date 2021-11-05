@@ -9,5 +9,6 @@ import lombok.ToString;
 @ToString
 public class ContentModifyRequest {
     private String id;
+    private String memberId;
     private String contents;
 }
