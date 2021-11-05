@@ -1,18 +1,25 @@
 <template>
   <div>
+    <Header />
     <div v-for="(alarm, index) in alarmList" :key="index">
-        <input type="checkbox" v-model="checkList" :value="alarm.id">{{alarm.content}}
+        <input type="checkbox" v-model="checkList" :value="index">{{alarm.content}}
       <button @click="goTodo(alarm.todoId)">이동</button>
     </div>
+    <button @click="check">선택한 알림 삭제</button>
+    <button @click="checkAll">모든 알림 삭제</button>
   </div>
 </template>
 
 <script>
 import { removeAllAlarm, removeAlarm } from "@/api/alarm.js";
 import { mapGetters } from "vuex";
+import Header from '@/components/Header.vue';
 
 export default {
   name: "Alarm",
+  components:{
+    Header
+  },
   data() {
     return {
       alarmList: [],
@@ -37,40 +44,55 @@ export default {
     },
     check() {
 
-        for(var alarmId in this.checkList){
-            removeAlarm(
-              {
-                memberId: this.id,
-                alarmId: alarmId,
-              },
-              (res) => {
-                this.alarmList = res.object;
-      
-                this.$route.params.alarmStomp.send(
-                  "/server/checkAlarm",
-                  JSON.stringify({
-                    memberId: this.id,
-                    alarmId: alarmId,
-                  }),
-                  {}
-                );
-              },
-              () => {}
-            );
+      this.checkList.sort();
+      let removeAlarm = [];
 
+      var idx = 0;
+      var newArray = [];
+      for(var i = 0 ; i < this.alarmList.length ; i++){
+        if(i == this.checkList[idx]){
+          removeAlarm.push(this.alarmList[i].id);
+          idx++;
+          continue;
         }
+        newArray.push(this.alarmList[i]);
+      }
+      this.alarmList = newArray;
+      this.checkList = [];
 
+      this.remove(removeAlarm);
+
+    },
+    remove(list){
+      removeAlarm(
+        {
+          memberId: this.id,
+          checkList: list
+        },
+        () => {
+
+          this.$route.params.alarmStomp.send(
+            "/server/getAlarm",
+            JSON.stringify({
+              memberId: this.id,
+            }),
+            {}
+          );
+          
+        },
+        () => {
+          return;
+        }
+      );
     },
     checkAll() {
       removeAllAlarm(
-        {
-          memberId: this.id,
-        },
+        this.id,
         () => {
           this.alarmList = [];
 
           this.$route.params.alarmStomp.send(
-            "/server/checkAll",
+            "/server/getAlarm",
             JSON.stringify({
               memberId: this.id,
             }),
