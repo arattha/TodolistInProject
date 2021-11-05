@@ -4,6 +4,7 @@ import store from '../store';
 import Home from '../views/Home.vue';
 import Project from '@/views/Project.vue';
 import TotalProject from '@/views/project/TotalProject.vue';
+import DoneProject from '@/views/project/DoneProject.vue';
 // import store from '@/store/index';
 
 Vue.use(VueRouter);
@@ -41,7 +42,7 @@ const routes = [
       {
         path: '/project/done',
         name: 'DoneProject',
-        component: () => import('@/views/project/DoneProject.vue'),
+        component: DoneProject,
       },
     ],
   },
