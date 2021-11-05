@@ -1,10 +1,10 @@
 const state = {
-  projectId: '1231231231231',
-  projectName: '',
+  projectId: "",
+  projectName: "",
 };
 
 const getters = {
-  projectId(state){
+  projectId(state) {
     return state.projectId;
   },
   projectName(state) {
@@ -24,15 +24,15 @@ const mutations = {
 
 const actions = {
   set_project_name(context, data) {
-    context.commit('SET_PROJECT_NAME', data);
+    context.commit("SET_PROJECT_NAME", data);
   },
   set_project_id(context, data) {
-    context.commit('SET_PROJECT_ID', data);
+    context.commit("SET_PROJECT_ID", data);
   },
 };
 
 export default {
-  strict: process.env.NODE_ENV !== 'production',
+  strict: process.env.NODE_ENV !== "production",
   state: {
     ...state,
   },
