@@ -30,7 +30,7 @@
         </div>
         <div class="grid items-center justify-items-center">
           <input
-            type="text"
+            type="password"
             class="
               appearance-none
               border border-transparent
@@ -123,7 +123,7 @@ export default {
             this.toggle_isLogin(true);
 
             alert('로그인 성공');
-            this.$router.push('Main');
+            this.$router.push('/project');
           } else {
             console.log(res.object);
             alert('회원가입이 필요합니다. \n회원가입 페이지로 이동합니다.');
