@@ -2,6 +2,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '../store';
 import Home from '../views/Home.vue';
+import Project from '@/views/Project.vue';
+import TotalProject from '@/views/project/TotalProject.vue';
 // import store from '@/store/index';
 
 Vue.use(VueRouter);
@@ -29,12 +31,12 @@ const routes = [
   },
   {
     path: '/project',
-    component: () => import('@/views/Project.vue'),
+    component: Project,
     children: [
       {
         path: '',
         name: 'TotalProject',
-        component: () => import('@/views/project/TotalProject.vue'),
+        component: TotalProject,
       },
       {
         path: '/project/done',
