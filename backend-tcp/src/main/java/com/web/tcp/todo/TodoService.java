@@ -317,4 +317,10 @@ public class TodoService {
         return true;
     }
 
+    public Todo getTodoInfo(String todoId) {
+
+        Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+        return todo;
+    }
 }
