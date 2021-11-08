@@ -177,19 +177,23 @@
       >
       </router-view>
     </div>
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
+import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 
 export default {
   name: 'TODODETAIL',
   components: {
     TodoStatus,
+    TodoDetailModal,
   },
   data() {
     return {
+      isShow: false,
       curPage: 0,
       todoInfo: {
         status: '접수',
@@ -215,7 +219,9 @@ export default {
       this.todoInfo.status = status;
     },
     modifyManager() {},
-    todoContentAdd() {},
+    todoContentAdd() {
+      this.showModal();
+    },
     toggleBookmark() {
       this.todoInfo.userInfo.isBookmark = !this.todoInfo.userInfo.isBookmark;
     },
@@ -236,6 +242,12 @@ export default {
       if (this.$route.path !== '/todo/detail/history') {
         this.$router.push('/todo/detail/history');
       }
+    },
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
     },
   },
 };
