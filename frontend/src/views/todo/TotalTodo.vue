@@ -66,7 +66,6 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        @click="todoFilter()"
       >
         즐겨찾기
       </button>
@@ -94,6 +93,7 @@ import { mapGetters, mapActions } from 'vuex';
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
 import { getTeam } from '@/api/team.js';
+import { getBookmark } from '@/api/bookmark.js';
 
 export default {
   name: 'PJTTODO',
@@ -113,15 +113,15 @@ export default {
 
   created() {
     this.isShow = false;
-    this.set_project_id('1231231231231');
+    this.set_project_id(this.projectId);
     this.connect();
-    this.set_project_name('프로젝트 명');
+    this.set_project_name(this.projectName);
   },
   computed: {
-    ...mapGetters(['projectId']),
+    ...mapGetters(['projectId','id','projectName']),
     teamFilter: function () {
       let filters = this.filters;
-      if (filters == null || filters.team.length == 0) {
+      if (filters == null) {
         return this.teamInfoList; //filter가 없을 때는 원본 반환
       } else {
         return this.teamInfoList.filter(function (team) {
@@ -210,12 +210,41 @@ export default {
               memberName: this.todoList[i].memberName,
               modifyDate: this.todoList[i].modifyDate,
               regDate: this.todoList[i].regDate,
+              bookmark:false,
             });
 
             break;
           }
         }
       }
+      this.getBookmarkList();
+    },
+    async getBookmarkList(){
+      let tmp = [];
+      await getBookmark(
+        {
+          projectId : this.projectId,
+          memberId : this.id
+        },
+        (res) => {
+          res.object.forEach(bookmark => {
+            tmp.push(bookmark.todoId);
+          });
+        },
+        (error) => {
+          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+          console.log(error);
+        }
+      );
+
+      for (var i = 0; i < this.teamInfoList.length; i++) {
+        for (var j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
+          if (tmp.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1 ) {
+            this.teamInfoList[i].todoInfoList[j].bookmark = true;
+          }
+        }
+      }
+
     },
     horizontalScroll() {
       console.log('hi', this);

@@ -35,14 +35,7 @@
 						<input type="checkbox" :id="'s'+index" :value="status" v-model="filters.status">
 						<label :for="'s'+index">{{status}}</label>
 					</div>
-					<!-- <input type="checkbox" id="New" name="status" value="New" v-model="filters.status">
-					<label for="New">New</label>
-					<input type="checkbox" id="접수" name="status" value="접수" v-model="filters.status">
-					<label for="접수">접수</label>
-					<input type="checkbox" id="진행" name="status" value="진행" v-model="filters.status">
-					<label for="진행">진행</label>
-					<input type="checkbox" id="완료" name="status" value="완료" v-model="filters.status">
-					<label for="완료">완료</label> -->
+					
 					<br>
 				</div>
 				<div class="block border-t-2" id='teams'>팀</div>
