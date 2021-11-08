@@ -4,17 +4,17 @@
       <div class="flex flex-col">
         <div class="flex my-3">
           <div class="font-black text-6xl">
-            {{ todoInfo.todoName }}
+            {{ todoInfo.title }}
           </div>
           <div class="flex items-end justify-center text-3xl ml-5">
             <i
               class="fas fa-star text-white cursor-pointer"
-              v-if="!todoInfo.userInfo.isBookmark"
+              v-if="!userInfo.isBookmark"
               @click="toggleBookmark()"
             ></i>
             <i
               class="fas fa-star text-yellow-400 cursor-pointer"
-              v-if="todoInfo.userInfo.isBookmark"
+              v-if="userInfo.isBookmark"
               @click="toggleBookmark()"
             ></i>
           </div>
@@ -54,7 +54,9 @@
             >
               담당자 변경
             </button>
-            <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3"></div>
+            <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
+              <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
+            </div>
             <div class="flex flex-col">
               <div class="lg:text-2xl">OOO</div>
               <div class="text-sm lg:text-base">XXX</div>
@@ -183,6 +185,7 @@
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
+import { mapGetters } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 
 export default {
@@ -196,18 +199,23 @@ export default {
       isShow: false,
       curPage: 0,
       todoInfo: {
+        id: '1',
+        title: '회원가입',
+        memberId: '0564293048818',
         status: '접수',
-        userInfo: {
-          name: '최광진',
-          teamName: 'F106',
-          // 즐겨찾기 여부
-          isBookmark: true,
-        },
-        todoName: '회원가입',
         regDate: '2021-10-14',
         modifyDate: '2021-10-15',
       },
+      userInfo: {
+        name: '최광진',
+        teamName: 'F106',
+        // 즐겨찾기 여부
+        isBookmark: true,
+      },
     };
+  },
+  computed: {
+    ...mapGetters(['id', 'todoId']),
   },
   created() {
     if (this.$route.path === '/todo/detail') {
@@ -223,7 +231,7 @@ export default {
       this.showModal();
     },
     toggleBookmark() {
-      this.todoInfo.userInfo.isBookmark = !this.todoInfo.userInfo.isBookmark;
+      this.userInfo.isBookmark = !this.userInfo.isBookmark;
     },
     goDetail() {
       this.curPage = 0;

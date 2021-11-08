@@ -79,15 +79,15 @@ export default {
     TodoCard,
     draggable,
   },
-  props: ['teamInfo','TodoStomp','filters'],
+  props: ['teamInfo', 'TodoStomp', 'filters'],
   data() {
     return {
       drag: false,
-      teamId: "",
-      todoId: "",
+      teamId: '',
+      todoId: '',
     };
   },
-  created(){
+  created() {
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
@@ -100,29 +100,27 @@ export default {
     //   console.log(e);
     //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
     // },
-    setTodoId(e){
+    setTodoId(e) {
       // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
-    updateTeam(e){
-      
+    updateTeam(e) {
       this.TodoStomp.send(
-            "/server/moveTodo/team",
-            JSON.stringify({
-              id:this.teamInfo.todoInfoList[e.newIndex].id,
-              title:this.teamInfo.todoInfoList[e.newIndex].title,
-              status:this.teamInfo.todoInfoList[e.newIndex].status,
-              projectId:this.teamInfo.todoInfoList[e.newIndex].projectId,
-              teamId:this.teamId,
-              memberId:this.teamInfo.todoInfoList[e.newIndex].memberId,
-              memberName:this.teamInfo.todoInfoList[e.newIndex].memberName,
-              modifyDate:this.teamInfo.todoInfoList[e.newIndex].modifyDate,
-              regDate:this.teamInfo.todoInfoList[e.newIndex].regDate
-            }),
-            {}
-          );
-      
-    }
+        '/server/moveTodo/team',
+        JSON.stringify({
+          id: this.teamInfo.todoInfoList[e.newIndex].id,
+          title: this.teamInfo.todoInfoList[e.newIndex].title,
+          status: this.teamInfo.todoInfoList[e.newIndex].status,
+          projectId: this.teamInfo.todoInfoList[e.newIndex].projectId,
+          teamId: this.teamId,
+          memberId: this.teamInfo.todoInfoList[e.newIndex].memberId,
+          memberName: this.teamInfo.todoInfoList[e.newIndex].memberName,
+          modifyDate: this.teamInfo.todoInfoList[e.newIndex].modifyDate,
+          regDate: this.teamInfo.todoInfoList[e.newIndex].regDate,
+        }),
+        {}
+      );
+    },
   },
   computed: {
     todoFilter:function(){
@@ -130,11 +128,11 @@ export default {
       if(filters == null){
         return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
       } else {
-        return this.teamInfo.todoInfoList.filter(function(todo){
-          if(filters.status.indexOf(todo.status) > -1){
+        return this.teamInfo.todoInfoList.filter(function (todo) {
+          if (filters.status.indexOf(todo.status) > -1) {
             return true;
           }
-        })
+        });
       }
     },
     dragOptions() {
