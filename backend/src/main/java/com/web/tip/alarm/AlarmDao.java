@@ -11,6 +11,6 @@ public interface AlarmDao extends JpaRepository<Alarm, String> {
 
     Optional<Alarm> findAlarmById(String alarmId);
     List<Alarm> findAlarmByMemberId(String memberId);
-    Slice<Alarm> findAlarmByMemberId(String memberId, Pageable pagable);
+    Slice<Alarm> findAlarmByMemberIdAndIsShowIsFalse(String memberId, Pageable pagable);
     long countAlarmByMemberIdAndIsShowIsFalse(String memberId);
 }

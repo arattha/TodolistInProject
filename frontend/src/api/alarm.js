@@ -22,10 +22,10 @@ function removeAllAlarm(memberId, callback, errorCallback) {
     });
 }
 
-async function getReviewInMypage(userData, callback, errorCallback) {
+async function getAlarmInMypage(userData, callback, errorCallback) {
   await axiosServiceWithAuth
     .get(
-      `/alarm/userAlarmList/${userData.id}?page=${userData.page}&size=${userData.size}&sort=${userData.sort}&sort=rid,desc`
+      `/alarm/userAlarmList/${userData.id}?page=${userData.page}&size=${userData.size}&sort=${userData.sort}&sort=id,desc`
     )
     .then((res) => {
       callback(res.data);
@@ -46,4 +46,4 @@ async function getAlarmCnt(userData, callback, errorCallback) {
     });
 }
 
-export { removeAlarm, removeAllAlarm, getReviewInMypage, getAlarmCnt };
+export { removeAlarm, removeAllAlarm, getAlarmInMypage, getAlarmCnt };

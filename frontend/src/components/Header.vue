@@ -132,7 +132,7 @@ export default {
       this.$router.push("/");
     },
     goAlarm() {
-      this.$router.push({name:"Alarm"});
+      this.$router.push({name:"Alarm", params: { alarmList: this.alarmList, alarmStomp: this.stompClient } });
     },
     goProfile() {
       this.$router.push("/profile");

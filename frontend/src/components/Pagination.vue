@@ -151,6 +151,7 @@ export default {
         }
         this.pageList.push(curMaxPage + i);
       }
+      console.log("pageList :",this.pageList);
     },
   },
   watch: {

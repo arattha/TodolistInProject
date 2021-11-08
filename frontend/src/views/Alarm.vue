@@ -1,19 +1,49 @@
 <template>
   <div>
     <Header />
-    <div v-for="(alarm, index) in alarmList" :key="index">
+    <!-- <div v-for="(alarm, index) in alarmList" :key="index">
         <input type="checkbox" v-model="checkList" :value="index">{{alarm.content}}
       <button @click="goTodo(alarm.todoId)">이동</button>
-    </div>
+    </div> -->
+
     <button @click="check">선택한 알림 삭제</button>
     <button @click="checkAll">모든 알림 삭제</button>
+    
+    <div v-if="alarmList">
+      <div
+        v-for="(alarm, index) in alarmList"
+        :key="index"
+      >
+        <input type="checkbox" v-model="checkList" :value="index">
+        <div class="
+          flex flex-row
+          h-14
+          border-b-2 border-r-2 border-l-2
+          cursor-pointer
+          hover:bg-indigo-200
+        ">
+          <div
+            class="
+              hidden md:flex justify-center items-center p-2 h-full w-72 border-r-2 mr-2
+            "
+          >
+            {{ alarm.content }}
+          </div>
+          <div class="flex justify-center items-center h-full w-32 text-center">
+            {{ alarm.regDate.split('T')[0] }}<br />{{ alarm.regDate.split('T')[1] }}
+          </div>
+        </div>
+      </div>
+    </div>
     <Pagination class="mt-3" :pageCnt="pageCnt" :pageSize="pageSize" @paging="pagingMethod" />
+    {{this.checkList}}
   </div>
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm, getAlarmInMypage } from "@/api/alarm.js";
+import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from "@/api/alarm.js";
 import { mapActions, mapGetters } from "vuex";
+import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
 
 export default {
@@ -32,15 +62,15 @@ export default {
   },
   created() {
     this.pageCnt = 5;
-    this.pageSize = 10;
+    this.pageSize = 6;
     this.getTotalAlarmCnt();
     this.getAlarm();
   },
   computed: {
-    ...mapGetters(["id"]),
+    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt']),
   },
   methods: {
-    ...mapActions(['set_totalReviewCnt', 'set_curPage', 'set_offset', 'toggle_isDel']),
+    ...mapActions(['set_totalAlarmCnt', 'set_curPage', 'set_offset', 'toggle_isDel']),
     async getAlarm() {
       let userData = {
         id: this.id,
@@ -76,6 +106,8 @@ export default {
       );
     },
     pagingMethod(page) {
+      console.log(this.alarmList);
+      this.checkList = [];
       this.getAlarm(page);
     },
     selectAlarm(e){
@@ -89,24 +121,14 @@ export default {
     },
     check() {
 
-      this.checkList.sort();
       let removeAlarm = [];
-
-      var idx = 0;
-      var newArray = [];
-      for(var i = 0 ; i < this.alarmList.length ; i++){
-        if(i == this.checkList[idx]){
-          removeAlarm.push(this.alarmList[i].id);
-          idx++;
-          continue;
-        }
-        newArray.push(this.alarmList[i]);
+      for(var i = 0 ; i < this.checkList.length ; i++){
+        removeAlarm.push(this.alarmList[this.checkList[i]].id);
       }
-      this.alarmList = newArray;
+
       this.checkList = [];
-
       this.remove(removeAlarm);
-
+      
     },
     remove(list){
       removeAlarm(
@@ -115,6 +137,11 @@ export default {
           checkList: list
         },
         () => {
+
+          this.toggle_isDel(true);
+          this.set_totalAlarmCnt(this.totalAlarmCnt - list.length);
+          this.getAlarm();
+          alert("삭제되었습니다.");
 
           this.$route.params.alarmStomp.send(
             "/server/getAlarm",
@@ -152,9 +179,6 @@ export default {
       // this.$route.push("/todoInfo");
       console.log(todoId);
     },
-    pagingMethod(){
-
-    }
   },
 };
 </script>
