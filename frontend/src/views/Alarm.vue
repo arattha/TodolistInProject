@@ -17,7 +17,8 @@
           border-b-2 border-r-2 border-l-2
           cursor-pointer
           hover:bg-indigo-200
-        ">
+        "
+        @click="goTodo(alarm.todoId)">
           <div
             class="
               hidden md:flex justify-center items-center p-2 h-full w-72 border-r-2 mr-2
@@ -66,7 +67,7 @@ export default {
     ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt']),
   },
   methods: {
-    ...mapActions(['set_totalAlarmCnt', 'set_curPage', 'set_offset', 'toggle_isDel']),
+    ...mapActions(['set_totalAlarmCnt', 'set_curPage', 'set_offset', 'toggle_isDel', 'set_todo_id']),
     async getAlarm() {
       let userData = {
         id: this.id,
@@ -150,10 +151,11 @@ export default {
       );
     },
     goTodo(todoId) {
-      // 해당 Todo의 상세 페이지로 이동
-      // this.$route.push("/todoInfo");
-      console.log(todoId);
 
+      // 해당 Todo의 상세 페이지로 이동
+      this.set_todo_id(todoId);
+      this.$router.push('/todo/detail');
+      
     },
     getRealtimeAlarm(){
       this.$route.params.alarmStomp.send(
