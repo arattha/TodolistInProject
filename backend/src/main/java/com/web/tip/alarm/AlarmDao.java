@@ -1,6 +1,7 @@
 package com.web.tip.alarm;
 
-import com.web.tip.alarm.Alarm;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,5 +11,6 @@ public interface AlarmDao extends JpaRepository<Alarm, String> {
 
     Optional<Alarm> findAlarmById(String alarmId);
     List<Alarm> findAlarmByMemberId(String memberId);
-
+    Slice<Alarm> findAlarmByMemberId(String memberId, Pageable pagable);
+    long countAlarmByMemberIdAndIsShowIsFalse(String memberId);
 }
