@@ -23,10 +23,10 @@
         <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
       </div>
       <div class="flex justify-center items-center">
-        <div id="bookmark" class="mr-5">
+        <div id="bookmark" class="mr-5 z-50">
           <!-- <i class="far fa-star"></i> -->
-          <i class="fas fa-star text-white"></i>
-          <i class="fas fa-star text-yellow-400"></i>
+          <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.bookmark"></i>
+          <i class="bookmark fas fa-star text-white" v-else></i>
         </div>
         <Todo-Status :status="todoInfo.status" :isDetail="false" />
       </div>
@@ -67,19 +67,63 @@
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
-import { mapActions } from 'vuex';
+import { addBookmark , deleteBookmark } from '@/api/bookmark.js';
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'TODOCARD',
+  data(){
+    return {
+
+    };
+  },
   components: {
     TodoStatus,
   },
   props: ['todoInfo'],
+  created(){
+    
+  },
+  computed:{
+    ...mapGetters(['id']),
+  },
   methods: {
     ...mapActions(['set_todo_id']),
     todoSend() {
       console.log('보내기');
     },
-    bookmark() {},
+    bookmark() {
+      if(!this.todoInfo.bookmark){
+        addBookmark(
+          {
+            memberId : this.id, 
+            todoId : this.todoInfo.id,
+          },
+          () => {
+            this.todoInfo.bookmark = true;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      } else {
+        deleteBookmark(
+          {
+            memberId : this.id, 
+            todoId : this.todoInfo.id,
+          },
+          () => {
+            this.todoInfo.bookmark = false;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      }
+      
+    },
     clicktodo(event) {
       let target = event.target;
       if (target == event.currentTarget.querySelector('.sendBtn')) {
@@ -92,7 +136,7 @@ export default {
       }
       console.log('이동 : ' + this.todoInfo.title + ' 상세 페이지');
       this.set_todo_id(this.todoInfo.id);
-      this.$router.push('/todo/detail');
+      this.$router.push(`/${this.todoInfo.id}/detail`);
     },
   },
 };

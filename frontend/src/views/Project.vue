@@ -79,18 +79,18 @@ export default {
     };
   },
   created() {
-    if (this.$route.path === '/project') {
+    if (this.$route.path === '/projects') {
       this.pageType = 'total';
     }
   },
   methods: {
     goTotalPjt() {
       this.pageType = 'total';
-      this.$router.push('/project');
+      this.$router.push('/projects');
     },
     goDonePjt() {
       this.pageType = 'done';
-      this.$router.push('/project/done');
+      this.$router.push('/projects/done');
     },
     addPjt() {
       console.log('프로젝트 추가');

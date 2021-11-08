@@ -9,6 +9,7 @@ import com.web.tip.todo.TodoDao;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class BookmarkService {
     BookmarkDao bookmarkDao;
     TodoDao todoDao;
 
-    public Object getBookmark(String projectId, String memberId) {
+    public Object getBookmarkList(String projectId, String memberId) {
 
         List<Todo> todoList= todoDao.findTodosByProjectIdAndMemberId(projectId,memberId);
         List<String> todoIdList = new ArrayList<>();

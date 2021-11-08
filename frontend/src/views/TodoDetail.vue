@@ -179,19 +179,24 @@
       >
       </router-view>
     </div>
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters } from 'vuex';
+import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
+
 export default {
   name: 'TODODETAIL',
   components: {
     TodoStatus,
+    TodoDetailModal,
   },
   data() {
     return {
+      isShow: false,
       curPage: 0,
       todoInfo: {
         id: '1',
@@ -222,27 +227,35 @@ export default {
       this.todoInfo.status = status;
     },
     modifyManager() {},
-    todoContentAdd() {},
+    todoContentAdd() {
+      this.showModal();
+    },
     toggleBookmark() {
       this.userInfo.isBookmark = !this.userInfo.isBookmark;
     },
     goDetail() {
       this.curPage = 0;
-      if (this.$route.path !== '/todo/detail') {
-        this.$router.push('/todo/detail');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail`) {
+        this.$router.push(`/${this.$routes.todoId}/detail`);
       }
     },
     goURL() {
       this.curPage = 1;
-      if (this.$route.path !== '/todo/detail/url') {
-        this.$router.push('/todo/detail/url');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail/url`) {
+        this.$router.push(`/${this.$routes.todoId}/detail/url`);
       }
     },
     goHistory() {
       this.curPage = 2;
-      if (this.$route.path !== '/todo/detail/history') {
-        this.$router.push('/todo/detail/history');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail/history`) {
+        this.$router.push(`/${this.$routes.todoId}/detail/history`);
       }
+    },
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
     },
   },
 };

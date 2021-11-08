@@ -4,6 +4,7 @@ import createPersistedState from 'vuex-persistedstate';
 import header from './header';
 import user from './user';
 import todo from './todo';
+import page from './page';
 
 Vue.use(Vuex);
 
@@ -12,10 +13,11 @@ export default new Vuex.Store({
     user,
     header,
     todo,
+    page,
   },
   plugins: [
     createPersistedState({
-      paths: ['header', 'user', 'todo'],
+      paths: ['header', 'user', 'todo', 'page'],
     }),
   ],
 });

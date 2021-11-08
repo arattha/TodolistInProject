@@ -28,27 +28,25 @@
 			<div class="h-5/6">
 				<div class="block border-t-2" id='status'>상태</div>
 				<div class="block" id='status'>
-					<input type="checkbox" id="New" value="New" v-model="filters.status">
-					<label for="New">New</label>
-					<input type="checkbox" id="접수" value="접수" v-model="filters.status">
-					<label for="접수">접수</label>
-					<input type="checkbox" id="진행" value="진행" v-model="filters.status">
-					<label for="진행">진행</label>
-					<input type="checkbox" id="완료" value="완료" v-model="filters.status">
-					<label for="완료">완료</label>
+					<input type="checkbox" id="allStatus" v-model="selectAllStatus">
+					<label for="allStatus">전체선택</label>
+
+					<div v-for="(status,index) in statusList" :key="'s'+index">
+						<input type="checkbox" :id="'s'+index" :value="status" v-model="filters.status">
+						<label :for="'s'+index">{{status}}</label>
+					</div>
+					
 					<br>
 				</div>
-				<div class="block border-t-2" id='status'>즐겨찾기</div>
-				<div class="block" id='favorite'>
-					<input type="checkbox" id="favorite" value="favorite" v-model="filters.favorite">
-					<label for="favorite">favorite</label>
-					<br>
-				</div>
-				<div class="block border-t-2" id='status'>팀</div>
+				<div class="block border-t-2" id='teams'>팀</div>
+
+				<input type="checkbox" id="allTeams" v-model="selectAllTeams">
+				<label for="allTeams">전체선택</label>
+
 				<div class="block" id='teams'>
-					<div v-for="(team,index) in teamInfoList" :key="index">
-						<input type="checkbox" :id="index" :value="team.teamName" v-model="filters.team">
-						<label :for="index">{{team.teamName}}</label>
+					<div v-for="(team,index) in teamInfoList" :key="'t'+index">
+						<input type="checkbox" :id="'t'+index" :value="team.teamName" v-model="filters.team">
+						<label :for="'t'+index">{{team.teamName}}</label>
 					</div>
 					<br>
 				</div>
@@ -136,7 +134,36 @@
 					status:[],
 					favorite:false,
 				},
+				statusList:['New','접수','진행','완료'],
 			}
+		},
+		computed:{
+			selectAllStatus: {
+				get: function () {
+					return this.statusList.length == this.filters.status.length ? true : false;
+				},
+				set: function (value) {
+						if (value) {
+								this.filters.status = this.statusList;
+						} else {
+							this.filters.status = [];
+						}
+				}
+      },
+			selectAllTeams: {
+				get: function () {
+					return this.teamInfoList.length == this.filters.team.length ? true : false;
+				},
+				set: function (value) {
+						if (value) {
+							this.teamInfoList.forEach(team => {
+								this.filters.team.push(team.teamName);
+							});
+						} else {
+							this.filters.team = [];
+						}
+				}
+      },
 		},
 		methods: {
 			applyFilter(){
