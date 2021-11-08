@@ -32,7 +32,7 @@ public class ImgController {
 
 
     @PostMapping()
-    public ResponseEntity<BasicResponse> addImgFile(@RequestBody ImgFileDto imgFileDto) throws IOException {
+    public ResponseEntity<BasicResponse> addImgFile(ImgFileDto imgFileDto) throws IOException {
 
         imgService.addFile(imgFileDto);
 
