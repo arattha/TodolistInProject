@@ -12,8 +12,9 @@
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm, getAlarmInMypage } from "@/api/alarm.js";
+import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from "@/api/alarm.js";
 import { mapActions, mapGetters } from "vuex";
+import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
 
 export default {
@@ -123,7 +124,7 @@ export default {
             }),
             {}
           );
-          
+
         },
         () => {
           return;
@@ -152,9 +153,6 @@ export default {
       // this.$route.push("/todoInfo");
       console.log(todoId);
     },
-    pagingMethod(){
-
-    }
   },
 };
 </script>

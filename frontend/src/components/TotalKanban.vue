@@ -127,7 +127,7 @@ export default {
   computed: {
     todoFilter:function(){
       let filters= this.filters;
-      if(filters == null || filters.status.length == 0){
+      if(filters == null){
         return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
       } else {
         return this.teamInfo.todoInfoList.filter(function(todo){
