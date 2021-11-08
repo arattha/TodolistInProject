@@ -132,7 +132,7 @@ export default {
         return;
       }
       console.log('누름 : ' + this.todoInfo.todoName);
-      this.$router.push('/todo/detail');
+      this.$router.push(`/${this.todoInfo.id}/detail`);
     },
   },
 };
