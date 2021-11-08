@@ -57,7 +57,7 @@ export default {
       console.log(this.pjtInfo.pjt);
       this.set_project_id(this.pjtInfo.pjt.id);
       this.set_project_name(this.pjtInfo.pjt.name);
-      this.$router.push("/todo");
+      this.$router.push(`/projects/${this.pjtInfo.pjt.id}/todos`);
     },
   },
 };

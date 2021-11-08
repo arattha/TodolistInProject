@@ -123,7 +123,7 @@ export default {
             this.toggle_isLogin(true);
 
             alert('로그인 성공');
-            this.$router.push('Project');
+            this.$router.push('Projects');
           } else {
             console.log(res.object);
             alert('회원가입이 필요합니다. \n회원가입 페이지로 이동합니다.');

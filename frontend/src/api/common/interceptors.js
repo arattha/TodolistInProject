@@ -55,7 +55,7 @@ export function setInterceptors(axiosService) {
       } else {
         alert('문제가 발생했습니다. 다시 시도해주세요.');
         console.log(error);
-        router.push('Main');
+        router.push('/login');
       }
 
       // 응답이 에러인 경우에 미리 전처리할 수 있다.

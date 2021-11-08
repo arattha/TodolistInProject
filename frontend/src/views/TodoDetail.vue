@@ -227,20 +227,20 @@ export default {
     },
     goDetail() {
       this.curPage = 0;
-      if (this.$route.path !== '/todo/detail') {
-        this.$router.push('/todo/detail');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail`) {
+        this.$router.push(`/${this.$routes.todoId}/detail`);
       }
     },
     goURL() {
       this.curPage = 1;
-      if (this.$route.path !== '/todo/detail/url') {
-        this.$router.push('/todo/detail/url');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail/url`) {
+        this.$router.push(`/${this.$routes.todoId}/detail/url`);
       }
     },
     goHistory() {
       this.curPage = 2;
-      if (this.$route.path !== '/todo/detail/history') {
-        this.$router.push('/todo/detail/history');
+      if (this.$route.path !== `/${this.$routes.todoId}/detail/history`) {
+        this.$router.push(`/${this.$routes.todoId}/detail/history`);
       }
     },
     showModal() {
