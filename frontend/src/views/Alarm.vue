@@ -1,20 +1,16 @@
 <template>
   <div>
     <Header />
-    <!-- <div v-for="(alarm, index) in alarmList" :key="index">
-        <input type="checkbox" v-model="checkList" :value="index">{{alarm.content}}
-      <button @click="goTodo(alarm.todoId)">이동</button>
-    </div> -->
 
-    <button @click="check">선택한 알림 삭제</button>
-    <button @click="checkAll">모든 알림 삭제</button>
+    <button @click="remove">선택한 알림 삭제</button>
+    <button @click="removeAll">모든 알림 삭제</button>
     
     <div v-if="alarmList">
       <div
         v-for="(alarm, index) in alarmList"
         :key="index"
       >
-        <input type="checkbox" v-model="checkList" :value="index">
+        <input type="checkbox" v-model="checkList" :value="alarm.id">
         <div class="
           flex flex-row
           h-14
@@ -106,70 +102,49 @@ export default {
       );
     },
     pagingMethod(page) {
-      console.log(this.alarmList);
       this.checkList = [];
       this.getAlarm(page);
     },
-    selectAlarm(e){
-        this.checkList = [];
-        for(let i=0; i < e.options.length; i++) {
-            const option = e.options[i];
-            if(option.selected) {
-                this.checkList.push(option.value);
-            }
-        }
-    },
-    check() {
+    remove(){
 
-      let removeAlarm = [];
-      for(var i = 0 ; i < this.checkList.length ; i++){
-        removeAlarm.push(this.alarmList[this.checkList[i]].id);
+      if(this.checkList.length == 0) {
+        alert("선택한 알람이 없습니다.");
+        return;
       }
 
-      this.checkList = [];
-      this.remove(removeAlarm);
-      
-    },
-    remove(list){
       removeAlarm(
         {
           memberId: this.id,
-          checkList: list
+          checkList: this.checkList
         },
         () => {
-
           this.toggle_isDel(true);
-          this.set_totalAlarmCnt(this.totalAlarmCnt - list.length);
+          this.set_totalAlarmCnt(this.totalAlarmCnt - this.checkList.length);
           this.getAlarm();
+          this.checkList = [];
           alert("삭제되었습니다.");
+          this.getRealtimeAlarm();
 
-          this.$route.params.alarmStomp.send(
-            "/server/getAlarm",
-            JSON.stringify({
-              memberId: this.id,
-            }),
-            {}
-          );
-          
         },
         () => {
           return;
         }
       );
     },
-    checkAll() {
+    removeAll() {
+
+      if(this.totalAlarmCnt == 0) {
+        alert("알람이 없습니다.");
+        return;
+      }
+
       removeAllAlarm(
         this.id,
         () => {
-          this.alarmList = [];
-
-          this.$route.params.alarmStomp.send(
-            "/server/getAlarm",
-            JSON.stringify({
-              memberId: this.id,
-            }),
-            {}
-          );
+          this.toggle_isDel(true);
+          this.set_totalAlarmCnt(0);
+          this.getAlarm();
+          this.getRealtimeAlarm();
         },
         () => {}
       );
@@ -178,7 +153,29 @@ export default {
       // 해당 Todo의 상세 페이지로 이동
       // this.$route.push("/todoInfo");
       console.log(todoId);
+
     },
+    getRealtimeAlarm(){
+      this.$route.params.alarmStomp.send(
+        "/server/getAlarm",
+        JSON.stringify({
+          memberId: this.id,
+        }),
+        {}
+      );
+    },
+    
+  },
+  // 해당 페이지에서 나갈때 값을 초기화하도록 세팅
+  // 만약 새로고침 시에는 url이 같으므로 변경 X
+  beforeRouteLeave(to, from, next) {
+    // just use `this` this.name = to.params.name next()
+    if (to.fullPath !== from.fullPath) {
+      this.set_curPage(1);
+      this.set_offset(0);
+    }
+
+    next();
   },
 };
 </script>
