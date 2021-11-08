@@ -113,7 +113,7 @@ export default {
 
   created() {
     this.isShow = false;
-    this.set_project_id('1231231231231');
+    this.set_project_id('1013795406242');
     this.connect();
     this.set_project_name('프로젝트 명');
   },
