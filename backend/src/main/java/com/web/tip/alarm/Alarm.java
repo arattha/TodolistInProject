@@ -24,6 +24,6 @@ public class Alarm {
     private LocalDateTime regDate;
 
     public void changeIsShow(){
-        this.isShow = !this.isShow;
+        this.isShow = true;
     }
 }
