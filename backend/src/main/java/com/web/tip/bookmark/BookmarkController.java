@@ -28,10 +28,10 @@ public class BookmarkController {
 
     @GetMapping()
     @ApiOperation(value = "북마크 가져오기")
-    public ResponseEntity<BasicResponse> getBookmark( @RequestParam String projectId, @RequestParam String memberId) {
+    public ResponseEntity<BasicResponse> getBookmarkList(@RequestParam String projectId, @RequestParam String memberId) {
         log.info("get Bookmark");
 
-        List<Bookmark> bookmarkResult = (List<Bookmark>) bookmarkService.getBookmark(projectId,memberId);
+        List<Bookmark> bookmarkResult = (List<Bookmark>) bookmarkService.getBookmarkList(projectId,memberId);
 
         final BasicResponse result = new BasicResponse();
         result.status = true;
@@ -55,7 +55,7 @@ public class BookmarkController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping()
+    @PutMapping()
     @ApiOperation(value = "북마크 삭제")
     public ResponseEntity<BasicResponse> deleteBookmark(@RequestBody BookmarkDto bookmarkDto) {
         log.info("delete Bookmark");

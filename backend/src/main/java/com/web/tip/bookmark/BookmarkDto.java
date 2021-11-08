@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class BookmarkDto {
-
     private String memberId;
     private String todoId;
 }
