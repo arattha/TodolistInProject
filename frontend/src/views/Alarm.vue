@@ -7,32 +7,77 @@
     </div>
     <button @click="check">선택한 알림 삭제</button>
     <button @click="checkAll">모든 알림 삭제</button>
+    <Pagination class="mt-3" :pageCnt="pageCnt" :pageSize="pageSize" @paging="pagingMethod" />
   </div>
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm } from "@/api/alarm.js";
-import { mapGetters } from "vuex";
+import { removeAllAlarm, removeAlarm, getAlarmInMypage } from "@/api/alarm.js";
+import { mapActions, mapGetters } from "vuex";
 import Header from '@/components/Header.vue';
 
 export default {
   name: "Alarm",
   components:{
-    Header
+    Header,
+    Pagination
   },
   data() {
     return {
       alarmList: [],
       checkList: [],
+      pageCnt: 5,
+      pageSize: 6,
     };
   },
   created() {
-    this.alarmList = this.$route.params.alarmList;
+    this.pageCnt = 5;
+    this.pageSize = 10;
+    this.getTotalAlarmCnt();
+    this.getAlarm();
   },
   computed: {
     ...mapGetters(["id"]),
   },
   methods: {
+    ...mapActions(['set_totalReviewCnt', 'set_curPage', 'set_offset', 'toggle_isDel']),
+    async getAlarm() {
+      let userData = {
+        id: this.id,
+        page: this.curPage - 1,
+        size: 6,
+        sort: 'regDate,desc',
+      };
+
+      await getAlarmInMypage(
+        userData,
+        (res) => {
+          this.alarmList = res.object.content;
+
+          if (!this.alarmList && this.isDel) {
+            this.set_curPage(this.curPage - 1);
+            this.getAlarm();
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    },
+    getTotalAlarmCnt() {
+      getAlarmCnt(
+        this.id,
+        (res) => {
+          this.set_totalAlarmCnt(res.object);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    },
+    pagingMethod(page) {
+      this.getAlarm(page);
+    },
     selectAlarm(e){
         this.checkList = [];
         for(let i=0; i < e.options.length; i++) {
@@ -107,6 +152,9 @@ export default {
       // this.$route.push("/todoInfo");
       console.log(todoId);
     },
+    pagingMethod(){
+
+    }
   },
 };
 </script>
