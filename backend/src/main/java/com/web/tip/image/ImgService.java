@@ -31,7 +31,7 @@ public class ImgService {
 
         MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Path path = Paths.get(".", "upload");
+        Path path = Paths.get("", "upload");
         log.info("path: " + path.toUri().toString());
 
         Resource img = new FileSystemResource(Paths.get(path.toString(), memberDetail.getProfileImg()));
@@ -46,7 +46,7 @@ public class ImgService {
     @Transactional
     public void addFile(ImgFileDto newFile) throws IllegalStateException, IOException {
 
-        Path path = Paths.get(".", "upload");
+        Path path = Paths.get("", "upload");
         File Folder = path.toFile();
         if (!Folder.exists()) Folder.mkdir();
 

@@ -17,14 +17,13 @@
   >
     <div class="flex justify-between items-center">
       <div class="flex items-center justify-center">
-        <div class="rounded-full w-10 h-10 bg-white mr-3">
-          <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
-        </div>
+          <div class= "rounded-full w-10 h-10 mr-3 flex">
+            <img class="rounded-full flex object-cover w-full h-full" :src="'http://localhost:8080/img/' + id" />
+          </div>
         <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
       </div>
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5 z-50">
-          <!-- <i class="far fa-star"></i> -->
           <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.isBookmark"></i>
           <i class="bookmark fas fa-star text-white" v-else></i>
         </div>

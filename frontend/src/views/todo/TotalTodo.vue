@@ -65,7 +65,7 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        :class="[bookmarkFilter ? 'bg-itemGray' : 'bg-menuGray']"
+        :class="[bookmarkFilter ? 'bg-menuGray' : 'bg-itemGray' ]"
         @click="activeBookmarkFilter()"
       >
         즐겨찾기
