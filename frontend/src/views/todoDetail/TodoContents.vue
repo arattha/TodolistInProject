@@ -14,8 +14,8 @@ export default {
   components: {
     TodoDetailContents,
   },
-  created(){
-    this.todoId = this.$route.todoId;
+  created() {
+    this.todoId = this.$route.params.todoId;
   },
   watch: {
     todoId: {
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       detailList: [],
-      todoId:"",
+      todoId: '',
     };
   },
 };

@@ -58,8 +58,8 @@
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
             <div class="flex flex-col">
-              <div class="lg:text-2xl">{{todoInfo.memberName}}</div>
-              <div class="text-sm lg:text-base">{{todoInfo.teamName}}</div>
+              <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
+              <div class="text-sm lg:text-base">{{ todoInfo.teamName }}</div>
             </div>
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
@@ -179,7 +179,7 @@
       >
       </router-view>
     </div>
-    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" />
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" />
   </div>
 </template>
 
@@ -222,13 +222,12 @@ export default {
     ...mapGetters(['id', 'todoId']),
   },
   created() {
-    if (this.$route.path === '/todo/detail') {
-      this.curPage = 0;
-    }
+    this.curPage = 0;
+    this.goDetail();
     this.connect();
   },
   methods: {
-    connect(){
+    connect() {
       const serverURL = 'http://localhost:8082/socket/todo';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
@@ -249,7 +248,7 @@ export default {
           );
 
           // subscribe 로 alarm List 가져오기
-          this.stompClient.subscribe("/client/detail/" + this.todoId, (res) => {
+          this.stompClient.subscribe('/client/detail/' + this.todoId, (res) => {
             var todo = JSON.parse(res.body);
 
             this.todoInfo.id = todo.id;
@@ -258,9 +257,8 @@ export default {
             this.todoInfo.memberName = todo.memberName;
             this.todoInfo.teamName = todo.teamName;
             this.todoInfo.status = todo.status;
-            this.todoInfo.modifyDate = todo.modifyDate.split("T")[0];
-            this.todoInfo.regDate = todo.regDate.split("T")[0];
-
+            this.todoInfo.modifyDate = todo.modifyDate.split('T')[0];
+            this.todoInfo.regDate = todo.regDate.split('T')[0];
           });
         },
         (error) => {
@@ -281,20 +279,20 @@ export default {
     },
     goDetail() {
       this.curPage = 0;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail`) {
-        this.$router.push(`/${this.$routes.todoId}/detail`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail`);
       }
     },
     goURL() {
       this.curPage = 1;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail/url`) {
-        this.$router.push(`/${this.$routes.todoId}/detail/url`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail/url`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail/url`);
       }
     },
     goHistory() {
       this.curPage = 2;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail/history`) {
-        this.$router.push(`/${this.$routes.todoId}/detail/history`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail/history`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail/history`);
       }
     },
     showModal() {
@@ -302,6 +300,13 @@ export default {
     },
     closeModal() {
       this.isShow = false;
+      if (this.curPage == 0) {
+        this.$router.replace(`/${this.$route.params.todoId}/detail`);
+      } else if (this.curPage == 1) {
+        this.$router.replace(`/${this.$route.params.todoId}/detail/url`);
+      } else if (this.curPage == 2) {
+        this.$router.replace(`/${this.$route.params.todoId}/detail/history`);
+      }
     },
   },
 };
