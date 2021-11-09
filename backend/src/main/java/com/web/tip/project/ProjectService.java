@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class ProjectService {
             }
             // Dto로 받은 project를 Entity로 변경
             projectDto.setId(pid);
+            projectDto.setRegDate(LocalDateTime.now());
 
             Project project = ProjectAdaptor.dtoToEntity(projectDto);
             // 중복되지 않은 pid를 새로운 프로젝트 Entity인 project변수에 set

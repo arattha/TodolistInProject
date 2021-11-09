@@ -11,4 +11,15 @@ function getProjectList(isDone, memberId, callback, errorCallback) {
     });
 }
 
-export { getProjectList };
+function addProject(data, callback, errorCallback) {
+  axiosServiceWithAuth
+    .post("/project/addProject", data)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export { getProjectList, addProject };

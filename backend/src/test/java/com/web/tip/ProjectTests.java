@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.nio.channels.MembershipKey;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -28,8 +29,8 @@ public class ProjectTests {
                         .name("test_project")
                         .desc("this is test for creating project")
                         .isDone(false)
-                        .startDate(LocalDateTime.now())
-                        .endDate(LocalDateTime.now())
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now())
                         .regDate(LocalDateTime.now())
                         .build()
                 ));

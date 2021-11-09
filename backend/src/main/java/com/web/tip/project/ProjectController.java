@@ -62,7 +62,7 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 추가")
     public Object addProject(@RequestBody ProjectDto projectDto) {
         log.info("프로젝트 추가");
-
+        System.out.println(projectDto);
         final BasicResponse result = new BasicResponse();
 
         if (projectService.addProject(projectDto)) {

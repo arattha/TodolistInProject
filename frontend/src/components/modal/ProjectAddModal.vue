@@ -214,6 +214,7 @@
 <script>
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
+import { addProject } from '@/api/project.js'
 
 export default {
   name: 'PROJECTADDMODAL',
@@ -282,7 +283,20 @@ export default {
       let changedText = DOMPurify.sanitize(changeContent);
 
       console.log(this.projectName, this.startDate, this.endDate, changedText);
-      alert('추가완료');
+
+      var data = {
+        name: this.projectName,
+        desc: changedText,
+        isDone: false,
+        startDate: this.startDate,
+        endDate: this.endDate,
+      }
+      addProject(data,
+      () => {
+        alert('추가완료');
+      },
+      () => {})
+
     },
     typingProjectName(e) {
       if (!e.target.value) {
