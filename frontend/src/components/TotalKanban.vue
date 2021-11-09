@@ -62,37 +62,42 @@
           @add="updateTeam"
         >
           <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
-            <Todo-Card :todoInfo="todoInfo" />
+            <Todo-Card :todoInfo="todoInfo" v-if="isShow" @closeModal="closeModal" />
           </div>
         </draggable>
       </div>
     </div>
+    <Todo-Add-Modal />
   </div>
 </template>
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
+import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
+
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
+    TodoAddModal,
     draggable,
   },
-  props: ['teamInfo','TodoStomp','filters'],
+  props: ['teamInfo', 'TodoStomp', 'filters'],
   data() {
     return {
+      isShow: false,
       drag: false,
-      teamId: "",
-      todoId: "",
+      teamId: '',
+      todoId: '',
     };
   },
-  created(){
+  created() {
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
     todoAdd() {
-      console.log('할일 추가');
+      this.showModal();
     },
     // draggable 관련 로그를 찍기위한 함수
     // draggable 컴포넌트에 @change="log"를 추가해서 사용
@@ -100,41 +105,45 @@ export default {
     //   console.log(e);
     //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
     // },
-    setTodoId(e){
+    setTodoId(e) {
       // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
-    updateTeam(e){
-      
+    updateTeam(e) {
       this.TodoStomp.send(
-            "/server/moveTodo/team",
-            JSON.stringify({
-              id:this.teamInfo.todoInfoList[e.newIndex].id,
-              title:this.teamInfo.todoInfoList[e.newIndex].title,
-              status:this.teamInfo.todoInfoList[e.newIndex].status,
-              projectId:this.teamInfo.todoInfoList[e.newIndex].projectId,
-              teamId:this.teamId,
-              memberId:this.teamInfo.todoInfoList[e.newIndex].memberId,
-              memberName:this.teamInfo.todoInfoList[e.newIndex].memberName,
-              modifyDate:this.teamInfo.todoInfoList[e.newIndex].modifyDate,
-              regDate:this.teamInfo.todoInfoList[e.newIndex].regDate
-            }),
-            {}
-          );
-      
-    }
+        '/server/moveTodo/team',
+        JSON.stringify({
+          id: this.teamInfo.todoInfoList[e.newIndex].id,
+          title: this.teamInfo.todoInfoList[e.newIndex].title,
+          status: this.teamInfo.todoInfoList[e.newIndex].status,
+          projectId: this.teamInfo.todoInfoList[e.newIndex].projectId,
+          teamId: this.teamId,
+          memberId: this.teamInfo.todoInfoList[e.newIndex].memberId,
+          memberName: this.teamInfo.todoInfoList[e.newIndex].memberName,
+          modifyDate: this.teamInfo.todoInfoList[e.newIndex].modifyDate,
+          regDate: this.teamInfo.todoInfoList[e.newIndex].regDate,
+        }),
+        {}
+      );
+    },
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
+    },
   },
   computed: {
-    todoFilter:function(){
-      let filters= this.filters;
-      if(filters == null || filters.status.length == 0){
+    todoFilter: function () {
+      let filters = this.filters;
+      if (filters == null || filters.status.length == 0) {
         return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
       } else {
-        return this.teamInfo.todoInfoList.filter(function(todo){
-          if(filters.status.indexOf(todo.status) > -1){
+        return this.teamInfo.todoInfoList.filter(function (todo) {
+          if (filters.status.indexOf(todo.status) > -1) {
             return true;
           }
-        })
+        });
       }
     },
     dragOptions() {

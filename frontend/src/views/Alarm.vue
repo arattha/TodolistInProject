@@ -2,7 +2,7 @@
   <div>
     <Header />
     <div v-for="(alarm, index) in alarmList" :key="index">
-        <input type="checkbox" v-model="checkList" :value="index">{{alarm.content}}
+      <input type="checkbox" v-model="checkList" :value="index" />{{ alarm.content }}
       <button @click="goTodo(alarm.todoId)">이동</button>
     </div>
     <button @click="check">선택한 알림 삭제</button>
@@ -12,15 +12,16 @@
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm, getAlarmInMypage } from "@/api/alarm.js";
-import { mapActions, mapGetters } from "vuex";
+import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from '@/api/alarm.js';
+import { mapActions, mapGetters } from 'vuex';
+import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
 
 export default {
-  name: "Alarm",
-  components:{
+  name: 'Alarm',
+  components: {
     Header,
-    Pagination
+    Pagination,
   },
   data() {
     return {
@@ -37,7 +38,7 @@ export default {
     this.getAlarm();
   },
   computed: {
-    ...mapGetters(["id"]),
+    ...mapGetters(['id']),
   },
   methods: {
     ...mapActions(['set_totalReviewCnt', 'set_curPage', 'set_offset', 'toggle_isDel']),
@@ -78,24 +79,23 @@ export default {
     pagingMethod(page) {
       this.getAlarm(page);
     },
-    selectAlarm(e){
-        this.checkList = [];
-        for(let i=0; i < e.options.length; i++) {
-            const option = e.options[i];
-            if(option.selected) {
-                this.checkList.push(option.value);
-            }
+    selectAlarm(e) {
+      this.checkList = [];
+      for (let i = 0; i < e.options.length; i++) {
+        const option = e.options[i];
+        if (option.selected) {
+          this.checkList.push(option.value);
         }
+      }
     },
     check() {
-
       this.checkList.sort();
       let removeAlarm = [];
 
       var idx = 0;
       var newArray = [];
-      for(var i = 0 ; i < this.alarmList.length ; i++){
-        if(i == this.checkList[idx]){
+      for (var i = 0; i < this.alarmList.length; i++) {
+        if (i == this.checkList[idx]) {
           removeAlarm.push(this.alarmList[i].id);
           idx++;
           continue;
@@ -106,24 +106,21 @@ export default {
       this.checkList = [];
 
       this.remove(removeAlarm);
-
     },
-    remove(list){
+    remove(list) {
       removeAlarm(
         {
           memberId: this.id,
-          checkList: list
+          checkList: list,
         },
         () => {
-
           this.$route.params.alarmStomp.send(
-            "/server/getAlarm",
+            '/server/getAlarm',
             JSON.stringify({
               memberId: this.id,
             }),
             {}
           );
-          
         },
         () => {
           return;
@@ -137,7 +134,7 @@ export default {
           this.alarmList = [];
 
           this.$route.params.alarmStomp.send(
-            "/server/getAlarm",
+            '/server/getAlarm',
             JSON.stringify({
               memberId: this.id,
             }),
@@ -152,9 +149,6 @@ export default {
       // this.$route.push("/todoInfo");
       console.log(todoId);
     },
-    pagingMethod(){
-
-    }
   },
 };
 </script>
