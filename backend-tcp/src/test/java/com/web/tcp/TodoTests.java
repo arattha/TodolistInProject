@@ -41,6 +41,12 @@ public class TodoTests {
     }
 
     @Test
+    void getTodo(){
+        log.info(todoService.getTodoInfo("1265706059665").toString());
+        Assertions.assertNotNull(todoService.getTodoInfo("1265706059665"), "Todo 목록 반환 실패");
+    }
+
+    @Test
     void moveTodoStatus(){
         Todo todo = todoService.getTodo("test4");
         log.info(todo.toString());
