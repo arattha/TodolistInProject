@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,20 +29,14 @@ public class ImgService {
     MemberDetailDao memberDetailDao;
 
     public Resource getFile(final String id) {
-
         MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Path path = Paths.get("", "upload");
-        log.info("path: " + path.toUri().toString());
 
-        Resource img = new FileSystemResource(Paths.get(path.toString(), memberDetail.getProfileImg()));
-
-        if (!img.exists()) {
-            img = new FileSystemResource(Paths.get(path.toString(), "default.png"));
-        }
+        Resource img = new FileSystemResource("//home//ubuntu//upload//" + Optional.ofNullable(memberDetail.getProfileImg())
+                .orElse("default.png"));
 
         if (!img.exists()) {
-            img = new FileSystemResource("/home/ubuntu/upload/default.png");
+            img = new FileSystemResource("//home//ubuntu//upload//default.png");
         }
 
         return img;
@@ -51,31 +46,29 @@ public class ImgService {
     @Transactional
     public void addFile(ImgFileDto newFile) throws IllegalStateException, IOException {
 
-        Path path = Paths.get("", "upload");
-        File Folder = path.toFile();
-        if (!Folder.exists()) Folder.mkdir();
+        String path = "//home//ubuntu//upload";
+        File folder = new File(path);
+        if (!folder.exists()) folder.mkdir();
 
-        if (newFile.getFile() != null) {//파일이 존재할 때에만,
+        MultipartFile multipartFile = Optional.ofNullable(newFile.getFile())
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+        try {
+            String ext = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+            String fileName = newFile.getId() + ext;
 
-            try {
-                MultipartFile multipartFile = newFile.getFile();
-                String ext = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
-                String fileName = newFile.getId() + ext;
+            MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(newFile.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-                MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(newFile.getId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            memberDetail.setProfileImgLink(fileName);
 
-                memberDetail.setProfileImgLink(fileName);
-
-                Path filePath = Paths.get(path.toString(), fileName);
-                log.info("파일 저장 위치:" + filePath.toString());
-                multipartFile.transferTo(new File(filePath.toUri()));
-                memberDetailDao.save(memberDetail);
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-                throw new JpaException(JpaErrorCode.SAVE_DETAIL_ERROR);
-            }
-
+            String filePath = path + "//" + fileName;
+            log.info("파일 저장 위치:" + filePath);
+            multipartFile.transferTo(new File(filePath));
+            memberDetailDao.save(memberDetail);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new JpaException(JpaErrorCode.SAVE_DETAIL_ERROR);
         }
+
     }
 }
