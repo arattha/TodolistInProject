@@ -58,8 +58,8 @@
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
             <div class="flex flex-col">
-              <div class="lg:text-2xl">OOO</div>
-              <div class="text-sm lg:text-base">XXX</div>
+              <div class="lg:text-2xl">{{todoInfo.memberName}}</div>
+              <div class="text-sm lg:text-base">{{todoInfo.teamName}}</div>
             </div>
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
@@ -201,16 +201,17 @@ export default {
       isShow: false,
       curPage: 0,
       todoInfo: {
-        id: '1',
-        title: '회원가입',
-        memberId: '0564293048818',
-        status: '접수',
-        regDate: '2021-10-14',
-        modifyDate: '2021-10-15',
+        id: '',
+        title: '',
+        memberId: '',
+        memberName: '',
+        status: '',
+        regDate: '',
+        modifyDate: '',
       },
       userInfo: {
-        name: '최광진',
-        teamName: 'F106',
+        name: '',
+        teamName: '',
         // 즐겨찾기 여부
         isBookmark: true,
       },
@@ -241,23 +242,23 @@ export default {
           this.stompClient.send(
             '/server/getTodoInfo',
             JSON.stringify({
-              todoId: "1265706059665",
+              todoId: this.todoId,
             }),
             {}
           );
 
           // subscribe 로 alarm List 가져오기
-          this.stompClient.subscribe("/client/detail/1265706059665", (res) => {
+          this.stompClient.subscribe("/client/detail/" + this.todoId, (res) => {
             var todo = JSON.parse(res.body);
-            
+
             this.todoInfo.id = todo.id;
             this.todoInfo.title = todo.title;
             this.todoInfo.memberId = todo.memberId;
+            this.todoInfo.memberName = todo.memberName;
+            this.todoInfo.teamName = todo.teamName;
             this.todoInfo.status = todo.status;
             this.todoInfo.modifyDate = todo.modifyDate.split("T")[0];
             this.todoInfo.regDate = todo.regDate.split("T")[0];
-
-            this.getUser(todo.memberId);
 
           });
         },
@@ -266,9 +267,6 @@ export default {
           console.log('소켓 연결 실패', error);
         }
       );
-    },
-    getUser(userId){
-      
     },
     changeStatus(status) {
       this.todoInfo.status = status;
