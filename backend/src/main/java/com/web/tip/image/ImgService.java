@@ -39,6 +39,11 @@ public class ImgService {
         if (!img.exists()) {
             img = new FileSystemResource(Paths.get(path.toString(), "default.png"));
         }
+
+        if (!img.exists()) {
+            img = new FileSystemResource("/home/ubuntu/upload/default.png");
+        }
+
         return img;
     }
 
