@@ -58,8 +58,8 @@
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
             <div class="flex flex-col">
-              <div class="lg:text-2xl">{{todoInfo.memberName}}</div>
-              <div class="text-sm lg:text-base">{{todoInfo.teamName}}</div>
+              <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
+              <div class="text-sm lg:text-base">{{ todoInfo.teamName }}</div>
             </div>
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
@@ -179,7 +179,7 @@
       >
       </router-view>
     </div>
-    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" />
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" />
   </div>
 </template>
 
@@ -228,7 +228,7 @@ export default {
     this.connect();
   },
   methods: {
-    connect(){
+    connect() {
       const serverURL = 'http://localhost:8082/todo';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
@@ -249,7 +249,7 @@ export default {
           );
 
           // subscribe 로 alarm List 가져오기
-          this.stompClient.subscribe("/client/detail/" + this.todoId, (res) => {
+          this.stompClient.subscribe('/client/detail/' + this.todoId, (res) => {
             var todo = JSON.parse(res.body);
 
             this.todoInfo.id = todo.id;
@@ -258,9 +258,8 @@ export default {
             this.todoInfo.memberName = todo.memberName;
             this.todoInfo.teamName = todo.teamName;
             this.todoInfo.status = todo.status;
-            this.todoInfo.modifyDate = todo.modifyDate.split("T")[0];
-            this.todoInfo.regDate = todo.regDate.split("T")[0];
-
+            this.todoInfo.modifyDate = todo.modifyDate.split('T')[0];
+            this.todoInfo.regDate = todo.regDate.split('T')[0];
           });
         },
         (error) => {

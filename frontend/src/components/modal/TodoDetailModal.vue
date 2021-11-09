@@ -143,6 +143,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
 import _ from 'lodash';
+import { createTodoContent } from '@/api/todo.js';
 
 export default {
   name: 'TODODETAILMODAL',
@@ -155,6 +156,7 @@ export default {
       isValid: true,
     };
   },
+  props: ['todoId', 'memberId'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
@@ -194,8 +196,17 @@ export default {
         alert('최대 1000byte 까지 입력이 가능합니다.');
         return;
       }
-
-      alert('추가완료');
+      createTodoContent(
+        { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
+        (res) => {
+          console.log(res);
+          alert('추가완료');
+        },
+        (error) => {
+          console.error(error);
+          alert('문제가 발생했습니다');
+        }
+      );
     },
   },
   computed: {

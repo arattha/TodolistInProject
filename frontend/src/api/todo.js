@@ -35,7 +35,7 @@ function modifyTodoContent(todo_content, callback, errorCallback) {
 
 function createTodoContent(todo_content, callback, errorCallback) {
   axiosServiceWithAuth
-    .put('/todo_content', {
+    .post('/todo_content', {
       todoId: todo_content.todoId,
       memberId: todo_content.memberId,
       contents: todo_content.contents,
