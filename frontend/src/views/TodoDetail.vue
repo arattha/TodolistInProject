@@ -205,6 +205,7 @@ export default {
         title: '',
         memberId: '',
         memberName: '',
+        teamName: '',
         status: '',
         regDate: '',
         modifyDate: '',
