@@ -62,7 +62,7 @@
           @add="updateTeam"
         >
           <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
-            <Todo-Card :todoInfo="todoInfo" />
+            <Todo-Card :todoInfo="todoInfo"/>
           </div>
         </draggable>
       </div>
@@ -83,7 +83,7 @@ export default {
     // TodoAddModal,
     draggable,
   },
-  props: ['teamInfo', 'TodoStomp', 'filters'],
+  props: ['teamInfo', 'TodoStomp', 'filters','bookmarkFilter'],
   data() {
     return {
       isShow: false,
@@ -136,15 +136,35 @@ export default {
   computed: {
     todoFilter:function(){
       let filters= this.filters;
-      if(filters == null){
-        return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
+      let bookmarkFilter = this.bookmarkFilter;
+      if(!bookmarkFilter){
+        if(filters == null){
+          return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
+        } else {
+          return this.teamInfo.todoInfoList.filter(function (todo) {
+            if (filters.status.indexOf(todo.status) > -1 ) {
+              return true;
+            }
+          });
+        }
       } else {
-        return this.teamInfo.todoInfoList.filter(function (todo) {
-          if (filters.status.indexOf(todo.status) > -1) {
-            return true;
-          }
+        let bookmarkedTodoList = [];
+        this.teamInfo.todoInfoList.forEach(todo => {
+          if(todo.isBookmark)
+            bookmarkedTodoList.push(todo);
         });
+        if(filters == null){
+          return bookmarkedTodoList; 
+        } else {
+          return bookmarkedTodoList.filter(function (todo) {
+            if (filters.status.indexOf(todo.status) > -1 ) {
+              return true;
+            }
+          });
+        }
       }
+
+      
     },
     dragOptions() {
       return {

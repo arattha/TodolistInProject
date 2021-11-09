@@ -50,7 +50,6 @@
       </button>
       <button
         class="
-          bg-itemGray
           text-black
           lg:text-base
           text-sm
@@ -66,6 +65,8 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
+        :class="[bookmarkFilter ? 'bg-itemGray' : 'bg-menuGray']"
+        @click="activeBookmarkFilter()"
       >
         즐겨찾기
       </button>
@@ -73,7 +74,7 @@
 
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamFilter" :key="index">
-        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" />
+        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" :bookmarkFilter="bookmarkFilter" />
       </div>
     </div>
     <TodoFilter
@@ -111,6 +112,7 @@ export default {
       teamList: [],
       isShow: false,
       filters: null,
+      bookmarkFilter: false,
       isShowTeamAddModal: false,
     };
   },
@@ -214,7 +216,7 @@ export default {
               memberName: this.todoList[i].memberName,
               modifyDate: this.todoList[i].modifyDate,
               regDate: this.todoList[i].regDate,
-              bookmark:false,
+              isBookmark:false,
             });
 
             break;
@@ -240,15 +242,17 @@ export default {
           console.log(error);
         }
       );
-
       for (var i = 0; i < this.teamInfoList.length; i++) {
         for (var j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
           if (tmp.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1 ) {
-            this.teamInfoList[i].todoInfoList[j].bookmark = true;
+            this.teamInfoList[i].todoInfoList[j].isBookmark = true;
           }
         }
       }
 
+    },
+    activeBookmarkFilter(){
+      this.bookmarkFilter = !this.bookmarkFilter;
     },
     horizontalScroll() {
       console.log('hi', this);

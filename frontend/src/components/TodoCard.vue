@@ -25,7 +25,7 @@
       <div class="flex justify-center items-center">
         <div id="bookmark" class="mr-5 z-50">
           <!-- <i class="far fa-star"></i> -->
-          <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.bookmark"></i>
+          <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.isBookmark"></i>
           <i class="bookmark fas fa-star text-white" v-else></i>
         </div>
         <Todo-Status :status="todoInfo.status" :isDetail="false" />
@@ -100,7 +100,7 @@ export default {
             todoId : this.todoInfo.id,
           },
           () => {
-            this.todoInfo.bookmark = true;
+            this.todoInfo.isBookmark = true;
           },
           (error) => {
             alert('북마크 실패');
@@ -114,7 +114,7 @@ export default {
             todoId : this.todoInfo.id,
           },
           () => {
-            this.todoInfo.bookmark = false;
+            this.todoInfo.isBookmark = false;
           },
           (error) => {
             alert('북마크 실패');

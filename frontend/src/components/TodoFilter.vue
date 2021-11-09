@@ -132,7 +132,6 @@
 				filters:{
 					team:[],
 					status:[],
-					favorite:false,
 				},
 				statusList:['New','접수','진행','완료'],
 			}
