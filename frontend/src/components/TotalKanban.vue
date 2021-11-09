@@ -62,25 +62,25 @@
           @add="updateTeam"
         >
           <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
-            <Todo-Card :todoInfo="todoInfo" v-if="isShow" @closeModal="closeModal" />
+            <Todo-Card :todoInfo="todoInfo" />
           </div>
         </draggable>
       </div>
     </div>
-    <Todo-Add-Modal />
+    <Todo-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
-import TodoAddModal from '@/components/modal/TodoAddModal.vue';
+// import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
-    TodoAddModal,
+    // TodoAddModal,
     draggable,
   },
   props: ['teamInfo', 'TodoStomp', 'filters'],
