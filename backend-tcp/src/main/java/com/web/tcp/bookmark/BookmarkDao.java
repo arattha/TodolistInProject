@@ -1,10 +1,11 @@
 package com.web.tcp.bookmark;
 
+import com.web.tcp.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface BookmarkDao extends JpaRepository<Bookmark, String> {
 
-    List<String> findMemberIdByTodoId(String memberId);
+    List<Member> findMemberByTodoIdAndIsUseIsTrue(String memberId);
 }

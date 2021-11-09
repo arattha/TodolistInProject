@@ -19,7 +19,7 @@ public class AlarmTests {
 
     @Test
     public void addAlarm(){
-        Assertions.assertTrue(alarmService.addAlarm("로그인 : A님께서 상태를 접수에서 진행(으)로 변경했습니다.", "1265706059665"), "알람 추가 실패");
+        Assertions.assertNotNull(alarmService.addAlarm("로그인 : A님께서 상태를 접수에서 진행(으)로 변경했습니다.", "1265706059665"), "알람 추가 실패");
     }
 
     @Test

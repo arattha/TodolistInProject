@@ -73,14 +73,14 @@
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
-// import TodoAddModal from '@/components/modal/TodoAddModal.vue';
+import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
-    // TodoAddModal,
+    TodoAddModal,
     draggable,
   },
   props: ['teamInfo', 'TodoStomp', 'filters'],
@@ -94,6 +94,7 @@ export default {
   },
   created() {
     this.teamId = this.teamInfo.teamId;
+    console.log(this.teamInfo);
   },
   methods: {
     todoAdd() {
@@ -117,7 +118,8 @@ export default {
           title: this.teamInfo.todoInfoList[e.newIndex].title,
           status: this.teamInfo.todoInfoList[e.newIndex].status,
           projectId: this.teamInfo.todoInfoList[e.newIndex].projectId,
-          teamId: this.teamId,
+          teamId: this.teamInfo.teamId,
+          teamName: this.teamInfo.teamName,
           memberId: this.teamInfo.todoInfoList[e.newIndex].memberId,
           memberName: this.teamInfo.todoInfoList[e.newIndex].memberName,
           modifyDate: this.teamInfo.todoInfoList[e.newIndex].modifyDate,

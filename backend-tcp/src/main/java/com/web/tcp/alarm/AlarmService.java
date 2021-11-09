@@ -3,6 +3,8 @@ package com.web.tcp.alarm;
 import com.web.tcp.bookmark.BookmarkDao;
 import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
+import com.web.tcp.member.Member;
+import com.web.tcp.member.MemberDao;
 import com.web.tcp.todo.Todo;
 import com.web.tcp.todo.TodoDao;
 import com.web.tcp.util.IdGenerator;
@@ -20,6 +22,7 @@ import java.util.List;
 public class AlarmService {
 
     AlarmDao alarmDao;
+    MemberDao memberDao;
     TodoDao todoDao;
     BookmarkDao bookmarkDao;
 
@@ -71,25 +74,7 @@ public class AlarmService {
     }
 
     @Transactional
-    public boolean checkAll(String memberId) {
-
-        try{
-            List<Alarm> alarmList = alarmDao.findAlarmByMemberId(memberId);
-
-            for(Alarm alarm : alarmList){
-                alarm.changeIsShow();
-                alarmDao.save(alarm);
-            }
-
-            return true;
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    @Transactional
-    public boolean addAlarm(String content, String todoId) {
+    public List<Member> addAlarm(String content, String todoId) {
 
         IdGenerator idGenerator = new IdGenerator();
         String aid = idGenerator.generateId();
@@ -100,15 +85,18 @@ public class AlarmService {
             // 2. 1에서 얻은 member 목록에 담당자가 없다면 따로 담당자에게 alarm 추가 기능 구현
 
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-            String manageMemberId = todo.getMemberId();
+            Member manageMember = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
             boolean isInclude = false;      // memberList에 manageMemberId가 포함되어 있는지 확인할 변수
 
-            List<String> memberList = bookmarkDao.findMemberIdByTodoId(todoId);
-            log.info("member" + memberList);
+            List<Member> memberList = bookmarkDao.findMemberByTodoIdAndIsUseIsTrue(todoId);
+            AlarmController alarmController = null;
 
-            for (String memberId : memberList) {
+            for (Member member : memberList) {
 
-                if(memberId.equals(manageMemberId)) isInclude = true;
+                String memberId = member.getId();
+
+                if(memberId.equals(manageMember.getId())) isInclude = true;
 
                 while (alarmDao.existsById(aid)) {
                     aid = idGenerator.generateId();
@@ -133,19 +121,22 @@ public class AlarmService {
                         .id(aid)
                         .content(content)
                         .isShow(false)
-                        .memberId(manageMemberId)
+                        .memberId(manageMember.getId())
                         .todoId(todoId)
                         .build();
 
                 alarmDao.save(alarm);
+
+                memberList.add(manageMember);
             }
 
-            return true;
+            return memberList;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.web.tcp.alarm;
 
+import com.web.tcp.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -9,6 +10,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -30,6 +33,16 @@ public class AlarmController {
             template.convertAndSend("/client/alarm/" + memberId, alarmService.getAlarmList(memberId));
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    // todoId와 관련된 사용자에게 알람 보내기
+    public void spreadAlarm(String content, String todoId){
+
+        List<Member> memberList = alarmService.addAlarm(content, todoId);
+
+        for(Member member : memberList){
+            template.convertAndSend("/client/alarm/" + member.getId(), alarmService.getAlarmList(member.getId()));
         }
     }
 
