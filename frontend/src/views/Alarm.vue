@@ -21,7 +21,7 @@
         @click="goTodo(alarm.todoId)">
           <div
             class="
-              hidden md:flex justify-center items-center p-2 h-full w-72 border-r-2 mr-2
+              md:flex justify-center items-center p-2 h-full w-full border-r-2 mr-2
             "
           >
             {{ alarm.content }}
@@ -33,7 +33,6 @@
       </div>
     </div>
     <Pagination class="mt-3" :pageCnt="pageCnt" :pageSize="pageSize" @paging="pagingMethod" />
-    {{this.checkList}}
   </div>
 </template>
 

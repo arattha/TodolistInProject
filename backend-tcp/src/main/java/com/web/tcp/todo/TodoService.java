@@ -1,5 +1,6 @@
 package com.web.tcp.todo;
 
+import com.web.tcp.alarm.AlarmController;
 import com.web.tcp.alarm.AlarmService;
 import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
@@ -27,6 +28,7 @@ public class TodoService {
     TeamDao teamDao;
     TodoDao todoDao;
     TodoRecordDao todoRecordDao;
+    AlarmController alarmController;
     AlarmService alarmService;
 
     @Transactional
@@ -79,8 +81,11 @@ public class TodoService {
             List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
             for(Todo todo : todoList) {
                 Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
                 todoDto = TodoAdaptor.entityToDto(todo);
                 todoDto.setMemberName(member.getName());
+                todoDto.setTeamName(team.getName());
 
                 todoDtoList.add(todoDto);
             }
@@ -125,20 +130,19 @@ public class TodoService {
             Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
             String writer = member.getName();
 
-            todo.changeStatus(todoDto.getStatus());
-
             diff.put("writer", writer);
             diff.put("before", todoTmp.getStatus());
             diff.put("after", todoDto.getStatus());
             diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
+            todo.changeStatus(todoDto.getStatus());
             todoTmp.changeModifyDate();
 
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
-            alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
+            alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
@@ -169,13 +173,14 @@ public class TodoService {
             Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
             String writer = member.getName();
 
-            todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
+            Team team = teamDao.findTeamById(todoTmp.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+            String beforeTeam = team.getName();
 
             diff.put("writer", writer);
             diff.put("before", todoTmp.getTeamId());
             diff.put("after", todoDto.getTeamId());
 
-            String changeStr = writer + "님께서 해당 할일의 팀을 " + todoTmp.getTeamId() + "에서 " + todoDto.getTeamId() + "(으)로 변경했습니다.";
+            String changeStr = writer + "님께서 해당 할일의 팀을 " + beforeTeam + "에서 " + todoDto.getTeamName() + "(으)로 변경했습니다.";
 
             if (todoDto.getMemberId() != null) {
                 // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
@@ -190,13 +195,14 @@ public class TodoService {
 
             diff.put("message", changeStr);
 
+            todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
             todoTmp.changeModifyDate();
 
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
-            alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
+            alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
@@ -251,7 +257,7 @@ public class TodoService {
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
 
-            if(!writer.equals("")) alarmService.addAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
+            if(!writer.equals("")) alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
             e.printStackTrace();
