@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     // connection을 맺을때 CORS 허용
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/socketalarm").setAllowedOrigins("https://k5f006.p.ssafy.io/tcpapi").withSockJS();
+        registry.addEndpoint("/socketalarm").setAllowedOrigins("https://k5f006.p.ssafy.io").withSockJS();
         registry.addEndpoint("/todo").setAllowedOrigins("https://k5f006.p.ssafy.io").withSockJS();
     }
 
