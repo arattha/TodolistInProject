@@ -227,7 +227,7 @@ export default {
     this.connect();
   },
   methods: {
-    connect(){
+    connect() {
       const serverURL = 'http://localhost:8082/socket/todo';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
@@ -279,20 +279,20 @@ export default {
     },
     goDetail() {
       this.curPage = 0;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail`) {
-        this.$router.push(`/${this.$routes.todoId}/detail`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail`);
       }
     },
     goURL() {
       this.curPage = 1;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail/url`) {
-        this.$router.push(`/${this.$routes.todoId}/detail/url`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail/url`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail/url`);
       }
     },
     goHistory() {
       this.curPage = 2;
-      if (this.$route.path !== `/${this.$routes.todoId}/detail/history`) {
-        this.$router.push(`/${this.$routes.todoId}/detail/history`);
+      if (this.$route.path !== `/${this.$route.params.todoId}/detail/history`) {
+        this.$router.push(`/${this.$route.params.todoId}/detail/history`);
       }
     },
     showModal() {
@@ -301,11 +301,11 @@ export default {
     closeModal() {
       this.isShow = false;
       if (this.curPage == 0) {
-        this.$router.replace(`/${this.$routes.todoId}/detail`);
+        this.$router.replace(`/${this.$route.params.todoId}/detail`);
       } else if (this.curPage == 1) {
-        this.$router.replace(`/${this.$routes.todoId}/detail/url`);
+        this.$router.replace(`/${this.$route.params.todoId}/detail/url`);
       } else if (this.curPage == 2) {
-        this.$router.replace(`/${this.$routes.todoId}/detail/history`);
+        this.$router.replace(`/${this.$route.params.todoId}/detail/history`);
       }
     },
   },
