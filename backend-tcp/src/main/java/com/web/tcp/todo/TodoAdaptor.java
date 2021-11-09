@@ -15,7 +15,7 @@ public class TodoAdaptor {
                 .build();
     }
 
-    public static Todo todoToEntity(TodoDto todoDto){
+    public static Todo dtoToEntity(TodoDto todoDto){
         return Todo.builder()
                 .title(todoDto.getTitle())
                 .status(todoDto.getStatus())
@@ -24,6 +24,19 @@ public class TodoAdaptor {
                 .memberId(todoDto.getMemberId())
                 .modifyDate(todoDto.getModifyDate())
                 .regDate(todoDto.getRegDate())
+                .build();
+    }
+
+    public static Todo dupEntity(Todo todo){
+        return Todo.builder()
+                .id(todo.getId())
+                .title(todo.getTitle())
+                .status(todo.getStatus())
+                .memberId(todo.getMemberId())
+                .teamId(todo.getTeamId())
+                .projectId(todo.getProjectId())
+                .modifyDate(todo.getModifyDate())
+                .regDate(todo.getRegDate())
                 .build();
     }
 }
