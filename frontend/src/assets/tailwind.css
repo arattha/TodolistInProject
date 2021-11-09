@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.form-tick:checked {
+  border-color: transparent;
+  background-color: currentColor;
+  background-size: 100% 100%;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+
 .todo-content a {
   color: #0000ff;
 }

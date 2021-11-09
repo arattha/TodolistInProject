@@ -44,10 +44,10 @@ import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
 
 export default {
-  name: "Alarm",
-  components:{
+  name: 'Alarm',
+  components: {
     Header,
-    Pagination
+    Pagination,
   },
   data() {
     return {

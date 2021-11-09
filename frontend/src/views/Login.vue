@@ -31,6 +31,7 @@
         <div class="grid items-center justify-items-center">
           <input
             type="password"
+            autocomplete="off"
             class="
               appearance-none
               border border-transparent
