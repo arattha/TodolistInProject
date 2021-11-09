@@ -50,7 +50,7 @@ public class MemberDetailService {
                     try {
                         imgService.addFile(ImgFileDto.builder()
                                 .id(member.getId())
-                                .multipartFile(multipartFile)
+                                .file(multipartFile)
                                 .build()
                         );
                     } catch (IOException e) {

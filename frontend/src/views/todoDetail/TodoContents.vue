@@ -8,12 +8,14 @@
 import TodoDetailContents from '@/components/TodoDetailContents.vue';
 import { getTodoContent } from '@/api/todo.js';
 import { formatDate } from '@/api/utils.js';
-import { mapGetters } from 'vuex';
 
 export default {
   name: 'TODOCONTENTS',
   components: {
     TodoDetailContents,
+  },
+  created(){
+    this.todoId = this.$route.todoId;
   },
   watch: {
     todoId: {
@@ -45,12 +47,10 @@ export default {
       immediate: true,
     },
   },
-  computed: {
-    ...mapGetters(['todoId']),
-  },
   data() {
     return {
       detailList: [],
+      todoId:"",
     };
   },
 };

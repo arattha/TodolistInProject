@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 @Service
@@ -29,10 +31,13 @@ public class ImgService {
 
         MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Resource img =  new FileSystemResource(".//upload//"+memberDetail.getProfileImg());
+        Path path = Paths.get(".", "upload");
+        log.info("path: " + path.toUri().toString());
 
-        if(!img.exists()){
-            img =  new FileSystemResource(".//upload//default.png");
+        Resource img = new FileSystemResource(Paths.get(path.toString(), memberDetail.getProfileImg()));
+
+        if (!img.exists()) {
+            img = new FileSystemResource(Paths.get(path.toString(), "default.png"));
         }
         return img;
     }
@@ -41,15 +46,15 @@ public class ImgService {
     @Transactional
     public void addFile(ImgFileDto newFile) throws IllegalStateException, IOException {
 
-        String path = ".//upload";
-        File Folder = new File(path);
-        if(!Folder.exists()) Folder.mkdir();
+        Path path = Paths.get(".", "upload");
+        File Folder = path.toFile();
+        if (!Folder.exists()) Folder.mkdir();
 
-        if(newFile.getMultipartFile() != null) {//파일이 존재할 때에만,
+        if (newFile.getFile() != null) {//파일이 존재할 때에만,
 
             try {
-                MultipartFile multipartFile = newFile.getMultipartFile();
-                String ext =  multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+                MultipartFile multipartFile = newFile.getFile();
+                String ext = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
                 String fileName = newFile.getId() + ext;
 
                 MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(newFile.getId())
@@ -57,9 +62,11 @@ public class ImgService {
 
                 memberDetail.setProfileImgLink(fileName);
 
-                multipartFile.transferTo(new File( path +"//"+fileName));
+                Path filePath = Paths.get(path.toString(), fileName);
+                log.info("파일 저장 위치:" + filePath.toString());
+                multipartFile.transferTo(new File(filePath.toUri()));
                 memberDetailDao.save(memberDetail);
-            }  catch (DataAccessException e) {
+            } catch (DataAccessException e) {
                 e.printStackTrace();
                 throw new JpaException(JpaErrorCode.SAVE_DETAIL_ERROR);
             }

@@ -17,14 +17,16 @@
   >
     <div class="flex justify-between items-center">
       <div class="flex items-center justify-center">
-        <div class="rounded-full w-10 h-10 bg-white mr-3"></div>
+        <div class="rounded-full w-10 h-10 bg-white mr-3">
+          <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
+        </div>
         <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
       </div>
       <div class="flex justify-center items-center">
-        <div id="bookmark" class="mr-5">
+        <div id="bookmark" class="mr-5 z-50">
           <!-- <i class="far fa-star"></i> -->
-          <i class="fas fa-star text-white"></i>
-          <i class="fas fa-star text-yellow-400"></i>
+          <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.bookmark"></i>
+          <i class="bookmark fas fa-star text-white" v-else></i>
         </div>
         <Todo-Status :status="todoInfo.status" :isDetail="false" />
       </div>
@@ -65,17 +67,63 @@
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
+import { addBookmark , deleteBookmark } from '@/api/bookmark.js';
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'TODOCARD',
+  data(){
+    return {
+
+    };
+  },
   components: {
     TodoStatus,
   },
   props: ['todoInfo'],
+  created(){
+    
+  },
+  computed:{
+    ...mapGetters(['id']),
+  },
   methods: {
+    ...mapActions(['set_todo_id']),
     todoSend() {
       console.log('보내기');
     },
-    bookmark() {},
+    bookmark() {
+      if(!this.todoInfo.bookmark){
+        addBookmark(
+          {
+            memberId : this.id, 
+            todoId : this.todoInfo.id,
+          },
+          () => {
+            this.todoInfo.bookmark = true;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      } else {
+        deleteBookmark(
+          {
+            memberId : this.id, 
+            todoId : this.todoInfo.id,
+          },
+          () => {
+            this.todoInfo.bookmark = false;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      }
+      
+    },
     clicktodo(event) {
       let target = event.target;
       if (target == event.currentTarget.querySelector('.sendBtn')) {
@@ -86,8 +134,9 @@ export default {
         this.bookmark();
         return;
       }
-      console.log('누름 : ' + this.todoInfo.todoName);
-      this.$router.push('/todo/detail');
+      console.log('이동 : ' + this.todoInfo.title + ' 상세 페이지');
+      this.set_todo_id(this.todoInfo.id);
+      this.$router.push(`/${this.todoInfo.id}/detail`);
     },
   },
 };

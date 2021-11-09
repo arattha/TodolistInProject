@@ -64,6 +64,18 @@ public class TodoController {
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
     }
 
+    // client가 '/server/getTodoInfo'경로로 Member의 Id와 Todo의 Id 전송
+    // Todo정보를 해당 client에게 send
+    @MessageMapping(value = "/getTodoInfo")
+    public void getTodoInfo(String todoId){
+        try{
+            todoId = (String) StringToJson(todoId).get("todoId");
+            template.convertAndSend("/client/detail" + todoId, todoService.getTodoInfo(todoId));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private JSONObject StringToJson(String str) throws ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(str);

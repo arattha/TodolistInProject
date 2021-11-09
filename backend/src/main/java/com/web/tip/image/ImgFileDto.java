@@ -11,6 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImgFileDto {
 
     private String id;
-    MultipartFile multipartFile;
+    private MultipartFile file;
 
 }

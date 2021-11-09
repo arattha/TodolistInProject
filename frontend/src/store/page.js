@@ -22,7 +22,7 @@ const state = {
   };
   
   const mutations = {
-    SET_TOTALAlarmCNT(state, payload) {
+    SET_TOTALALARMCNT(state, payload) {
       state.totalAlarmCnt = payload;
     },
     SET_CURPAGE(state, payload) {
@@ -38,7 +38,7 @@ const state = {
   
   const actions = {
     async set_totalAlarmCnt(context, data) {
-      await context.commit('SET_TOTALAlarmCNT', data);
+      await context.commit('SET_TOTALALARMCNT', data);
     },
     async set_curPage(context, data) {
       await context.commit('SET_CURPAGE', data);

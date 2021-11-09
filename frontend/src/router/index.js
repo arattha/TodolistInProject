@@ -28,7 +28,7 @@ const routes = [
     component: () => import('@/views/Alarm.vue'),
   },
   {
-    path: '/project',
+    path: '/projects',
     component: () => import('@/views/Project.vue'),
     children: [
       {
@@ -44,7 +44,7 @@ const routes = [
     ],
   },
   {
-    path: '/todo',
+    path: '/projects/:projectId/todos',
     component: () => import('@/views/Todo.vue'),
     children: [
       {
@@ -63,7 +63,7 @@ const routes = [
         component: () => import('@/views/todo/TodoProgress.vue'),
       },
       {
-        path: 'detail',
+        path: '/:todoId/detail',
         component: () => import('@/views/TodoDetail.vue'),
         children: [
           {

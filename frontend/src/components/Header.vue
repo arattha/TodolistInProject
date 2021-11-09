@@ -2,16 +2,7 @@
   <div class="bg-headerGray h-16 w-full grid grid-cols-2">
     <div class="h-16 ml-2 flex">
       <div
-        class="
-          grid
-          justify-items-center
-          items-center
-          h-full
-          w-auto
-          ml-3
-          cursor-pointer
-          mr-10
-        "
+        class="grid justify-items-center items-center h-full w-auto ml-3 cursor-pointer mr-10"
         @click="goMain()"
       >
         <img src="@/images/logo.png" class="h-12 w-auto" />
@@ -57,23 +48,17 @@
             "
             v-if="this.cnt != ''"
           >
-            {{this.cnt}}
+            {{ this.cnt }}
           </div>
         </div>
 
         <div
-          class="
-            h-full
-            w-16
-            grid
-            justify-items-center
-            items-center
-            cursor-pointer
-            hover:opacity-50
-          "
+          class="h-full w-16 grid justify-items-center items-center cursor-pointer hover:opacity-50"
           @click="goProfile()"
         >
-          <i class="fas fa-user-circle text-white text-3xl"></i>
+          <div class="rounded-full w-10 h-10 bg-white mr-3">
+            <img :src="'http://localhost:8080/img/' + id" />
+          </div>
         </div>
       </div>
     </div>
@@ -81,12 +66,12 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import { mapGetters } from 'vuex';
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
-  name: "Header",
+  name: 'Header',
   data() {
     return {
       showAlert: false,
@@ -100,7 +85,7 @@ export default {
   },
   methods: {
     connect() {
-      const serverURL = "http://localhost:8082/alarm";
+      const serverURL = 'http://localhost:8082/alarm';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
@@ -108,38 +93,38 @@ export default {
         this.connected = true;
         this.stompClient.debug = () => {};
         this.stompClient.send(
-          "/server/getAlarm",
+          '/server/getAlarm',
           JSON.stringify({
             memberId: this.id,
           }),
           {}
         );
 
-        this.stompClient.subscribe("/client/alarm/" + this.id, (res) => {
-          
+        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
           this.alarmList = JSON.parse(res.body);
-          
+
           var alarmCnt = this.alarmList.length;
-          if(alarmCnt > 9) this.cnt = "9+";
-          else if(alarmCnt == 0) this.cnt = "";
+          if (alarmCnt > 9) this.cnt = '9+';
+          else if (alarmCnt == 0) this.cnt = '';
           else this.cnt = alarmCnt;
-
         });
-
       });
     },
     goMain() {
-      this.$router.push("/");
+      this.$router.push('/');
     },
     goAlarm() {
-      this.$router.push({name:"Alarm"});
+      this.$router.push({
+        name: 'Alarm',
+        params: { alarmList: this.alarmList, alarmStomp: this.stompClient },
+      });
     },
     goProfile() {
-      this.$router.push("/profile");
+      this.$router.push('/profile');
     },
   },
   computed: {
-    ...mapGetters(["projectName", "id"]),
+    ...mapGetters(['projectName', 'id']),
   },
 };
 </script>
