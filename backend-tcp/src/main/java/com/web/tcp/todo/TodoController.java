@@ -70,7 +70,7 @@ public class TodoController {
     public void getTodoInfo(String todoId){
         try{
             todoId = (String) StringToJson(todoId).get("todoId");
-            template.convertAndSend("/client/detail" + todoId, todoService.getTodoInfo(todoId));
+            template.convertAndSend("/client/detail/" + todoId, todoService.getTodoInfo(todoId));
         } catch (Exception e){
             e.printStackTrace();
         }
