@@ -15,6 +15,7 @@
       rounded-lg
       shadow-lg
       cursor-pointer
+      hover:bg-menuGray
       my-5
     "
     @click="goPjtTodo()"
@@ -47,12 +48,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex';
 export default {
-  name: "PROJECTCARD",
-  props: ["pjtInfo"],
+  name: 'PROJECTCARD',
+  props: ['pjtInfo'],
   methods: {
-    ...mapActions(["set_project_id", "set_project_name"]),
+    ...mapActions(['set_project_id', 'set_project_name']),
     goPjtTodo() {
       console.log(this.pjtInfo.pjt);
       this.set_project_id(this.pjtInfo.pjt.id);
