@@ -39,22 +39,6 @@
       >
         완료 프로젝트
       </div>
-      <div
-        class="
-          flex
-          justify-center
-          items-center
-          text-lg
-          font-black
-          cursor-pointer
-          h-full
-          w-36
-          hover:text-white
-        "
-        @click="addPjt()"
-      >
-        프로젝트 추가
-      </div>
     </div>
     <div class="flex mx-16 my-5 font-black text-2xl border-b-2 border-black pb-2 w-1/3">
       Project
