@@ -222,9 +222,7 @@ export default {
     ...mapGetters(['id', 'todoId']),
   },
   created() {
-    if (this.$route.path === '/todo/detail') {
-      this.curPage = 0;
-    }
+    this.goDetail();
     this.connect();
   },
   methods: {
@@ -301,6 +299,13 @@ export default {
     },
     closeModal() {
       this.isShow = false;
+      if (this.curPage == 0) {
+        this.$router.replace(`/${this.$routes.todoId}/detail`);
+      } else if (this.curPage == 1) {
+        this.$router.replace(`/${this.$routes.todoId}/detail/url`);
+      } else if (this.curPage == 2) {
+        this.$router.replace(`/${this.$routes.todoId}/detail/history`);
+      }
     },
   },
 };
