@@ -187,6 +187,8 @@
 import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'TODODETAIL',
@@ -221,8 +223,53 @@ export default {
     if (this.$route.path === '/todo/detail') {
       this.curPage = 0;
     }
+    this.connect();
   },
   methods: {
+    connect(){
+      const serverURL = 'http://localhost:8082/todo';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect(
+        {},
+        () => {
+          // 소켓 연결 성공
+          this.connected = true;
+
+          this.stompClient.debug = () => {};
+
+          this.stompClient.send(
+            '/server/getTodoInfo',
+            JSON.stringify({
+              todoId: "1265706059665",
+            }),
+            {}
+          );
+
+          // subscribe 로 alarm List 가져오기
+          this.stompClient.subscribe("/client/detail/1265706059665", (res) => {
+            var todo = JSON.parse(res.body);
+            
+            this.todoInfo.id = todo.id;
+            this.todoInfo.title = todo.title;
+            this.todoInfo.memberId = todo.memberId;
+            this.todoInfo.status = todo.status;
+            this.todoInfo.modifyDate = todo.modifyDate.split("T")[0];
+            this.todoInfo.regDate = todo.regDate.split("T")[0];
+
+            this.getUser(todo.memberId);
+
+          });
+        },
+        (error) => {
+          // 소켓 연결 실패
+          console.log('소켓 연결 실패', error);
+        }
+      );
+    },
+    getUser(userId){
+      
+    },
     changeStatus(status) {
       this.todoInfo.status = status;
     },
