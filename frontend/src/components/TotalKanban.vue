@@ -26,7 +26,7 @@
             focus:ring-offset-2
             focus:ring-offset-purple-200
           "
-          @click="todoAdd()"
+          @click="showModal()"
         >
           할일 추가
         </button>
@@ -62,7 +62,7 @@
           @add="updateTeam"
         >
           <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
-            <Todo-Card :todoInfo="todoInfo"/>
+            <Todo-Card :todoInfo="todoInfo" />
           </div>
         </draggable>
       </div>
@@ -73,17 +73,17 @@
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
-// import TodoAddModal from '@/components/modal/TodoAddModal.vue';
+import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
-    // TodoAddModal,
+    TodoAddModal,
     draggable,
   },
-  props: ['teamInfo', 'TodoStomp', 'filters','bookmarkFilter'],
+  props: ['teamInfo', 'TodoStomp', 'filters', 'bookmarkFilter'],
   data() {
     return {
       isShow: false,
@@ -134,37 +134,34 @@ export default {
     },
   },
   computed: {
-    todoFilter:function(){
-      let filters= this.filters;
+    todoFilter: function () {
+      let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;
-      if(!bookmarkFilter){
-        if(filters == null){
+      if (!bookmarkFilter) {
+        if (filters == null) {
           return this.teamInfo.todoInfoList; //filter가 없을 때는 원본 반환
         } else {
           return this.teamInfo.todoInfoList.filter(function (todo) {
-            if (filters.status.indexOf(todo.status) > -1 ) {
+            if (filters.status.indexOf(todo.status) > -1) {
               return true;
             }
           });
         }
       } else {
         let bookmarkedTodoList = [];
-        this.teamInfo.todoInfoList.forEach(todo => {
-          if(todo.isBookmark)
-            bookmarkedTodoList.push(todo);
+        this.teamInfo.todoInfoList.forEach((todo) => {
+          if (todo.isBookmark) bookmarkedTodoList.push(todo);
         });
-        if(filters == null){
-          return bookmarkedTodoList; 
+        if (filters == null) {
+          return bookmarkedTodoList;
         } else {
           return bookmarkedTodoList.filter(function (todo) {
-            if (filters.status.indexOf(todo.status) > -1 ) {
+            if (filters.status.indexOf(todo.status) > -1) {
               return true;
             }
           });
         }
       }
-
-      
     },
     dragOptions() {
       return {
