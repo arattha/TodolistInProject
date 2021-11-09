@@ -12,8 +12,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +26,7 @@ public class BookmarkService {
 
     public Object getBookmarkList(String projectId, String memberId) {
 
-        List<Todo> todoList= todoDao.findTodosByProjectIdAndMemberId(projectId,memberId);
+        List<Todo> todoList= todoDao.findTodosByProjectId(projectId);
         List<String> todoIdList = new ArrayList<>();
         todoList.forEach(v -> todoIdList.add(v.getId()));
 
@@ -47,6 +49,11 @@ public class BookmarkService {
         }
 
         try {
+
+            Optional<Bookmark> isBookmark = bookmarkDao.findBookmarksByMemberIdAndTodoIdAndIsUse(bookmarkDto.getMemberId(), bookmarkDto.getTodoId(),true); // 이미 있다면 더티리드
+            if(isBookmark.isPresent()) {
+                return true; //성공으로 간주하고 반환
+            }
 
             Bookmark newBookmark = new Bookmark(id,bookmarkDto.getMemberId(),bookmarkDto.getTodoId(),true);
             bookmarkDao.save(newBookmark);
