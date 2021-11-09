@@ -5,6 +5,8 @@ import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
 import com.web.tcp.member.Member;
 import com.web.tcp.member.MemberDao;
+import com.web.tcp.team.Team;
+import com.web.tcp.team.TeamDao;
 import com.web.tcp.todoRecord.TodoRecord;
 import com.web.tcp.todoRecord.TodoRecordDao;
 import com.web.tcp.util.IdGenerator;
@@ -22,6 +24,7 @@ import java.util.*;
 public class TodoService {
 
     MemberDao memberDao;
+    TeamDao teamDao;
     TodoDao todoDao;
     TodoRecordDao todoRecordDao;
     AlarmService alarmService;
@@ -37,16 +40,8 @@ public class TodoService {
                 tid = idGenerator.generateId();
             }
 
-            Todo todo = Todo.builder()
-                    .id(tid)
-                    .title(todoDto.getTitle())
-                    .status(todoDto.getStatus())
-                    .projectId(todoDto.getProjectId())
-                    .teamId(todoDto.getTeamId())
-                    .memberId(todoDto.getMemberId())
-                    .modifyDate(todoDto.getModifyDate())
-                    .regDate(todoDto.getRegDate())
-                    .build();
+            todoDto.setId(tid);
+            Todo todo = TodoAdaptor.dtoToEntity(todoDto);
 
             todoDao.save(todo);
 
@@ -79,22 +74,13 @@ public class TodoService {
 
         List<TodoDto> todoDtoList = new ArrayList<>();
         try{
-            TodoDto todoDto = new TodoDto();
+            TodoDto todoDto = null;
 
             List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
             for(Todo todo : todoList) {
                 Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-                todoDto = todoDto.builder()
-                        .id(todo.getId())
-                        .title(todo.getTitle())
-                        .status(todo.getStatus())
-                        .projectId(todo.getProjectId())
-                        .teamId(todo.getTeamId())
-                        .memberId(todo.getMemberId())
-                        .memberName(member.getName())
-                        .modifyDate(todo.getModifyDate())
-                        .regDate(todo.getRegDate())
-                        .build();
+                todoDto = TodoAdaptor.entityToDto(todo);
+                todoDto.setMemberName(member.getName());
 
                 todoDtoList.add(todoDto);
             }
@@ -125,16 +111,7 @@ public class TodoService {
 
             String todoId = todoDto.getId();
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-            Todo todoTmp = Todo.builder()
-                    .id(todo.getId())
-                    .title(todo.getTitle())
-                    .status(todo.getStatus())
-                    .projectId(todo.getProjectId())
-                    .teamId(todo.getTeamId())
-                    .memberId(todo.getMemberId())
-                    .modifyDate(todo.getModifyDate())
-                    .regDate(todo.getRegDate())
-                    .build();
+            Todo todoTmp = TodoAdaptor.dupEntity(todo);
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
@@ -157,12 +134,7 @@ public class TodoService {
 
             todoTmp.changeModifyDate();
 
-            TodoRecord todoRecord = TodoRecord.builder()
-                    .id(todoRecordId)
-                    .diff(diff)
-                    .todo_id(todoTmp.getId())
-                    .modifyDate(LocalDateTime.now())
-                    .build();
+            TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
@@ -183,16 +155,7 @@ public class TodoService {
 
             String todoId = todoDto.getId();
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-            Todo todoTmp = Todo.builder()
-                    .id(todo.getId())
-                    .title(todo.getTitle())
-                    .status(todo.getStatus())
-                    .projectId(todo.getProjectId())
-                    .teamId(todo.getTeamId())
-                    .memberId(todo.getMemberId())
-                    .modifyDate(todo.getModifyDate())
-                    .regDate(todo.getRegDate())
-                    .build();
+            Todo todoTmp = TodoAdaptor.dupEntity(todo);
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
@@ -229,12 +192,7 @@ public class TodoService {
 
             todoTmp.changeModifyDate();
 
-            TodoRecord todoRecord = TodoRecord.builder()
-                    .id(todoRecordId)
-                    .diff(diff)
-                    .todo_id(todoTmp.getId())
-                    .modifyDate(LocalDateTime.now())
-                    .build();
+            TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
@@ -255,16 +213,7 @@ public class TodoService {
 
             String todoId = todoDto.getId();
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-            Todo todoTmp = Todo.builder()
-                    .id(todo.getId())
-                    .title(todo.getTitle())
-                    .status(todo.getStatus())
-                    .projectId(todo.getProjectId())
-                    .teamId(todo.getTeamId())
-                    .memberId(todo.getMemberId())
-                    .modifyDate(todo.getModifyDate())
-                    .regDate(todo.getRegDate())
-                    .build();
+            Todo todoTmp = TodoAdaptor.dupEntity(todo);
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
@@ -297,12 +246,7 @@ public class TodoService {
             todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());
             todoTmp.changeModifyDate();
 
-            TodoRecord todoRecord = TodoRecord.builder()
-                    .id(todoRecordId)
-                    .diff(diff)
-                    .todo_id(todoTmp.getId())
-                    .modifyDate(LocalDateTime.now())
-                    .build();
+            TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
             todoDao.save(todoTmp);
@@ -317,10 +261,26 @@ public class TodoService {
         return true;
     }
 
-    public Todo getTodoInfo(String todoId) {
+    public TodoDto getTodoInfo(String todoId) {
 
         Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        TodoDto todoDto = TodoAdaptor.entityToDto(todo);
 
-        return todo;
+        Member member = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Team team = teamDao.findTeamById(todoDto.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        todoDto.setMemberName(member.getName());
+        todoDto.setTeamName(team.getName());
+
+        return todoDto;
+    }
+
+    private TodoRecord setTodoRecord(String todoRecordId, Map<String, String> diff, String todoId){
+        return TodoRecord.builder()
+                .id(todoRecordId)
+                .diff(diff)
+                .todo_id(todoId)
+                .modifyDate(LocalDateTime.now())
+                .build();
     }
 }

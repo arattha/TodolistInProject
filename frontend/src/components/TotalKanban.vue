@@ -67,21 +67,26 @@
         </draggable>
       </div>
     </div>
+    <Todo-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import TodoCard from '@/components/TodoCard.vue';
+// import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
+
 export default {
   name: 'TOTALKANBAN',
   components: {
     TodoCard,
+    // TodoAddModal,
     draggable,
   },
   props: ['teamInfo', 'TodoStomp', 'filters','bookmarkFilter'],
   data() {
     return {
+      isShow: false,
       drag: false,
       teamId: '',
       todoId: '',
@@ -92,7 +97,7 @@ export default {
   },
   methods: {
     todoAdd() {
-      console.log('할일 추가');
+      this.showModal();
     },
     // draggable 관련 로그를 찍기위한 함수
     // draggable 컴포넌트에 @change="log"를 추가해서 사용
@@ -120,6 +125,12 @@ export default {
         }),
         {}
       );
+    },
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
     },
   },
   computed: {

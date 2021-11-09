@@ -29,31 +29,37 @@
           />
         </div>
         <div class="grid items-center justify-items-center">
-          <input
-            type="password"
-            class="
-              appearance-none
-              border border-transparent
-              w-11/12
-              h-2/3
-              py-2
-              px-4
-              bg-itemGray
-              text-gray-700
-              placeholder-gray-500
-              shadow-md
-              rounded-sm
-              text-base
-              focus:outline-none focus:ring-2 focus:ring-menuGray focus:border-transparent
-            "
-            placeholder="비밀번호"
-            @keyup.enter="pwKeyupEnter()"
-            v-model="password"
-          />
+          <form class="grid items-center justify-items-center w-full h-full">
+            <input
+              type="password"
+              autocomplete="off"
+              class="
+                appearance-none
+                border border-transparent
+                w-11/12
+                h-2/3
+                py-2
+                px-4
+                bg-itemGray
+                text-gray-700
+                placeholder-gray-500
+                shadow-md
+                rounded-sm
+                text-base
+                focus:outline-none focus:ring-2 focus:ring-menuGray focus:border-transparent
+              "
+              placeholder="비밀번호"
+              @keyup.enter="pwKeyupEnter()"
+              v-model="password"
+            />
+          </form>
         </div>
         <div class="grid items-center justify-items-center">
           <button
             class="
+              flex
+              justify-center
+              items-center
               w-11/12
               h-2/3
               bg-headerGray

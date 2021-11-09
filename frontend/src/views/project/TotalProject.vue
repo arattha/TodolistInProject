@@ -1,11 +1,35 @@
 <template>
   <div class="px-16 w-full h-full">
+    <button
+      class="
+        bg-itemGray
+        text-black text-sm
+        font-semibold
+        mt-1
+        h-10
+        w-16
+        lg:w-20 lg:py-2 lg:px-2
+        rounded-lg
+        shadow-md
+        hover:bg-menuGray
+        focus:outline-none
+        focus:ring-2
+        focus:ring-headerGray
+        focus:ring-offset-2
+        focus:ring-offset-purple-200
+      "
+      @click="showModal"
+    >
+      추가하기
+    </button>
     <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" />
+    <Project-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import ProjectCard from '@/components/ProjectCard.vue';
+import ProjectAddModal from '@/components/modal/ProjectAddModal.vue';
 import { getProjectList } from '@/api/project.js';
 import { formatDate } from '@/api/utils.js';
 import { mapGetters } from 'vuex';
@@ -14,10 +38,12 @@ export default {
   name: 'TOTALPROJECT',
   components: {
     ProjectCard,
+    ProjectAddModal,
   },
   data() {
     return {
       pjtInfoList: [],
+      isShow: false,
     };
   },
   created() {
@@ -30,7 +56,7 @@ export default {
         if (res.object) {
           for (let i = 0; i < res.object.length; i++) {
             let item = res.object[i];
-            
+
             let temp = {};
             temp['pjt'] = {
               id: item['id'],
@@ -53,8 +79,16 @@ export default {
       }
     );
   },
-  computed:{
+  computed: {
     ...mapGetters(['isLogin', 'id', 'nickname']),
-  }
+  },
+  methods: {
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
+    },
+  },
 };
 </script>

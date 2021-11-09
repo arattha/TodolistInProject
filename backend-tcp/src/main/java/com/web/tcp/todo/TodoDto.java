@@ -18,10 +18,14 @@ public class TodoDto {
 
     private String title;
     private String status;
+
     private String projectId;
+
     private String memberId;
     private String memberName;
+
     private String teamId;
+    private String teamName;
 
     private LocalDateTime modifyDate;
     private LocalDateTime regDate;

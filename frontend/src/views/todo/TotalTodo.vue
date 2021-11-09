@@ -84,12 +84,14 @@
       @applyFilter="applyFilter"
       :teamInfoList="teamInfoList"
     />
+    <Team-Add-Modal v-if="isShowTeamAddModal" @closeTeamAddModal="closeTeamAddModal" />
   </div>
 </template>
 
 <script>
 import TotalKanban from '@/components/TotalKanban.vue';
 import TodoFilter from '@/components/TodoFilter.vue';
+import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
@@ -101,6 +103,7 @@ export default {
   components: {
     TotalKanban,
     TodoFilter,
+    TeamAddModal,
   },
   data() {
     return {
@@ -110,6 +113,7 @@ export default {
       isShow: false,
       filters: null,
       bookmarkFilter: false,
+      isShowTeamAddModal: false,
     };
   },
 
@@ -260,8 +264,7 @@ export default {
       else item.scrollLeft -= 100;
     },
     teamAdd() {
-      console.log('팀추가');
-      this.$router.push('/todos/detail');
+      this.showTeamAddModal();
     },
     todoFilter() {
       this.isShow = true;
@@ -276,6 +279,12 @@ export default {
     cleanFilter() {
       this.filters = null;
       this.isShow = false;
+    },
+    showTeamAddModal() {
+      this.isShowTeamAddModal = true;
+    },
+    closeTeamAddModal() {
+      this.isShowTeamAddModal = false;
     },
   },
 };

@@ -58,8 +58,8 @@
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
             <div class="flex flex-col">
-              <div class="lg:text-2xl">OOO</div>
-              <div class="text-sm lg:text-base">XXX</div>
+              <div class="lg:text-2xl">{{todoInfo.memberName}}</div>
+              <div class="text-sm lg:text-base">{{todoInfo.teamName}}</div>
             </div>
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
@@ -187,6 +187,8 @@
 import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'TODODETAIL',
@@ -199,16 +201,18 @@ export default {
       isShow: false,
       curPage: 0,
       todoInfo: {
-        id: '1',
-        title: '회원가입',
-        memberId: '0564293048818',
-        status: '접수',
-        regDate: '2021-10-14',
-        modifyDate: '2021-10-15',
+        id: '',
+        title: '',
+        memberId: '',
+        memberName: '',
+        teamName: '',
+        status: '',
+        regDate: '',
+        modifyDate: '',
       },
       userInfo: {
-        name: '최광진',
-        teamName: 'F106',
+        name: '',
+        teamName: '',
         // 즐겨찾기 여부
         isBookmark: true,
       },
@@ -221,8 +225,50 @@ export default {
     if (this.$route.path === '/todo/detail') {
       this.curPage = 0;
     }
+    this.connect();
   },
   methods: {
+    connect(){
+      const serverURL = 'http://localhost:8082/todo';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect(
+        {},
+        () => {
+          // 소켓 연결 성공
+          this.connected = true;
+
+          this.stompClient.debug = () => {};
+
+          this.stompClient.send(
+            '/server/getTodoInfo',
+            JSON.stringify({
+              todoId: this.todoId,
+            }),
+            {}
+          );
+
+          // subscribe 로 alarm List 가져오기
+          this.stompClient.subscribe("/client/detail/" + this.todoId, (res) => {
+            var todo = JSON.parse(res.body);
+
+            this.todoInfo.id = todo.id;
+            this.todoInfo.title = todo.title;
+            this.todoInfo.memberId = todo.memberId;
+            this.todoInfo.memberName = todo.memberName;
+            this.todoInfo.teamName = todo.teamName;
+            this.todoInfo.status = todo.status;
+            this.todoInfo.modifyDate = todo.modifyDate.split("T")[0];
+            this.todoInfo.regDate = todo.regDate.split("T")[0];
+
+          });
+        },
+        (error) => {
+          // 소켓 연결 실패
+          console.log('소켓 연결 실패', error);
+        }
+      );
+    },
     changeStatus(status) {
       this.todoInfo.status = status;
     },
