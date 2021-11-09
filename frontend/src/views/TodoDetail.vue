@@ -229,7 +229,7 @@ export default {
   },
   methods: {
     connect(){
-      const serverURL = 'http://localhost:8082/todo';
+      const serverURL = 'http://localhost:8082/socket/todo';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect(

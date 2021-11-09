@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     connect() {
-      const serverURL = 'http://localhost:8082/socketalarm';
+      const serverURL = 'http://localhost:8082/socket/alarm';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
