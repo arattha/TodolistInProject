@@ -29,7 +29,7 @@
           />
         </div>
         <div class="grid items-center justify-items-center">
-          <form class="grid items-center justify-items-center w-full h-full">
+          <form @submit.prevent="login" class="grid items-center justify-items-center w-full h-full">
             <input
               type="password"
               autocomplete="off"
@@ -49,7 +49,6 @@
                 focus:outline-none focus:ring-2 focus:ring-menuGray focus:border-transparent
               "
               placeholder="비밀번호"
-              @keyup.enter="pwKeyupEnter()"
               v-model="password"
             />
           </form>
@@ -132,8 +131,7 @@ export default {
             this.$router.push('Projects');
           } else {
             console.log(res.object);
-            alert('회원가입이 필요합니다. \n회원가입 페이지로 이동합니다.');
-            this.$router.push('Signup');
+            alert('로그인이 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
           }
         },
         (error) => {
@@ -146,9 +144,6 @@ export default {
       this.$router.push('/signup');
     },
     idKeyupEnter() {
-      this.login();
-    },
-    pwKeyupEnter() {
       this.login();
     },
     loginKeyupEnter() {
