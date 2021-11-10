@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,9 +66,13 @@ public class ProjectService {
     }
 
     @Transactional
-    public boolean addProject(ProjectDto projectDto) {
+    public boolean addProject(ProjectDto projectDto, String memberId) {
 
         try {
+            // 1. 프로젝트를 생성
+            // 2. 생성한 사용자를 해당 프로젝트의 admin팀의 일원으로 저장
+
+            // 1.
             // 새로운 프로젝트를 위한 id 생성
             String pid = idGenerator.generateId();
             while (projectDao.existsById(pid)) {
@@ -75,12 +80,25 @@ public class ProjectService {
             }
             // Dto로 받은 project를 Entity로 변경
             projectDto.setId(pid);
+            projectDto.setRegDate(LocalDateTime.now());
 
             Project project = ProjectAdaptor.dtoToEntity(projectDto);
             // 중복되지 않은 pid를 새로운 프로젝트 Entity인 project변수에 set
 
             // project table에 insert
             projectDao.save(project);
+
+            // 2.
+            String tid = idGenerator.generateId();
+            while (teamDao.existsById(tid)) {
+                tid = idGenerator.generateId();
+            }
+
+            Team team = new Team(tid, "admin", pid, false);
+            teamDao.save(team);
+
+            MemberHasTeam memberHasTeam = new MemberHasTeam(memberId, tid, true);
+            memberHasTeamDao.save(memberHasTeam);
 
             return true;
 

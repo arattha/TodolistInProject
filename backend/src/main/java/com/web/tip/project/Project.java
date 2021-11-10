@@ -3,6 +3,7 @@ package com.web.tip.project;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,8 +23,8 @@ public class Project {
 
     private boolean isDone;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private LocalDateTime regDate;
 
     public void changeProjectState(){

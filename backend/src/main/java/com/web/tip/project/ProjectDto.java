@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -21,8 +22,8 @@ public class ProjectDto {
 
     private boolean isDone;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private LocalDateTime regDate;
 
 }

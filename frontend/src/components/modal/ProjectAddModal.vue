@@ -214,6 +214,8 @@
 <script>
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
+import { mapGetters } from 'vuex';
+import { addProject } from '@/api/project.js'
 
 export default {
   name: 'PROJECTADDMODAL',
@@ -236,6 +238,9 @@ export default {
   },
   created() {
     this.minDate = new Date().toISOString().substring(0, 10);
+  },
+  computed: {
+    ...mapGetters(['id']),
   },
   methods: {
     onClickOutside() {
@@ -282,7 +287,21 @@ export default {
       let changedText = DOMPurify.sanitize(changeContent);
 
       console.log(this.projectName, this.startDate, this.endDate, changedText);
-      alert('추가완료');
+
+      var data = {
+        name: this.projectName,
+        desc: changedText,
+        isDone: false,
+        startDate: this.startDate,
+        endDate: this.endDate,
+      }
+      addProject(data, this.id,
+      () => {
+        alert('추가완료');
+        this.closeModal();
+      },
+      () => {})
+
     },
     typingProjectName(e) {
       if (!e.target.value) {
