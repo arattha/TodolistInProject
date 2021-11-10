@@ -47,7 +47,7 @@
             text-3xl
           "
         >
-          상세내용 추가
+          상세내용 수정
         </div>
         <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
           <textarea
@@ -109,7 +109,7 @@
               focus:ring-offset-red-200
               mr-10
             "
-            @click="closeModal(true)"
+            @click="closeModal()"
           >
             닫기
           </button>
@@ -130,9 +130,9 @@
               focus:ring-offset-2
               focus:ring-offset-blue-200
             "
-            @click="addTodoDetail()"
+            @click="modifyTodoDetail()"
           >
-            추가
+            수정
           </button>
         </div>
       </div>
@@ -145,10 +145,11 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
 import _ from 'lodash';
-import { createTodoContent } from '@/api/todo.js';
-
+import { modifyTodoContent } from '@/api/todo.js';
+import { mapGetters } from 'vuex';
 export default {
-  name: 'TODODETAILMODAL',
+  name: 'TODODETAILMODIFYMODAL',
+  props: ['todoId', 'detailId', 'detailContent'],
   data() {
     return {
       inputContent: '',
@@ -158,19 +159,21 @@ export default {
       isValid: true,
     };
   },
-  props: ['todoId', 'memberId'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
+  mounted() {
+    // this.inputContent = this.detailContent;
+    this.checkByte(this.detailContent);
+  },
   methods: {
     onClickOutside() {
-      this.closeModal(true);
+      this.closeModal();
     },
-    closeModal(val) {
-      this.$emit('closeModal', val);
+    closeModal() {
+      this.$emit('closeModal');
     },
     checkByte(text_val) {
-      // console.log(obj)
       // const maxByte = 1000; //최대 1000바이트
       const text_len = text_val.length; //입력한 문자수
 
@@ -193,26 +196,30 @@ export default {
     update: _.debounce(function (e) {
       this.checkByte(e.target.value);
     }, 300),
-    addTodoDetail() {
+    modifyTodoDetail() {
       if (this.wordCnt > 1000) {
         alert('최대 1000byte 까지 입력이 가능합니다.');
         return;
       }
-      createTodoContent(
-        { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
+
+      console.log('현재 사용자 아이디: ' + this.id);
+      modifyTodoContent(
+        { id: this.detailId, contents: this.inputContent, memberId: this.id },
         (res) => {
           console.log(res);
-          this.closeModal(false);
+          console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
+          this.closeModal(true);
         },
         (error) => {
           console.error(error);
-          alert('문제가 발생했습니다');
-          this.closeModal(true);
+          alert('오류가 발생했습니다.');
+          this.closeModal(false);
         }
       );
     },
   },
   computed: {
+    ...mapGetters(['id']),
     compiledMarkdown: function () {
       marked.setOptions({
         renderer: new marked.Renderer(),

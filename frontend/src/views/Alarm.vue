@@ -4,26 +4,21 @@
 
     <button @click="remove">선택한 알림 삭제</button>
     <button @click="removeAll">모든 알림 삭제</button>
-    
+
     <div v-if="alarmList">
-      <div
-        v-for="(alarm, index) in alarmList"
-        :key="index"
-      >
-        <input type="checkbox" v-model="checkList" :value="alarm.id">
-        <div class="
-          flex flex-row
-          h-14
-          border-b-2 border-r-2 border-l-2
-          cursor-pointer
-          hover:bg-indigo-200
-        "
-        @click="goTodo(alarm.todoId)">
-          <div
-            class="
-              md:flex justify-center items-center p-2 h-full w-full border-r-2 mr-2
-            "
-          >
+      <div v-for="(alarm, index) in alarmList" :key="index">
+        <input type="checkbox" v-model="checkList" :value="alarm.id" />
+        <div
+          class="
+            flex flex-row
+            h-14
+            border-b-2 border-r-2 border-l-2
+            cursor-pointer
+            hover:bg-indigo-200
+          "
+          @click="goTodo(alarm.todoId)"
+        >
+          <div class="md:flex justify-center items-center p-2 h-full w-full border-r-2 mr-2">
             {{ alarm.content }}
           </div>
           <div class="flex justify-center items-center h-full w-32 text-center">
@@ -37,8 +32,8 @@
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from "@/api/alarm.js";
-import { mapActions, mapGetters } from "vuex";
+import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from '@/api/alarm.js';
+import { mapActions, mapGetters } from 'vuex';
 import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
 
@@ -66,7 +61,13 @@ export default {
     ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt']),
   },
   methods: {
-    ...mapActions(['set_totalAlarmCnt', 'set_curPage', 'set_offset', 'toggle_isDel', 'set_todo_id']),
+    ...mapActions([
+      'set_totalAlarmCnt',
+      'set_curPage',
+      'set_offset',
+      'toggle_isDel',
+      'set_todo_id',
+    ]),
     async getAlarm() {
       let userData = {
         id: this.id,
@@ -105,26 +106,24 @@ export default {
       this.checkList = [];
       this.getAlarm(page);
     },
-    remove(){
-
-      if(this.checkList.length == 0) {
-        alert("선택한 알람이 없습니다.");
+    remove() {
+      if (this.checkList.length == 0) {
+        alert('선택한 알람이 없습니다.');
         return;
       }
 
       removeAlarm(
         {
           memberId: this.id,
-          checkList: this.checkList
+          checkList: this.checkList,
         },
         () => {
           this.toggle_isDel(true);
           this.set_totalAlarmCnt(this.totalAlarmCnt - this.checkList.length);
           this.getAlarm();
           this.checkList = [];
-          alert("삭제되었습니다.");
+          alert('삭제되었습니다.');
           this.getRealtimeAlarm();
-
         },
         () => {
           return;
@@ -132,9 +131,8 @@ export default {
       );
     },
     removeAll() {
-
-      if(this.totalAlarmCnt == 0) {
-        alert("알람이 없습니다.");
+      if (this.totalAlarmCnt == 0) {
+        alert('알람이 없습니다.');
         return;
       }
 
@@ -150,22 +148,19 @@ export default {
       );
     },
     goTodo(todoId) {
-
       // 해당 Todo의 상세 페이지로 이동
       this.set_todo_id(todoId);
-      this.$router.push('/todo/detail');
-      
+      this.$router.push('/' + todoId + '/detail');
     },
-    getRealtimeAlarm(){
+    getRealtimeAlarm() {
       this.$route.params.alarmStomp.send(
-        "/server/getAlarm",
+        '/server/getAlarm',
         JSON.stringify({
           memberId: this.id,
         }),
         {}
       );
     },
-    
   },
   // 해당 페이지에서 나갈때 값을 초기화하도록 세팅
   // 만약 새로고침 시에는 url이 같으므로 변경 X

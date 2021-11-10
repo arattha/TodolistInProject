@@ -76,9 +76,7 @@ export default {
     };
   },
   created() {
-    if (this.$route.path === '/todo') {
-      this.pageType = 'total';
-    }
+    this.pageType = 'total';
   },
   computed: {
     ...mapGetters(['projectId']),
@@ -88,15 +86,15 @@ export default {
 
     goTotalTodo() {
       this.pageType = 'total';
-      this.$router.push('/todo');
+      this.$router.push('/projects/' + this.projectId + '/todos');
     },
     goMyTodo() {
       this.pageType = 'my';
-      this.$router.push('/todo/my');
+      this.$router.push('/projects/' + this.projectId + '/my');
     },
     goTodoProgress() {
       this.pageType = 'progress';
-      this.$router.push('/todo/progress');
+      this.$router.push('/projects/' + this.projectId + '/progress');
     },
   },
 };

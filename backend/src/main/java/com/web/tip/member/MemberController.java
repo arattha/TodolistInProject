@@ -60,42 +60,33 @@ public class MemberController {
     public Object login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         BasicResponse result = new BasicResponse();
         LoginResponse loginResponse;
+        result.status = false;
+        result.data = "fail";
+        loginResponse = LoginResponse.builder()
+                .isMember(false)
+                .build();
 
-        result.status = true;
-        result.data = SUCCESS;
-        // 만약 존재하지 않는 유저라면 회원가입을 유도하기 위해 isMember를 false로 반환
-
-        System.out.println(memberService.existsUserCheck(loginRequest.getNickname()));
-        if (!memberService.existsUserCheck(loginRequest.getNickname())) {
-            loginResponse = LoginResponse.builder()
-                    .isMember(false)
-                    .build();
-
+        if (!memberService.existsUserCheck(loginRequest.getNickname()) ||
+                !Optional.ofNullable(loginRequest.getPassword()).isPresent()
+        ) {
             result.object = loginResponse;
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
-        // 로그인을 처리하기 위한 토큰을 발급받고 쿠키에 담는다.
         Optional<TokenDto> tokenDtoOptional = memberService.login(loginRequest.getPassword(), loginRequest.getNickname());
         if (tokenDtoOptional.isPresent()) {
-            // 현재 mid의 Member 정보를 가져와 반환 객체인 loginResponse에 필요한 내용을 담는다.
             Member member = memberService.getMemberByNickName(loginRequest.getNickname());
-
             loginResponse = LoginResponse.builder()
                     .mid(member.getId())
                     .nickname(member.getNickname())
                     .isMember(true)
                     .build();
 
-            result.object = loginResponse;
-
             Cookie cookie = getAuthCookie(tokenDtoOptional);
             response.addCookie(cookie);
-        } else {
-            result.object = "fail";
-            result.status = false;
         }
 
+        result.object = loginResponse;
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

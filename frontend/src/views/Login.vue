@@ -29,7 +29,10 @@
           />
         </div>
         <div class="grid items-center justify-items-center">
-          <form @submit.prevent="login" class="grid items-center justify-items-center w-full h-full">
+          <form
+            @submit.prevent="login"
+            class="grid items-center justify-items-center w-full h-full"
+          >
             <input
               type="password"
               autocomplete="off"
@@ -127,7 +130,6 @@ export default {
             this.set_nickname(res.object.nickname);
             this.toggle_isLogin(true);
 
-            alert('로그인 성공');
             this.$router.push('Projects');
           } else {
             console.log(res.object);

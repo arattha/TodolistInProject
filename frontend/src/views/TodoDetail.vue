@@ -36,8 +36,8 @@
                 bg-itemGray
                 text-black text-xs
                 font-semibold
-                h-9
-                w-24
+                w-16
+                h-8
                 py-2
                 px-2
                 mr-8
@@ -50,9 +50,9 @@
                 focus:ring-offset-2
                 focus:ring-offset-purple-200
               "
-              @click="modifyManager()"
+              @click="showTeamMemberMoveModal"
             >
-              담당자 변경
+              보내기
             </button>
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
@@ -180,6 +180,11 @@
       </router-view>
     </div>
     <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" />
+    <Todo-Team-Member-Move-Modal
+      v-if="isTeamMemberMoveModalShow"
+      @closeModal="closeTeamMemberMoveModal"
+      :todoId="todoInfo.id"
+    />
   </div>
 </template>
 
@@ -187,6 +192,7 @@
 import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
+import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
 
@@ -195,9 +201,11 @@ export default {
   components: {
     TodoStatus,
     TodoDetailModal,
+    TodoTeamMemberMoveModal,
   },
   data() {
     return {
+      isTeamMemberMoveModalShow: false,
       isShow: false,
       curPage: 0,
       todoInfo: {
@@ -271,7 +279,6 @@ export default {
     changeStatus(status) {
       this.todoInfo.status = status;
     },
-    modifyManager() {},
     todoContentAdd() {
       this.showModal();
     },
@@ -299,15 +306,24 @@ export default {
     showModal() {
       this.isShow = true;
     },
-    closeModal() {
+    closeModal(val) {
+      this.isShow = false;
+
+      if (val) {
+        return;
+      }
+
       if (this.curPage !== 0) {
         this.goDetail();
       } else {
-        // this.$router.go(`/${this.$route.params.todoId}/detail`);
         this.toggle_reload_todo_detail(true);
       }
-
-      this.isShow = false;
+    },
+    showTeamMemberMoveModal() {
+      this.isTeamMemberMoveModalShow = true;
+    },
+    closeTeamMemberMoveModal() {
+      this.isTeamMemberMoveModalShow = false;
     },
   },
 };

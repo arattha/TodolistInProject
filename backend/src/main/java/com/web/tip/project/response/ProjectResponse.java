@@ -3,6 +3,7 @@ package com.web.tip.project.response;
 import com.web.tip.project.Project;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -15,8 +16,8 @@ public class ProjectResponse {
     private String id;
     private String name;
     private String desc;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private int totalCnt;
     private int progressCnt;

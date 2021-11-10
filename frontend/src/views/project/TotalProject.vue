@@ -48,46 +48,50 @@ export default {
   },
   created() {
     this.pjtInfoList = [];
-    getProjectList(
-      false,
-      this.id,
-      (res) => {
-        this.pjtInfoList = [];
-        if (res.object) {
-          for (let i = 0; i < res.object.length; i++) {
-            let item = res.object[i];
-
-            let temp = {};
-            temp['pjt'] = {
-              id: item['id'],
-              name: item['name'],
-              desc: item['desc'],
-              startDate: formatDate(item['startDate']),
-              endDate: formatDate(item['endDate']),
-            };
-            temp['totalCnt'] = item['totalCnt'];
-            temp['progressCnt'] = item['progressCnt'];
-            temp['doneCnt'] = item['doneCnt'];
-
-            this.pjtInfoList.push(temp);
-          }
-        }
-      },
-      (error) => {
-        alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-        console.log(error);
-      }
-    );
+    this.getProject();
   },
   computed: {
-    ...mapGetters(['isLogin', 'id', 'nickname']),
+    ...mapGetters(['id']),
   },
   methods: {
+    getProject(){
+      getProjectList(
+        false,
+        this.id,
+        (res) => {
+          this.pjtInfoList = [];
+          if (res.object) {
+            for (let i = 0; i < res.object.length; i++) {
+              let item = res.object[i];
+
+              let temp = {};
+              temp['pjt'] = {
+                id: item['id'],
+                name: item['name'],
+                desc: item['desc'],
+                startDate: formatDate(item['startDate']),
+                endDate: formatDate(item['endDate']),
+              };
+              temp['totalCnt'] = item['totalCnt'];
+              temp['progressCnt'] = item['progressCnt'];
+              temp['doneCnt'] = item['doneCnt'];
+
+              this.pjtInfoList.push(temp);
+            }
+          }
+        },
+        (error) => {
+          alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+          console.log(error);
+        }
+      );
+    },
     showModal() {
       this.isShow = true;
     },
     closeModal() {
       this.isShow = false;
+      this.getProject();
     },
   },
 };

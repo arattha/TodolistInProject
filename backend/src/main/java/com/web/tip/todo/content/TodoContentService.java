@@ -74,6 +74,8 @@ public class TodoContentService {
 
         List<TodoContentDto> todoContentDtos = new ArrayList<>();
         for (TodoContent todoContent : todoContents) {
+            if(!todoContent.isUse())
+                continue;
             todoContentDtos.add(TodoContentDto.entityToDto(todoContent));
         }
 
@@ -110,9 +112,11 @@ public class TodoContentService {
     }
 
     @Transactional
-    public TodoContentDto deleteTodoContent(String todoContentId) {
+    public TodoContentDto deleteTodoContent(String todoContentId, String memberId) {
         TodoContent todoContent = todoContentDao.findById(todoContentId)
                 .orElseThrow(() -> new CustomException(TODO_CONTENT_NOT_FOUND));
+        Member member = memberDao.findMemberById(memberId)
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
         if (!todoContent.isUse()) {
             throw new CustomException(TODO_CONTENT_NOT_FOUND);
@@ -127,7 +131,10 @@ public class TodoContentService {
                 .regDate(todoContent.getRegDate())
                 .build();
 
-        return TodoContentDto.entityToDto(todoContentDao.save(removedTodoContent));
+        TodoContentDto todoContentDto = TodoContentDto.entityToDto(todoContentDao.save(removedTodoContent));
+        saveDeletedTodoContentHistory(removedTodoContent, member);
+
+        return todoContentDto;
     }
 
     private void saveTodoContentRecord(Member writer, TodoContent todoContent, String before) {
@@ -141,6 +148,26 @@ public class TodoContentService {
         diff.put("message", "\"" + writer.getName() + "\"가 " + todoContent.getTodo().getTitle() +"의 상세 정보를 변경했습니다.");
         diff.put("before", before);
         diff.put("after", todoContent.getContents());
+
+        todoContentRecordDao.save(TodoContentRecord.builder()
+                .id(id)
+                .diff(diff)
+                .todoContent(todoContent)
+                .modifyDate(LocalDateTime.now())
+                .build());
+    }
+
+    private void saveDeletedTodoContentHistory(TodoContent todoContent, Member writer) {
+        String id = idGenerator.generateId();
+        while (todoContentRecordDao.existsById(id)) {
+            id = idGenerator.generateId();
+        }
+
+        Map<String, String> diff = new HashMap<>();
+        diff.put("writer", writer.getName());
+        diff.put("message", "\"" + writer.getName() + "\"가 " + todoContent.getTodo().getTitle() +"의 상세 정보를 삭제했습니다.");
+        diff.put("before", todoContent.getContents());
+        diff.put("after", "");
 
         todoContentRecordDao.save(TodoContentRecord.builder()
                 .id(id)
