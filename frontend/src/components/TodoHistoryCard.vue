@@ -1,11 +1,16 @@
 <template>
-  <div class="flex flex-col w-11/12 h-24 bg-contentGray rounded-lg my-3 px-8 py-3 shadow-lg">
-    <div class="flex justify-between w-full">
+  <div class="flex flex-col w-11/12 h-32 bg-contentGray rounded-lg my-3 shadow-lg py-3 px-5">
+    <div class="flex justify-between w-full h-full">
       <div class="flex">
-        <div class="flex items-end font-black text-lg">
+        <div class="flex items-center font-black text-lg">
           {{ todoHistory.diff.message }}
         </div>
       </div>
+    </div>
+    <div
+      class="flex"
+      :class="{ 'justify-between': todoHistory.isContent, 'justify-end': !todoHistory.isContent }"
+    >
       <button
         class="
           my-auto
@@ -29,8 +34,8 @@
       >
         비교하기
       </button>
+      <div class="flex justify-end text-xs items-center">{{ todoHistory.modifyDate }}</div>
     </div>
-    <div class="flex ml-5 text-xs items-end pt-2">수정일: {{ todoHistory.modifyDate }}</div>
   </div>
 </template>
 
