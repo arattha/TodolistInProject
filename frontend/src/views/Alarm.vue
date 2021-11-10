@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { removeAllAlarm, removeAlarm, getAlarmInMypage, getAlarmCnt } from '@/api/alarm.js';
+import { removeAllAlarm, removeAlarm, getAlarmInMypage } from '@/api/alarm.js';
 import { mapActions, mapGetters } from 'vuex';
 import Pagination from '@/components/Pagination';
 import Header from '@/components/Header.vue';
@@ -54,11 +54,10 @@ export default {
   created() {
     this.pageCnt = 5;
     this.pageSize = 6;
-    this.getTotalAlarmCnt();
     this.getAlarm();
   },
   computed: {
-    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt']),
+    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt', 'alarmStomp']),
   },
   methods: {
     ...mapActions([
@@ -85,17 +84,6 @@ export default {
             this.set_curPage(this.curPage - 1);
             this.getAlarm();
           }
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-    },
-    getTotalAlarmCnt() {
-      getAlarmCnt(
-        this.id,
-        (res) => {
-          this.set_totalAlarmCnt(res.object);
         },
         (error) => {
           console.log(error);
@@ -153,7 +141,7 @@ export default {
       this.$router.push('/' + todoId + '/detail');
     },
     getRealtimeAlarm() {
-      this.$route.params.alarmStomp.send(
+      this.alarmStomp.send(
         '/server/getAlarm',
         JSON.stringify({
           memberId: this.id,
