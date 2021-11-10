@@ -299,15 +299,19 @@ export default {
     showModal() {
       this.isShow = true;
     },
-    closeModal() {
+    closeModal(val) {
+      this.isShow = false;
+
+      if (val) {
+        return;
+      }
+
       if (this.curPage !== 0) {
         this.goDetail();
       } else {
         // this.$router.go(`/${this.$route.params.todoId}/detail`);
         this.toggle_reload_todo_detail(true);
       }
-
-      this.isShow = false;
     },
   },
 };

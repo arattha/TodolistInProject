@@ -24,7 +24,7 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        @click="teamAdd()"
+        @click="showModal()"
       >
         수정
       </button>
@@ -33,20 +33,49 @@
       v-html="compiledMarkdown"
       class="todo-content h-52 overflow-y-auto mt-5 scroll_type2 break-all"
     ></div>
+    <Todo-Detail-Modify-Modal
+      v-if="isShow"
+      @closeModal="closeModal"
+      :todoId="todoId"
+      :detailId="detail.id"
+      :detailContent="detail.content"
+    />
   </div>
 </template>
 
 <script>
+import TodoDetailModifyModal from '@/components/modal/TodoDetailModifyModal';
+import { mapGetters, mapActions } from 'vuex';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 export default {
   name: 'TODODETAILCONTENTS',
   props: ['detail'],
+  components: {
+    TodoDetailModifyModal,
+  },
   data() {
-    return {};
+    return {
+      isShow: false,
+      todoId: '',
+    };
+  },
+  created() {
+    this.todoId = this.$route.params.todoId;
+  },
+  methods: {
+    ...mapActions(['toggle_reload_todo_detail']),
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.toggle_reload_todo_detail(true);
+      this.isShow = false;
+    },
   },
   computed: {
+    ...mapGetters(['reloadTodoDetail']),
     compiledMarkdown: function () {
       marked.setOptions({
         renderer: new marked.Renderer(),
