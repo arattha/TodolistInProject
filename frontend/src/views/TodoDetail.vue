@@ -309,7 +309,6 @@ export default {
       if (this.curPage !== 0) {
         this.goDetail();
       } else {
-        // this.$router.go(`/${this.$route.params.todoId}/detail`);
         this.toggle_reload_todo_detail(true);
       }
     },

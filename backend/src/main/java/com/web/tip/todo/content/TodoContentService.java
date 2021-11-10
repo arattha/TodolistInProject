@@ -74,6 +74,8 @@ public class TodoContentService {
 
         List<TodoContentDto> todoContentDtos = new ArrayList<>();
         for (TodoContent todoContent : todoContents) {
+            if(!todoContent.isUse())
+                continue;
             todoContentDtos.add(TodoContentDto.entityToDto(todoContent));
         }
 
