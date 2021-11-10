@@ -133,6 +133,7 @@ export default {
       this.isShowMenu = false;
       deleteTodoContent(
         this.detail.id,
+        this.id,
         (res) => {
           console.log(res);
           this.toggle_reload_todo_detail(true);
@@ -149,7 +150,7 @@ export default {
     // },
   },
   computed: {
-    ...mapGetters(['reloadTodoDetail']),
+    ...mapGetters(['reloadTodoDetail', 'id']),
     compiledMarkdown: function () {
       marked.setOptions({
         renderer: new marked.Renderer(),
