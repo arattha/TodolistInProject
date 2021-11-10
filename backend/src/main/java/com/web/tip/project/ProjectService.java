@@ -38,31 +38,22 @@ public class ProjectService {
 
         // 읽어온 사용자의 Id로 사용자가 속해있는 팀의 목록을 불러온다.
         List<MemberHasTeam> hasTeamList = memberHasTeamDao.findMemberHasTeamByMemberId(memberId);
+        List<String> teamIdList = new ArrayList<>();
+        hasTeamList.forEach(v -> teamIdList.add(v.getTeamId()));//id 만 String으로 변경
 
-        // 사용자가 담당 중인 프로젝트 목록
-        List<ProjectResponse> projectList = new ArrayList<>();
+        //해당 팀이 존재하는 프로젝트의 리스트를 불러온다.
+        List<Team> teamList = teamDao.findTeamByIdIn(teamIdList);
 
-        for (MemberHasTeam mht : hasTeamList) {
+        List<String> projectIdList = new ArrayList<>();
+        teamList.forEach(v -> projectIdList.add(v.getProjectId()));
 
-            // 사용자가 속한 팀의 아이디를 읽어온다.
-            String teamId = mht.getTeamId();
+        //프로젝트의 아이디를 토대로 데이터를 불러온다.
+        List<Project> projectList = projectDao.findProjectByIdInAndIsDone(projectIdList, isDone);
 
-            // 팀의 아이디로 그 팀에 대한 정보를 불러온다.
-            Team team = teamDao.findTeamById(teamId).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+        List<ProjectResponse> result = new ArrayList<>();
+        projectList.forEach(v -> result.add(ProjectResponse.entityToResponse(v, countTodos(v))));
 
-            // 해당 팀이 존재하면 그 팀이 속해 있는 프로젝트의 아이디를 통해 프로젝트 정보를 가져온다.
-            Project project = projectDao.findProjectById(team.getProjectId()).orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
-
-            int[] countTodoStatus = countTodos(project);
-
-            // 진행 중인 프로젝트 목록인지 완료된 프로젝트 목록인지 구분하여 projectList에 추가한다.
-            if (project.isDone() == isDone) {
-                projectList.add(ProjectResponse.entityToResponse(project, countTodoStatus));
-            }
-
-        }
-
-        return projectList;
+        return result;
     }
 
     @Transactional
