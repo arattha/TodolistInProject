@@ -92,6 +92,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
+import { deleteTodoContent } from '@/api/todo.js';
 
 export default {
   name: 'TODODETAILCONTENTS',
@@ -130,7 +131,18 @@ export default {
     },
     deleteTodoDetailContent() {
       this.isShowMenu = false;
-      console.log('삭제');
+      deleteTodoContent(
+        this.detail.id,
+        (res) => {
+          console.log(res);
+          this.toggle_reload_todo_detail(true);
+        },
+        (error) => {
+          console.error(error);
+          alert('삭제를 하는 도중에 오류가 발생했습니다.');
+          this.toggle_reload_todo_detail(false);
+        }
+      );
     },
     // closeMenu() {
     //   this.isShowMenu = false;

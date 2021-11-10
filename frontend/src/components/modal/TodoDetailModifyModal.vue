@@ -145,7 +145,8 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
 import _ from 'lodash';
-
+import { modifyTodoContent } from '@/api/todo.js';
+import { mapGetters } from 'vuex';
 export default {
   name: 'TODODETAILMODIFYMODAL',
   props: ['todoId', 'detailId', 'detailContent'],
@@ -201,10 +202,24 @@ export default {
         return;
       }
 
-      console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
+      console.log('현재 사용자 아이디: ' + this.id);
+      modifyTodoContent(
+        { id: this.detailId, contents: this.inputContent, memberId: this.id },
+        (res) => {
+          console.log(res);
+          console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
+          this.closeModal(true);
+        },
+        (error) => {
+          console.error(error);
+          alert('오류가 발생했습니다.');
+          this.closeModal(false);
+        }
+      );
     },
   },
   computed: {
+    ...mapGetters(['id']),
     compiledMarkdown: function () {
       marked.setOptions({
         renderer: new marked.Renderer(),

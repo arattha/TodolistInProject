@@ -11,9 +11,9 @@ function getTodoContent(todoId, callback, errorCallback) {
     });
 }
 
-function deleteTodoContent(todoId, callback, errorCallback) {
+function deleteTodoContent(todo_content_Id, callback, errorCallback) {
   axiosServiceWithAuth
-    .delete('/todo_content', { params: { id: todoId } })
+    .delete('/todo_content', { params: { id: todo_content_Id } })
     .then((res) => {
       callback(res.data);
     })
@@ -24,7 +24,11 @@ function deleteTodoContent(todoId, callback, errorCallback) {
 
 function modifyTodoContent(todo_content, callback, errorCallback) {
   axiosServiceWithAuth
-    .put('/todo_content', { id: todo_content.id, contents: todo_content.contents })
+    .put('/todo_content', {
+      id: todo_content.id,
+      contents: todo_content.contents,
+      memberId: todo_content.memberId,
+    })
     .then((res) => {
       callback(res.data);
     })
