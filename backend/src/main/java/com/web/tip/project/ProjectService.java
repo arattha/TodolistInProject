@@ -66,9 +66,13 @@ public class ProjectService {
     }
 
     @Transactional
-    public boolean addProject(ProjectDto projectDto) {
+    public boolean addProject(ProjectDto projectDto, String memberId) {
 
         try {
+            // 1. 프로젝트를 생성
+            // 2. 생성한 사용자를 해당 프로젝트의 admin팀의 일원으로 저장
+
+            // 1.
             // 새로운 프로젝트를 위한 id 생성
             String pid = idGenerator.generateId();
             while (projectDao.existsById(pid)) {
@@ -83,6 +87,18 @@ public class ProjectService {
 
             // project table에 insert
             projectDao.save(project);
+
+            // 2.
+            String tid = idGenerator.generateId();
+            while (teamDao.existsById(tid)) {
+                tid = idGenerator.generateId();
+            }
+
+            Team team = new Team(tid, "admin", pid, false);
+            teamDao.save(team);
+
+            MemberHasTeam memberHasTeam = new MemberHasTeam(memberId, tid, true);
+            memberHasTeamDao.save(memberHasTeam);
 
             return true;
 

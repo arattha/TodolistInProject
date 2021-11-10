@@ -33,7 +33,7 @@ public class ProjectTests {
                         .endDate(LocalDate.now())
                         .regDate(LocalDateTime.now())
                         .build()
-                ));
+                , "1231231231231"));
 
         Project project = projectService.getProjectByProjectName("test_project");
         log.info(project.toString());

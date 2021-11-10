@@ -58,14 +58,14 @@ public class ProjectController {
     }
 
     // 프로젝트 추가
-    @PostMapping("/addProject")
+    @PostMapping("/addProject/{memberId}")
     @ApiOperation(value = "프로젝트 추가")
-    public Object addProject(@RequestBody ProjectDto projectDto) {
+    public Object addProject(@RequestBody ProjectDto projectDto, @PathVariable(name = "memberId") String memberId) {
         log.info("프로젝트 추가");
         System.out.println(projectDto);
         final BasicResponse result = new BasicResponse();
 
-        if (projectService.addProject(projectDto)) {
+        if (projectService.addProject(projectDto, memberId)) {
 
             result.status = true;
             result.data = SUCCESS;

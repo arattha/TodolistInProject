@@ -11,9 +11,9 @@ function getProjectList(isDone, memberId, callback, errorCallback) {
     });
 }
 
-function addProject(data, callback, errorCallback) {
+function addProject(data, memberId, callback, errorCallback) {
   axiosServiceWithAuth
-    .post("/project/addProject", data)
+    .post("/project/addProject/" + memberId, data)
     .then((res) => {
       callback(res.data);
     })
