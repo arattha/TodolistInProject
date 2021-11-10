@@ -74,9 +74,9 @@ public class TodoContentController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<Object> deleteTodoContent(@RequestParam(value = "id") String todoContentId) {
+    public ResponseEntity<Object> deleteTodoContent(@RequestParam(value = "id") String todoContentId, @RequestParam(value = "memberId") String memberId) {
         log.info("content:{} 삭제 요청", todoContentId);
-        TodoContentDto todoContentDto = todoContentService.deleteTodoContent(todoContentId);
+        TodoContentDto todoContentDto = todoContentService.deleteTodoContent(todoContentId, memberId);
         log.info("content:{} 삭제 완료", todoContentDto.getId());
 
         BasicResponse result = new BasicResponse();

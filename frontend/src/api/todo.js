@@ -11,9 +11,9 @@ function getTodoContent(todoId, callback, errorCallback) {
     });
 }
 
-function deleteTodoContent(todo_content_Id, callback, errorCallback) {
+function deleteTodoContent(todo_content_Id, memberId, callback, errorCallback) {
   axiosServiceWithAuth
-    .delete('/todo_content', { params: { id: todo_content_Id } })
+    .delete('/todo_content', { params: { id: todo_content_Id, memberId: memberId } })
     .then((res) => {
       callback(res.data);
     })
