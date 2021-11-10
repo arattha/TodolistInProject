@@ -124,7 +124,6 @@
                     rounded-lg
                     focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
                   "
-                  placeholder="팀 이름을 적어주세요."
                   v-model="endDate"
                   @input="inputEndDate"
                   type="date"
