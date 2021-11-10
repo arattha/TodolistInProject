@@ -7,7 +7,6 @@ import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
 import com.web.tip.member.request.UpdatePasswordRequest;
 import com.web.tip.member.security.Authority;
-import com.web.tip.mypage.MemberDetail;
 import com.web.tip.mypage.MemberDetailService;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
@@ -16,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +95,10 @@ public class MemberService {
 
             long diffTime = tokenDto.getRefreshTokenExpiresIn() - (new Date()).getTime();
             redisTemplate.expire(key, diffTime, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        } catch (RuntimeException e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
