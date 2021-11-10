@@ -107,7 +107,7 @@
               focus:ring-offset-red-200
               mr-10
             "
-            @click="closeModal"
+            @click="closeModal()"
           >
             닫기
           </button>
@@ -200,11 +200,12 @@ export default {
         { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
         (res) => {
           console.log(res);
-          alert('추가완료');
+          this.closeModal();
         },
         (error) => {
           console.error(error);
           alert('문제가 발생했습니다');
+          this.closeModal();
         }
       );
     },

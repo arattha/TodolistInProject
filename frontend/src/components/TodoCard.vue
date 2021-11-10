@@ -23,7 +23,7 @@
         <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
       </div>
       <div class="flex justify-center items-center">
-        <div id="bookmark" class="mr-5 z-50">
+        <div id="bookmark" class="mr-5 z-30">
           <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.isBookmark"></i>
           <i class="bookmark fas fa-star text-white" v-else></i>
         </div>
@@ -55,7 +55,7 @@
           focus:ring-headerGray
           focus:ring-offset-2
           focus:ring-offset-purple-200
-          z-50
+          z-30
         "
       >
         보내기
@@ -92,7 +92,7 @@ export default {
       console.log('보내기');
     },
     bookmark() {
-      if(!this.todoInfo.bookmark){
+      if(!this.todoInfo.isBookmark){
         addBookmark(
           {
             memberId : this.id, 

@@ -185,7 +185,7 @@
 
 <script>
 import TodoStatus from '@/components/TodoStatus.vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
@@ -227,6 +227,7 @@ export default {
     this.connect();
   },
   methods: {
+    ...mapActions(['toggle_reload_todo_detail']),
     connect() {
       const serverURL = 'http://localhost:8082/socket/todo';
       let socket = new SockJS(serverURL);
@@ -299,14 +300,14 @@ export default {
       this.isShow = true;
     },
     closeModal() {
-      this.isShow = false;
-      if (this.curPage == 0) {
-        this.$router.replace(`/${this.$route.params.todoId}/detail`);
-      } else if (this.curPage == 1) {
-        this.$router.replace(`/${this.$route.params.todoId}/detail/url`);
-      } else if (this.curPage == 2) {
-        this.$router.replace(`/${this.$route.params.todoId}/detail/history`);
+      if (this.curPage !== 0) {
+        this.goDetail();
+      } else {
+        // this.$router.go(`/${this.$route.params.todoId}/detail`);
+        this.toggle_reload_todo_detail(true);
       }
+
+      this.isShow = false;
     },
   },
 };
