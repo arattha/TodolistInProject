@@ -174,5 +174,26 @@ export default {
       };
     },
   },
+  watch: {
+    teamInfo: {
+      immediate: true,
+      handler(teamInfo) {
+        teamInfo.totalCnt = teamInfo.todoInfoList.length;
+        teamInfo.addCnt = 0;
+        teamInfo.doneCnt = 0;
+        teamInfo.progressCnt = 0;
+
+        teamInfo.todoInfoList.forEach((todo) => {
+          if (todo.status === '접수') {
+            teamInfo.addCnt++;
+          } else if (todo.status === '진행') {
+            teamInfo.progressCnt++;
+          } else if (todo.status === '완료') {
+            teamInfo.doneCnt++;
+          }
+        });
+      },
+    },
+  },
 };
 </script>
