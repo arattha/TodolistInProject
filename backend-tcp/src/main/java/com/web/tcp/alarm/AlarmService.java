@@ -1,5 +1,6 @@
 package com.web.tcp.alarm;
 
+import com.web.tcp.bookmark.Bookmark;
 import com.web.tcp.bookmark.BookmarkDao;
 import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
@@ -74,7 +75,7 @@ public class AlarmService {
     }
 
     @Transactional
-    public List<Member> addAlarm(String content, String todoId) {
+    public List<String> addAlarm(String content, String todoId) {
 
         IdGenerator idGenerator = new IdGenerator();
         String aid = idGenerator.generateId();
@@ -89,12 +90,11 @@ public class AlarmService {
 
             boolean isInclude = false;      // memberList에 manageMemberId가 포함되어 있는지 확인할 변수
 
-            List<Member> memberList = bookmarkDao.findMemberByTodoIdAndIsUseIsTrue(todoId);
-            AlarmController alarmController = null;
+            List<Bookmark> memberList = bookmarkDao.findBookmarkByTodoIdAndIsUseIsTrue(todoId);
+            List<String> memberIdList = new ArrayList<>();
+            memberList.forEach(v -> memberIdList.add(v.getMemberId()));
 
-            for (Member member : memberList) {
-
-                String memberId = member.getId();
+            for (String memberId : memberIdList) {
 
                 if(memberId.equals(manageMember.getId())) isInclude = true;
 
@@ -127,10 +127,10 @@ public class AlarmService {
 
                 alarmDao.save(alarm);
 
-                memberList.add(manageMember);
+                memberIdList.add(manageMember.getId());
             }
 
-            return memberList;
+            return memberIdList;
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface BookmarkDao extends JpaRepository<Bookmark, String> {
 
-    List<Member> findMemberByTodoIdAndIsUseIsTrue(String memberId);
+    List<Bookmark> findBookmarkByTodoIdAndIsUseIsTrue(String memberId);
 }
