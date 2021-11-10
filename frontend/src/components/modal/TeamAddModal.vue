@@ -11,7 +11,7 @@
       bottom-0
       w-screen
       h-screen
-      z-100
+      z-50
       bg-buttonGray bg-opacity-75
     "
   >
@@ -74,7 +74,7 @@
                 />
 
                 <p class="text-red-500 font-black text-xs mt-2" v-if="!isValid">
-                  팀 이름을 입력해주세요.
+                  팀 이름이 중복이거나 비어있습니다.
                 </p>
               </div>
             </div>
@@ -139,6 +139,7 @@
                         checked:bg-blue-600 checked:border-transparent
                         focus:outline-none
                       "
+                      @change="testMember($event)"
                     />
                     <div class="flex justify-center items-center w-8/12">{{ member.email }}</div>
                     <div class="flex justify-center items-center w-3/12">{{ member.name }}</div>
@@ -200,6 +201,9 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
+import { getAllMembers } from '@/api/auth.js';
+import { getProjectMembers, createTeam, teamNameCheck } from '@/api/team.js';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'TEADADDMODAL',
@@ -210,6 +214,7 @@ export default {
       teamName: '',
       searchName: '',
       memberList: [],
+      projectMembers: [],
       checkedMember: [],
       isValid: false,
     };
@@ -218,70 +223,50 @@ export default {
     clickOutside: vClickOutside.directive,
   },
   created() {
-    this.memberList = [
-      {
-        id: 'cyi',
-        email: 'cyi@naver.com',
-        name: '조용일',
-      },
-      {
-        id: 'cjo',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-      {
-        id: 'cyi1',
-        email: 'cyi@naver.com',
-        name: '조용일',
-      },
-      {
-        id: 'cjo1',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj1',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp1',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-      {
-        id: 'cyi2',
-        email: 'cyi@naver.com',
-        name: '조용일',
-      },
-      {
-        id: 'cjo2',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj2',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp2',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-    ];
+    this.getMemberList();
+    this.getCheckedMembers();
   },
   methods: {
+    testMember(e){
+      if(e.target.checked){
+        let clickedMember = e.target._value;
+        let flag = false;
+
+        this.projectMembers.forEach(members => {
+          if(members.memberId == clickedMember.id){
+            flag = true;
+          }
+        });
+        
+        if(flag){
+          if(!confirm(clickedMember.name + "님 은(는) 이미 다른 팀에 속해 있습니다. 진행할까요?")){
+            this.checkedMember.pop();
+            e.target.checked = false;
+          }
+        }
+      }
+    },
+    getMemberList(){
+      getAllMembers(
+        (res) => {
+          this.memberList = res.object;
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+    },
+    getCheckedMembers(){
+      getProjectMembers(
+        this.projectId,
+        (res) => {
+          this.projectMembers = res.object;
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+    },
     onClickOutside() {
       this.closeModal();
     },
@@ -296,18 +281,53 @@ export default {
         this.isValid = false;
         return;
       }
-
-      this.isValid = true;
+      teamNameCheck(
+        {
+          projectId : this.projectId,
+          teamName : this.teamName,
+        },
+        (res) => {
+          console.log(res);
+          if(res.status){
+            this.isValid = true;
+          } else {
+            this.isValid = false;
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
     },
     teamAdd() {
       // 팀 이름 입력이 필수!
       if (!this.isValid) {
         return;
       }
-      console.log(this.teamName, this.checkedMember);
+
+      let mlist = [];
+      this.checkedMember.forEach(member => {
+        mlist.push(member.id);
+      })
+      
+      createTeam(
+        {
+          projectId: this.projectId,
+          teamName: this.teamName,
+          memberList: mlist
+        },
+        (res) => {
+          console.log("성공",res);
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+      this.closeModal();
     },
   },
   computed: {
+    ...mapGetters(['projectId']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);

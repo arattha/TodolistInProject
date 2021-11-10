@@ -55,7 +55,7 @@ public class TeamController {
     @GetMapping("/members")
     @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
     public Object getProjectMembers(@RequestParam String projectId) {
-        log.info("팀 리스트 목록 반환");
+        log.info("프로젝트 내 멤버리스트 반환");
 
         List<MemberHasTeamDto> teamList = (List<MemberHasTeamDto>) teamService.getAllMembers(projectId);
         BasicResponse result = new BasicResponse();
@@ -74,6 +74,31 @@ public class TeamController {
             result.object = null;
 
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/ncheck")
+    @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
+    public Object teamNameCheck(@RequestParam String projectId, @RequestParam String teamName) {
+        log.info("프로젝트 내 이름 중복 체크");
+
+        boolean check = teamService.teamNameCheck(projectId,teamName);
+        BasicResponse result = new BasicResponse();
+
+        if (check) {
+
+            result.status = true;
+            result.data = "success";
+            result.object = null;
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } else {
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
     }
 

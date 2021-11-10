@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -59,6 +60,15 @@ public class TeamService {
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new JpaException(JpaErrorCode.SAVE_TEAM_ERROR);
+        }
+    }
+
+    @Transactional
+    public boolean teamNameCheck(String projectId, String teamName){//이미 팀체크가 끝난상태라 가정
+        if(teamDao.findTeamByProjectIdAndName(projectId,teamName).isPresent()){
+            return false;
+        } else {
+            return true;
         }
     }
 
