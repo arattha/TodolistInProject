@@ -1,5 +1,5 @@
 const state = {
-    totalAlarmCnt: 0,
+    totalAlarmCnt: '',
     curPage: 0,
     offset: 0,
     isDel: false,

@@ -67,8 +67,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
 
 export default {
   name: 'Header',
@@ -76,47 +74,22 @@ export default {
     return {
       showAlert: false,
       alarmList: [],
-      cnt: 0,
+      cnt: '',
     };
   },
   components: {},
-  created() {
-    this.connect();
+  created(){
+    if (this.totalAlarmCnt > 9) this.cnt = '9+';
+    else if (this.totalAlarmCnt == 0) this.cnt = '';
+    else this.cnt = this.totalAlarmCnt;
   },
   methods: {
-    connect() {
-      const serverURL = 'http://localhost:8082/socket/alarm';
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect({}, () => {
-        // 소켓 연결 성공
-        this.connected = true;
-        this.stompClient.debug = () => {};
-        this.stompClient.send(
-          '/server/getAlarm',
-          JSON.stringify({
-            memberId: this.id,
-          }),
-          {}
-        );
-
-        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
-          this.alarmList = JSON.parse(res.body);
-
-          var alarmCnt = this.alarmList.length;
-          if (alarmCnt > 9) this.cnt = '9+';
-          else if (alarmCnt == 0) this.cnt = '';
-          else this.cnt = alarmCnt;
-        });
-      });
-    },
     goMain() {
       this.$router.push('/');
     },
     goAlarm() {
       this.$router.push({
         name: 'Alarm',
-        params: { alarmList: this.alarmList, alarmStomp: this.stompClient },
       });
     },
     goProfile() {
@@ -124,7 +97,14 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['projectName', 'id']),
+    ...mapGetters(['projectName', 'id', 'totalAlarmCnt']),
   },
+  watch:{
+    totalAlarmCnt(){
+      if (this.totalAlarmCnt > 9) this.cnt = '9+';
+      else if (this.totalAlarmCnt == 0) this.cnt = '';
+      else this.cnt = this.totalAlarmCnt;
+    }
+  }
 };
 </script>

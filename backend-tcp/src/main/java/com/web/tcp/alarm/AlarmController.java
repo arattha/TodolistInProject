@@ -39,10 +39,10 @@ public class AlarmController {
     // todoId와 관련된 사용자에게 알람 보내기
     public void spreadAlarm(String content, String todoId){
 
-        List<Member> memberList = alarmService.addAlarm(content, todoId);
+        List<String> memberList = alarmService.addAlarm(content, todoId);
 
-        for(Member member : memberList){
-            template.convertAndSend("/client/alarm/" + member.getId(), alarmService.getAlarmList(member.getId()));
+        for(String memberId : memberList){
+            template.convertAndSend("/client/alarm/" + memberId, alarmService.getAlarmList(memberId));
         }
     }
 
