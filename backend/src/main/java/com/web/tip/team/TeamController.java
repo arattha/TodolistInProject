@@ -1,6 +1,7 @@
 package com.web.tip.team;
 
 import com.web.tip.BasicResponse;
+import com.web.tip.common.MemberHasTeamDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -31,7 +32,7 @@ public class TeamController {
     public Object getProjectTeam(@RequestParam String projectId){
         log.info("팀 리스트 목록 반환");
 
-        List<Team> teamList = (List<Team>) teamService.getAllTeam(projectId);
+        List<TeamDto> teamList = (List<TeamDto>) teamService.getAllTeam(projectId);
         BasicResponse result = new BasicResponse();
 
         if(teamList != null){
@@ -49,8 +50,31 @@ public class TeamController {
 
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
+    }
 
+    @GetMapping("/members")
+    @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
+    public Object getProjectMembers(@RequestParam String projectId) {
+        log.info("팀 리스트 목록 반환");
 
+        List<MemberHasTeamDto> teamList = (List<MemberHasTeamDto>) teamService.getAllMembers(projectId);
+        BasicResponse result = new BasicResponse();
+
+        if (!teamList.isEmpty()) {
+
+            result.status = true;
+            result.data = "success";
+            result.object = teamList;
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } else {
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
@@ -116,7 +140,7 @@ public class TeamController {
 
     @DeleteMapping
     @ApiOperation(value = "프로젝트 내 팀 삭제")
-    public Object deleteProjectTeam(@RequestBody String teamId){
+    public Object deleteProjectTeam(@RequestParam String teamId){
         log.info("팀 삭제");
 
         boolean flag = teamService.deleteProjectTeam(teamId);

@@ -2,6 +2,7 @@ package com.web.tip.team;
 
 import com.web.tip.common.MemberHasTeam;
 import com.web.tip.common.MemberHasTeamDao;
+import com.web.tip.common.MemberHasTeamDto;
 import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.error.JpaErrorCode;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,9 +31,35 @@ public class TeamService {
 
     @Transactional
     public Object getAllTeam(String projectId){
+
         List<TeamDto> result = new ArrayList<>();
-        teamDao.findTeamByProjectId(projectId).forEach(v -> result.add(TeamAdaptor.entityToDto(v)));
+        teamDao.findTeamByProjectIdAndIsUse(projectId,true).forEach(v -> result.add(TeamAdaptor.entityToDto(v)));
+
         return result;
+    }
+
+    @Transactional
+    public Object getAllMembers(String projectId){//이미 팀체크가 끝난상태라 가정
+        try {
+            List<Team> teamList = teamDao.findTeamByProjectIdAndIsUse(projectId,true);//팀 리스트
+
+            ArrayList<String> teamIdList = new ArrayList<>();
+            teamList.forEach(v -> teamIdList.add(v.getId()));
+            List<MemberHasTeam> byTeamIdIn = memberHasTeamDao.findByTeamIdInAndIsUse(teamIdList, true);//프로젝트 내부의 사람들
+
+            if(byTeamIdIn.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            List<MemberHasTeamDto> result = new ArrayList<>();
+            byTeamIdIn.forEach(v -> result.add(MemberHasTeamDto.entityToDto(v)));
+
+            return result;
+
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new JpaException(JpaErrorCode.SAVE_TEAM_ERROR);
+        }
     }
 
     @Transactional
@@ -48,17 +76,18 @@ public class TeamService {
             teamDao.save(new Team(teamId,newRequestTeam.getTeamName(),projectId,true)); //새 팀 생성
 
             List<String> teamMembers = newRequestTeam.getMemberList();
-            List<Team> teamList = teamDao.findTeamByProjectId(projectId);//팀 리스트
+            List<Team> teamList = teamDao.findTeamByProjectIdAndIsUse(projectId,true);//팀 리스트
 
             ArrayList<String> teamIdList = new ArrayList<>();
             teamList.forEach(v -> teamIdList.add(v.getId()));
-            List<MemberHasTeam> byTeamIdIn = memberHasTeamDao.findByTeamIdIn(teamIdList);//프로젝트 내부의 사람들
+            List<MemberHasTeam> byTeamIdIn = memberHasTeamDao.findByTeamIdInAndIsUse(teamIdList, true);//프로젝트 내부의 사람들
 
             for ( String m : teamMembers) {
-                MemberHasTeam mt = new MemberHasTeam(m,teamId);
+                MemberHasTeam mt = new MemberHasTeam(m,teamId,true);
                 for ( MemberHasTeam t : byTeamIdIn){
                     if(t.getMemberId().equals(m)){
-                        memberHasTeamDao.delete(t);
+                        t.setUse(false);
+                        memberHasTeamDao.save(t);
                         break;
                     }
                 }
@@ -78,20 +107,21 @@ public class TeamService {
         String teamId = modificationTeamRequest.getTeamId();
 
         try {
-            Team team = teamDao.findById(teamId).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+            Team team = teamDao.findTeamById(teamId).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
             List<String> teamMembers = modificationTeamRequest.getMemberList();
-            List<Team> teamList = teamDao.findTeamByProjectId(team.getProjectId());//팀 리스트
+            List<Team> teamList = teamDao.findTeamByProjectIdAndIsUse(team.getProjectId(),true);//팀 리스트
 
             ArrayList<String> teamIdList = new ArrayList<>();
             teamList.forEach(v -> teamIdList.add(v.getId()));
-            List<MemberHasTeam> byTeamIdIn = memberHasTeamDao.findByTeamIdIn(teamIdList);//프로젝트 내부의 사람들
+            List<MemberHasTeam> byTeamIdIn = memberHasTeamDao.findByTeamIdInAndIsUse(teamIdList, true);//프로젝트 내부의 사람들
 
             for ( String m : teamMembers) {
-                MemberHasTeam mt = new MemberHasTeam(m,teamId);
+                MemberHasTeam mt = new MemberHasTeam(m,teamId, true);
                 for ( MemberHasTeam t : byTeamIdIn){
                     if(t.getMemberId().equals(m)){
-                        memberHasTeamDao.delete(t); //기존것 삭제
+                        t.setUse(false);
+                        memberHasTeamDao.save(t); //기존것 삭제
                         break;
                     }
                 }
@@ -114,7 +144,7 @@ public class TeamService {
         try {
             Team team = teamDao.findById(teamId).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
             team.changeName(teamDto.getName());
-            teamDao.save(team); //삭제
+            teamDao.save(team);
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new JpaException(JpaErrorCode.SAVE_TEAM_ERROR);
@@ -129,7 +159,7 @@ public class TeamService {
         try {
             Team team = teamDao.findById(teamId).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
             team.deleteTeam();
-            teamDao.save(team); //삭제
+            teamDao.save(team);
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new JpaException(JpaErrorCode.SAVE_TEAM_ERROR);

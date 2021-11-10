@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamDao extends JpaRepository<Team, String> {
-    List<Team> findTeamByProjectId(String ProjectId);
+    List<Team> findTeamByProjectIdAndIsUse(String ProjectId,boolean isUse);
     Optional<Team> findTeamById(String id);
 }

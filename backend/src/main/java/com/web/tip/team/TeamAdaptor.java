@@ -11,17 +11,6 @@ public class TeamAdaptor {
                 .id(team.getId())
                 .name(team.getName())
                 .projectId(team.getProjectId())
-                .isUse(team.isUse())
-                .build();
-    }
-
-    public static Team dtoToEntity(TeamDto teamDto){
-
-        return Team.builder()
-                .id(teamDto.getId())
-                .name(teamDto.getName())
-                .projectId(teamDto.getProjectId())
-                .isUse(teamDto.isUse())
                 .build();
     }
 }

@@ -50,7 +50,7 @@ public class TodoTest {
                 .get();
         Project project = projectDao.findProjectByName("test_project")
                 .get();
-        Team team = teamDao.findTeamByProjectId(project.getId())
+        Team team = teamDao.findTeamByProjectIdAndIsUse(project.getId(),true)
                 .get(0);
 
         Todo todo = Todo.builder()
