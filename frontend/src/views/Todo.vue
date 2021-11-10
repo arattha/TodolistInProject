@@ -90,7 +90,7 @@ export default {
     },
     goMyTodo() {
       this.pageType = 'my';
-      this.$router.push('/projects/' + this.projectId + '/my');
+      this.$router.push('/projects/' + this.projectId + '/todos/my');
     },
     goTodoProgress() {
       this.pageType = 'progress';
