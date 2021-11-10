@@ -147,6 +147,19 @@ public class MemberController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping()
+    public Object getAllMembers() {
+        log.info("모든 멤버 반환");
+
+        BasicResponse result = new BasicResponse();
+
+        result.status = true;
+        result.data = SUCCESS;
+        result.object = memberService.getAllMembers();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     private String getAccessTokenToCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

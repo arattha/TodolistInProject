@@ -17,4 +17,6 @@ public class MemberHasTeam {
     @Id
     private String teamId;
 
+    private boolean isUse;
+
 }

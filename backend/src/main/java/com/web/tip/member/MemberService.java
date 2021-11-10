@@ -6,7 +6,10 @@ import com.web.tip.error.ErrorCode;
 import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
 import com.web.tip.member.request.UpdatePasswordRequest;
+import com.web.tip.member.response.MemberResponse;
 import com.web.tip.member.security.Authority;
+import com.web.tip.mypage.MemberDetail;
+import com.web.tip.mypage.MemberDetailDto;
 import com.web.tip.mypage.MemberDetailService;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;
@@ -20,8 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -213,6 +215,18 @@ public class MemberService {
         memberDao.save(changedMember);
     }
 
+    @Transactional
+    public Object getAllMembers() {
+
+        List<Member> memberList = memberDao.findAll();
+        if (memberList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<MemberResponse> result = new ArrayList<>();
+        memberList.forEach(v -> result.add(new MemberResponse(v.getId(), v.getName(), MemberDetailDto.entityToDto(v.getMemberDetail()))));
+
+        return result;
+    }
 
     @Transactional
     public boolean existsUserCheck(String nickname) {
@@ -229,4 +243,6 @@ public class MemberService {
         return memberDao.findMemberById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
+
+
 }
