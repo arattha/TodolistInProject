@@ -94,7 +94,6 @@ export default {
   },
   created() {
     this.teamId = this.teamInfo.teamId;
-    console.log(this.teamInfo);
   },
   methods: {
     todoAdd() {

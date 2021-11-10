@@ -5,7 +5,7 @@ import header from './header';
 import user from './user';
 import todo from './todo';
 import page from './page';
-import alarm from './alarm';
+import stomp from './stomp';
 
 Vue.use(Vuex);
 
@@ -15,11 +15,11 @@ export default new Vuex.Store({
     header,
     todo,
     page,
-    alarm,
+    stomp,
   },
   plugins: [
     createPersistedState({
-      paths: ['header', 'user', 'todo', 'page', 'alarm'],
+      paths: ['header', 'user', 'todo', 'page', 'stomp'],
     }),
   ],
 });

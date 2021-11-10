@@ -23,14 +23,14 @@ export default {
     ...mapGetters(['id'])
   },
   methods:{
-    ...mapActions(['set_totalAlarmCnt', 'set_alarmStomp']),
+    ...mapActions(['set_totalAlarmCnt', 'set_stomp']),
     connect() {
-      const serverURL = 'http://localhost:8082/socket/alarm';
+      const serverURL = 'http://localhost:8082/socket';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
 
-        this.set_alarmStomp(this.stompClient);
+        this.set_stomp(this.stompClient);
 
         // 소켓 연결 성공
         this.connected = true;
@@ -51,7 +51,7 @@ export default {
     },
   },
   beforeDestroy(){
-    this.set_alarmStomp(null);
+    this.set_stomp(null);
     this.stompClient.disconnect();
   }
 };

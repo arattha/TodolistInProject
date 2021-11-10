@@ -237,7 +237,7 @@ export default {
   methods: {
     ...mapActions(['toggle_reload_todo_detail']),
     connect() {
-      const serverURL = 'http://localhost:8082/socket/todo';
+      const serverURL = 'http://localhost:8082/socket';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect(

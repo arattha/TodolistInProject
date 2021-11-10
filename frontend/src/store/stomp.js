@@ -1,22 +1,22 @@
 const state = {
-    alarmStomp: '',
+    stomp: '',
   };
   
   const getters = {
-    alarmStomp(state) {
-      return state.alarmStomp;
+    stomp(state) {
+      return state.stomp;
     },
   };
   
   const mutations = {
-    SET_ALARMSTOMP(state, payload) {
-      state.alarmStomp = payload;
+    SET_STOMP(state, payload) {
+      state.stomp = payload;
     },
   };
   
   const actions = {
-    set_alarmStomp(context, data) {
-      context.commit('SET_ALARMSTOMP', data);
+    set_stomp(context, data) {
+      context.commit('SET_STOMP', data);
     },
   };
   

@@ -57,7 +57,7 @@ export default {
     this.getAlarm();
   },
   computed: {
-    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt', 'alarmStomp']),
+    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt', 'stomp']),
   },
   methods: {
     ...mapActions([
@@ -141,7 +141,7 @@ export default {
       this.$router.push('/' + todoId + '/detail');
     },
     getRealtimeAlarm() {
-      this.alarmStomp.send(
+      this.stomp.send(
         '/server/getAlarm',
         JSON.stringify({
           memberId: this.id,
