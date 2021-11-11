@@ -1,5 +1,18 @@
 <template>
-  <div class="flex flex-col flex-shrink-0 pb-3 mr-4 bg-itemGray w-80 rounded-md h-full">
+  <div
+    class="
+      flex flex-col
+      xl:flex-shrink
+      flex-shrink-0
+      pb-3
+      mr-4
+      bg-itemGray
+      w-80
+      xl:w-1/5
+      rounded-md
+      h-full
+    "
+  >
     <div class="flex flex-col px-5 py-2 mt-3 w-full">
       <div class="flex h-10 w-30 pb-2 text-xl font-black">
         {{ status }}
