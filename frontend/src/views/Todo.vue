@@ -39,7 +39,7 @@
       >
         내 할일
       </div>
-      <div
+      <!-- <div
         class="
           flex
           justify-center
@@ -55,7 +55,7 @@
         @click="goTodoProgress()"
       >
         진행 상황
-      </div>
+      </div> -->
     </div>
     <router-view class="flex overflow-auto" />
   </div>
