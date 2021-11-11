@@ -17,6 +17,7 @@ public class TodoAdaptor {
 
     public static Todo dtoToEntity(TodoDto todoDto){
         return Todo.builder()
+                .id(todoDto.getId())
                 .title(todoDto.getTitle())
                 .status(todoDto.getStatus())
                 .projectId(todoDto.getProjectId())
