@@ -106,6 +106,7 @@ export default {
   data() {
     return {
       teamInfoList: [],
+      bookmarkList:[],
       todoList: [],
       teamList: [],
       isShow: false,
@@ -115,7 +116,9 @@ export default {
     };
   },
 
-  created() {
+  async created() {
+    await this.getBookmarkList();
+    this.getTeamList();
     this.isShow = false;
     this.set_project_id(this.projectId);
     this.connect();
@@ -150,7 +153,7 @@ export default {
           // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
         this.todoList = JSON.parse(res.body);
-        this.getTeamList();
+        this.updateList();
       });
     },
     getTeamList() {
@@ -174,6 +177,7 @@ export default {
               todoInfoList: [],
             });
           });
+
           this.updateList();
         },
         () => {
@@ -184,6 +188,12 @@ export default {
     updateList() {
       for (var i = 0; i < this.todoList.length; i++) {
         var teamId = this.todoList[i].teamId;
+
+        if(this.bookmarkList.indexOf(this.todoList[i].id) > -1){
+          this.todoList[i].isBookmark = true;
+        } else {
+          this.todoList[i].isBookmark = false;
+        }
 
         for (var j = 0; j < this.teamInfoList.length; j++) {
           if (this.teamInfoList[j].teamId == teamId) {
@@ -197,17 +207,17 @@ export default {
               memberName: this.todoList[i].memberName,
               modifyDate: this.todoList[i].modifyDate,
               regDate: this.todoList[i].regDate,
-              isBookmark: false,
+              isBookmark: this.todoList[i].isBookmark,
             });
 
             break;
           }
         }
       }
-      this.getBookmarkList();
     },
     async getBookmarkList() {
-      let tmp = [];
+      
+      this.bookmarkList = [];
       await getBookmark(
         {
           projectId: this.projectId,
@@ -215,7 +225,7 @@ export default {
         },
         (res) => {
           res.object.forEach((bookmark) => {
-            tmp.push(bookmark.todoId);
+            this.bookmarkList.push(bookmark.todoId);
           });
         },
         (error) => {
@@ -223,13 +233,7 @@ export default {
           console.log(error);
         }
       );
-      for (var i = 0; i < this.teamInfoList.length; i++) {
-        for (var j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
-          if (tmp.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1) {
-            this.teamInfoList[i].todoInfoList[j].isBookmark = true;
-          }
-        }
-      }
+      
     },
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;

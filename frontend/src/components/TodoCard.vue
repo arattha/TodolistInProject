@@ -67,7 +67,7 @@
         </button>
       </div>
     </div>
-    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoInfo.id" />
+    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfo" />
   </div>
 </template>
 
