@@ -104,7 +104,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'Project') {
     store.dispatch('set_project_name', '');
     next();
-  } else if (to.name !== 'Login') {
+  } else if (to.name !== 'Login' && to.name !== 'Signup') {
     if (store.getters.id) {
       await reissuUser(
         store.getters.id,
