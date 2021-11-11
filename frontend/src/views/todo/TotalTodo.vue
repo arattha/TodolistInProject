@@ -197,6 +197,7 @@ export default {
 
         for (var j = 0; j < this.teamInfoList.length; j++) {
           if (this.teamInfoList[j].teamId == teamId) {
+            
             this.teamInfoList[j].todoInfoList.push({
               id: this.todoList[i].id,
               title: this.todoList[i].title,
