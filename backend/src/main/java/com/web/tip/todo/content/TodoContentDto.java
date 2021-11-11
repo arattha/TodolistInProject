@@ -19,7 +19,7 @@ public class TodoContentDto {
 
     private String writer;
 
-    private String profileImg;
+    private String writerId;
 
     private LocalDateTime regDate;
 
@@ -28,7 +28,7 @@ public class TodoContentDto {
                 .id(todoContent.getId())
                 .contents(todoContent.getContents())
                 .writer(todoContent.getMember().getName())
-                .profileImg(todoContent.getMember().getMemberDetail().getProfileImg())
+                .writerId(todoContent.getMember().getId())
                 .regDate(todoContent.getRegDate())
                 .build();
     }

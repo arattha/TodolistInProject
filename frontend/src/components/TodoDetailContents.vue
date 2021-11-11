@@ -2,6 +2,9 @@
   <div class="flex flex-col w-11/12 h-52 bg-contentGray rounded-lg my-3 px-8 py-3 shadow-lg">
     <div class="flex justify-between w-full">
       <div class="flex">
+        <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
+          <img :src="'http://localhost:8080/img/' + detail.writerId" />
+        </div>
         <div class="flex items-end font-black text-2xl">{{ detail.name }}</div>
         <div class="flex ml-5 text-xs items-end pb-1">{{ detail.regDate }}</div>
       </div>

@@ -57,7 +57,7 @@ export default {
               name: item['writer'],
               content: item['contents'],
               regDate: formatDate(item['regDate']),
-              profileImg: item['profileImg'],
+              writerId: item['writerId'],
             };
             this.detailList.push(temp);
           }
