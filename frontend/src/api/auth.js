@@ -1,4 +1,4 @@
-import { axiosService , axiosServiceWithAuth} from '@/api/index.js';
+import { axiosService, axiosServiceWithAuth } from '@/api/index.js';
 
 async function nicknameCheck(userData, callback, errorCallback) {
   await axiosService
@@ -66,4 +66,23 @@ async function getAllMembers(callback, errorCallback) {
     });
 }
 
-export { loginUser, logoutUser, signUpUser, nicknameCheck, reissuUser, getAllMembers };
+function getMembersByTeam(teamId, callback, errorCallback) {
+  axiosServiceWithAuth
+    .get('/member/' + teamId)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export {
+  loginUser,
+  logoutUser,
+  signUpUser,
+  nicknameCheck,
+  reissuUser,
+  getAllMembers,
+  getMembersByTeam,
+};

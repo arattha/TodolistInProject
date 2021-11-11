@@ -160,6 +160,19 @@ public class MemberController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/{teamId}")
+    public Object getMembersByTeam(@PathVariable("teamId") String teamId){
+        log.info("모든 팀 멤버 반환");
+
+        BasicResponse result = new BasicResponse();
+
+        result.status = true;
+        result.data = SUCCESS;
+        result.object = memberService.getMembersByTeam(teamId);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     private String getAccessTokenToCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

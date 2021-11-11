@@ -43,6 +43,8 @@ public class TodoService {
             }
 
             todoDto.setId(tid);
+            todoDto.setRegDate(LocalDateTime.now());
+            todoDto.setModifyDate(LocalDateTime.now());
             Todo todo = TodoAdaptor.dtoToEntity(todoDto);
 
             todoDao.save(todo);
@@ -275,11 +277,13 @@ public class TodoService {
 
         Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
         TodoDto todoDto = TodoAdaptor.entityToDto(todo);
-
-        Member member = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        todoDto.setMemberName("담당자 없음");
+        if(Optional.ofNullable(todo.getMemberId()).isPresent()) {
+            Member member = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            todoDto.setMemberName(member.getName());
+        }
         Team team = teamDao.findTeamById(todoDto.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        todoDto.setMemberName(member.getName());
         todoDto.setTeamName(team.getName());
 
         return todoDto;

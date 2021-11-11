@@ -2,7 +2,10 @@
   <div class="flex w-96">
     <div class="flex flex-col bg-itemGray rounded-lg shadow-lg w-full h-full">
       <div class="flex justify-between items-center px-5 py-2 my-3">
-        <div class="flex border-b-2 w-24 pb-2 border-black text-xl font-black">
+        <div
+          class="flex border-b-2 w-24 pb-2 border-black text-xl font-black cursor-pointer"
+          @click="goTeamTodo"
+        >
           {{ teamInfo.teamName }}
         </div>
         <button
@@ -67,7 +70,7 @@
         </draggable>
       </div>
     </div>
-    <Todo-Add-Modal v-if="isShow" @closeModal="closeModal" />
+    <Todo-Add-Modal v-if="isShow" :teamId="teamInfo.teamId" @closeModal="closeModal" />
   </div>
 </template>
 
@@ -76,7 +79,6 @@ import TodoCard from '@/components/TodoCard.vue';
 import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 import { mapGetters } from 'vuex';
-
 export default {
   name: 'TOTALKANBAN',
   components: {
@@ -100,12 +102,7 @@ export default {
     todoAdd() {
       this.showModal();
     },
-    // draggable 관련 로그를 찍기위한 함수
-    // draggable 컴포넌트에 @change="log"를 추가해서 사용
-    // log(e) {
-    //   console.log(e);
-    //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
-    // },
+
     setTodoId(e) {
       // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
@@ -133,6 +130,10 @@ export default {
     },
     closeModal() {
       this.isShow = false;
+    },
+    goTeamTodo() {
+      const projectId = this.$route.params.projectId;
+      this.$router.push(`/projects/${projectId}/todos/team/${this.teamId}`);
     },
   },
   computed: {
