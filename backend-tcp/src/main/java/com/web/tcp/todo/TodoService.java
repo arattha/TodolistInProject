@@ -103,34 +103,6 @@ public class TodoService {
     }
 
     @Transactional
-    public Object getTodoList(String projectId,String memberId) {
-
-        List<TodoDto> todoDtoList = new ArrayList<>();
-        try{
-            TodoDto todoDto = null;
-
-            List<Todo> todoList = todoDao.findTodosByProjectIdAndMemberId(projectId,memberId);
-            for(Todo todo : todoList) {
-                Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-                Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-
-                todoDto = TodoAdaptor.entityToDto(todo);
-                todoDto.setMemberName(member.getName());
-                todoDto.setTeamName(team.getName());
-
-                todoDtoList.add(todoDto);
-            }
-
-        } catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-
-        return todoDtoList;
-    }
-
-
-    @Transactional
     public Todo getTodo(String todoTitle) {
 
         Todo todo = todoDao.findTodoByTitle(todoTitle).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
