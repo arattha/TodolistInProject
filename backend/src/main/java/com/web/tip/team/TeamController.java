@@ -78,7 +78,7 @@ public class TeamController {
     }
 
     @GetMapping("/ncheck")
-    @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
+    @ApiOperation(value = "프로젝트 내 이름 중복 체크")
     public Object teamNameCheck(@RequestParam String projectId, @RequestParam String teamName) {
         log.info("프로젝트 내 이름 중복 체크");
 

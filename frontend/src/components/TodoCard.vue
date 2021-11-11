@@ -29,8 +29,7 @@
         </div>
         <div class="flex justify-center items-center">
           <div id="bookmark" class="mr-5 z-30">
-            <i class="bookmark fas fa-star text-yellow-400" v-if="todoInfo.isBookmark"></i>
-            <i class="bookmark fas fa-star text-white" v-else></i>
+            <i class="bookmark fas fa-star" :class="{'text-yellow-400' : todoInfo.isBookmark , 'text-white' : !todoInfo.isBookmark}"></i>
           </div>
           <Todo-Status :status="todoInfo.status" :isDetail="false" />
         </div>
