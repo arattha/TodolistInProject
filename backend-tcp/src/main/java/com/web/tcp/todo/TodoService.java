@@ -80,6 +80,37 @@ public class TodoService {
 
             List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
             for(Todo todo : todoList) {
+                todoDto = TodoAdaptor.entityToDto(todo);
+
+                Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+                todoDto.setTeamName(team.getName());
+
+                todoDto.setMemberName("담당자 없음");
+                if(Optional.ofNullable(todo.getMemberId()).isPresent()){
+                    Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                    todoDto.setMemberName(member.getName());
+                }
+
+                todoDtoList.add(todoDto);
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return todoDtoList;
+    }
+
+    @Transactional
+    public Object getTodoList(String projectId,String memberId) {
+
+        List<TodoDto> todoDtoList = new ArrayList<>();
+        try{
+            TodoDto todoDto = null;
+
+            List<Todo> todoList = todoDao.findTodosByProjectIdAndMemberId(projectId,memberId);
+            for(Todo todo : todoList) {
                 Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
                 Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
@@ -97,6 +128,7 @@ public class TodoService {
 
         return todoDtoList;
     }
+
 
     @Transactional
     public Todo getTodo(String todoTitle) {
@@ -135,7 +167,7 @@ public class TodoService {
             diff.put("after", todoDto.getStatus());
             diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
-            todo.changeStatus(todoDto.getStatus());
+            todoTmp.changeStatus(todoDto.getStatus());
             todoTmp.changeModifyDate();
 
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());

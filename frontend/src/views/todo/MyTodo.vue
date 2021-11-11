@@ -65,7 +65,6 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        :class="[bookmarkFilter ? 'bg-menuGray' : 'bg-itemGray']"
         @click="activeBookmarkFilter()"
       >
         즐겨찾기
@@ -85,6 +84,8 @@
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'MYTODO',
   components: {
@@ -176,14 +177,39 @@ export default {
           isBookmark: false,
         },
       ],
+      todoList:[],
     };
   },
   created() {
     this.setStatusTodo();
+    this.stomp.send(
+      '/server/getTodo',
+      JSON.stringify({
+        projectId: this.projectId,
+      }),
+      {}
+    );
+
+    // subscribe 로 alarm List 가져오기
+    this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+      this.todoInfoList = JSON.parse(res.body);
+      this.setStatusTodo();
+    });
+
+  },
+  computed: {
+    ...mapGetters(['projectId','id','projectName','stomp']),
   },
   methods: {
     setStatusTodo() {
+      this.statusInfoList.newStatus.todoList = [];
+      this.statusInfoList.accepStatus.todoList = [];
+      this.statusInfoList.progressStatus.todoList = [];
+      this.statusInfoList.doneStatus.todoList = [];
+      this.statusInfoList.notProgressStatus.todoList = [];
+
       for (let i = 0; i < this.todoInfoList.length; ++i) {
+        if(this.todoInfoList[i].memberId != this.id) continue;
         if (this.todoInfoList[i].status === 'New') {
           this.statusInfoList.newStatus.todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '접수') {

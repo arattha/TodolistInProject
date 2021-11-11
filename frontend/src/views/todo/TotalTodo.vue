@@ -74,7 +74,7 @@
 
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamFilter" :key="index">
-        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" :bookmarkFilter="bookmarkFilter" />
+        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :bookmarkFilter="bookmarkFilter" />
       </div>
     </div>
     <TodoFilter
@@ -93,8 +93,6 @@ import TotalKanban from '@/components/TotalKanban.vue';
 import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
 import { getTeam } from '@/api/team.js';
 import { getBookmark } from '@/api/bookmark.js';
 
@@ -124,7 +122,7 @@ export default {
     this.set_project_name(this.projectName);
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName']),
+    ...mapGetters(['projectId','id','projectName','stomp']),
     teamFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -141,36 +139,19 @@ export default {
   methods: {
     ...mapActions(['set_project_name', 'set_project_id']),
     connect() {
-      const serverURL = 'http://localhost:8082/socket';
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect(
-        {},
-        () => {
-          // 소켓 연결 성공
-          this.connected = true;
-
-          this.stompClient.debug = () => {};
-
-          this.stompClient.send(
-            '/server/getTodo',
-            JSON.stringify({
-              projectId: this.projectId,
-            }),
-            {}
-          );
+      this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
 
           // subscribe 로 alarm List 가져오기
-          this.stompClient.subscribe('/client/todo/' + this.projectId, (res) => {
-            this.todoList = JSON.parse(res.body);
-            this.getTeamList();
-          });
-        },
-        (error) => {
-          // 소켓 연결 실패
-          console.log('소켓 연결 실패', error);
-        }
-      );
+      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.todoList = JSON.parse(res.body);
+        this.getTeamList();
+      });
     },
     getTeamList() {
       getTeam(

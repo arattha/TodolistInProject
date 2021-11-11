@@ -27,6 +27,7 @@
 <script>
 import draggable from 'vuedraggable';
 import TodoCard from '@/components/TodoCard.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'STATUSKANBAN',
@@ -44,22 +45,22 @@ export default {
       this.todoId = this.todoList[e.oldIndex];
     },
     updateTeam(e, status) {
-      // this.TodoStomp.send(
-      //   '/server/moveTodo/team',
-      //   JSON.stringify({
-      //     id: this.todoList[e.newIndex].id,
-      //     title: this.todoList[e.newIndex].title,
-      //     status: this.todoList[e.newIndex].status,
-      //     projectId: this.todoList[e.newIndex].projectId,
-      //     teamId: this.todoList[e.newIndex].teamId,
-      //     teamName: this.todoList[e.newIndex].teamName,
-      //     memberId: this.todoList[e.newIndex].memberId,
-      //     memberName: this.todoList[e.newIndex].memberName,
-      //     modifyDate: this.todoList[e.newIndex].modifyDate,
-      //     regDate: this.todoList[e.newIndex].regDate,
-      //   }),
-      //   {}
-      // );
+      this.stomp.send(
+        '/server/moveTodo/status',
+        JSON.stringify({
+          id: this.todoList[e.newIndex].id,
+          title: this.todoList[e.newIndex].title,
+          status: status,
+          projectId: this.todoList[e.newIndex].projectId,
+          teamId: this.todoList[e.newIndex].teamId,
+          teamName: this.todoList[e.newIndex].teamName,
+          memberId: this.todoList[e.newIndex].memberId,
+          memberName: this.todoList[e.newIndex].memberName,
+          modifyDate: this.todoList[e.newIndex].modifyDate,
+          regDate: this.todoList[e.newIndex].regDate,
+        }),
+        {}
+      );
 
       // 상태를 드래거블로 이동시 바꾸어주기 위한 메서드 MyTodo.vue 참고
       this.$emit('changeStatus', { index: e.newIndex, status: status });
@@ -67,6 +68,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['projectId','id','projectName','stomp']),
     dragOptions() {
       return {
         animation: 200,

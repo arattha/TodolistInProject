@@ -75,6 +75,7 @@
 import TodoCard from '@/components/TodoCard.vue';
 import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'TOTALKANBAN',
@@ -83,7 +84,7 @@ export default {
     TodoAddModal,
     draggable,
   },
-  props: ['teamInfo', 'TodoStomp', 'filters', 'bookmarkFilter'],
+  props: ['teamInfo', 'filters', 'bookmarkFilter'],
   data() {
     return {
       isShow: false,
@@ -110,7 +111,7 @@ export default {
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
     updateTeam(e) {
-      this.TodoStomp.send(
+      this.stomp.send(
         '/server/moveTodo/team',
         JSON.stringify({
           id: this.teamInfo.todoInfoList[e.newIndex].id,
@@ -135,6 +136,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['projectId','id','projectName','stomp']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;
