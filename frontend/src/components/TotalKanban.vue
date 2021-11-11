@@ -2,7 +2,10 @@
   <div class="flex w-96">
     <div class="flex flex-col bg-itemGray rounded-lg shadow-lg w-full h-full">
       <div class="flex justify-between items-center px-5 py-2 my-3">
-        <div class="flex border-b-2 w-24 pb-2 border-black text-xl font-black">
+        <div
+          class="flex border-b-2 w-24 pb-2 border-black text-xl font-black cursor-pointer"
+          @click="goTeamTodo"
+        >
           {{ teamInfo.teamName }}
         </div>
         <button
@@ -132,6 +135,10 @@ export default {
     },
     closeModal() {
       this.isShow = false;
+    },
+    goTeamTodo() {
+      const projectId = this.$route.params.projectId;
+      this.$router.push(`/projects/${projectId}/todos/team/${this.teamId}`);
     },
   },
   computed: {

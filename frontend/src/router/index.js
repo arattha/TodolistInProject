@@ -58,10 +58,15 @@ const routes = [
         component: () => import('@/views/todo/MyTodo.vue'),
       },
       {
-        path: 'progress',
-        name: 'TodoProgress',
-        component: () => import('@/views/todo/TodoProgress.vue'),
+        path: 'team/:teamId',
+        name: 'TeamTodo',
+        component: () => import('@/views/todo/TeamTodo.vue'),
       },
+      // {
+      //   path: 'progress',
+      //   name: 'TodoProgress',
+      //   component: () => import('@/views/todo/TodoProgress.vue'),
+      // },
       {
         path: '/:todoId/detail',
         component: () => import('@/views/TodoDetail.vue'),
