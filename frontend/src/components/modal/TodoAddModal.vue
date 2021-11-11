@@ -200,6 +200,8 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
+import { mapGetters } from 'vuex';
+import { getMembersByTeam } from '@/api/auth.js';
 
 export default {
   name: 'TODOADDMODAL',
@@ -210,76 +212,25 @@ export default {
       todoName: '',
       searchName: '',
       memberList: [],
-      checkedMember: [],
+      checkedMember: {},
       isValid: false,
     };
   },
+  props: ['teamId'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
   created() {
-    this.memberList = [
-      {
-        id: 'cyi',
-        email: 'cyi@naver.com',
-        name: '조용일',
+    getMembersByTeam(
+      this.teamId,
+      (res) => {
+        console.log(res);
+        this.memberList = res.object;
       },
-      {
-        id: 'cjo',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-      {
-        id: 'cyi1',
-        email: 'cyi@naver.com',
-        name: '조용일',
-      },
-      {
-        id: 'cjo1',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj1',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp1',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-      {
-        id: 'cyi2',
-        email: 'cyi@naver.com',
-        name: '조용일',
-      },
-      {
-        id: 'cjo2',
-        email: 'cjo@naver.com',
-        name: '최준오',
-      },
-      {
-        id: 'ckj2',
-        email: 'ckj@naver.com',
-        name: '최광진',
-      },
-      {
-        id: 'jsp2',
-        email: 'jsp@naver.com',
-        name: '조성표',
-      },
-    ];
+      (error) => {
+        console.error(error);
+      }
+    );
   },
   methods: {
     onClickOutside() {
@@ -301,13 +252,37 @@ export default {
     },
     todoAdd() {
       // 팀 이름 입력이 필수!
+      console.log(this.checkedMember.id);
       if (!this.isValid) {
         return;
       }
+      if (this.checkedMember) {
+        this.stomp.send(
+          '/server/addTodo',
+          JSON.stringify({
+            title: this.todoName,
+            status: 'New',
+            memberId: this.checkedMember.id,
+            projectId: this.projectId,
+            teamId: this.teamId,
+          })
+        );
+        return;
+      }
+      this.stomp.send(
+        '/server/addTodo',
+        JSON.stringify({
+          title: this.todoName,
+          status: 'New',
+          projectId: this.projectId,
+          teamId: this.teamId,
+        })
+      );
       console.log(this.todoName, this.checkedMember);
     },
   },
   computed: {
+    ...mapGetters(['stomp', 'projectId']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);

@@ -67,7 +67,7 @@
         </draggable>
       </div>
     </div>
-    <Todo-Add-Modal v-if="isShow" @closeModal="closeModal" />
+    <Todo-Add-Modal v-if="isShow" :teamId="teamInfo.teamId" @closeModal="closeModal" />
   </div>
 </template>
 
@@ -75,7 +75,7 @@
 import TodoCard from '@/components/TodoCard.vue';
 import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
-
+import { mapGetters } from 'vuex';
 export default {
   name: 'TOTALKANBAN',
   components: {
@@ -83,7 +83,7 @@ export default {
     TodoAddModal,
     draggable,
   },
-  props: ['teamInfo', 'TodoStomp', 'filters', 'bookmarkFilter'],
+  props: ['teamInfo', 'filters', 'bookmarkFilter'],
   data() {
     return {
       isShow: false,
@@ -99,18 +99,13 @@ export default {
     todoAdd() {
       this.showModal();
     },
-    // draggable 관련 로그를 찍기위한 함수
-    // draggable 컴포넌트에 @change="log"를 추가해서 사용
-    // log(e) {
-    //   console.log(e);
-    //   console.log(this.teamInfo.teamName, this.teamInfo.todoInfoList);
-    // },
+
     setTodoId(e) {
       // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
     updateTeam(e) {
-      this.TodoStomp.send(
+      this.stomp.send(
         '/server/moveTodo/team',
         JSON.stringify({
           id: this.teamInfo.todoInfoList[e.newIndex].id,
@@ -135,6 +130,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['stomp']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;

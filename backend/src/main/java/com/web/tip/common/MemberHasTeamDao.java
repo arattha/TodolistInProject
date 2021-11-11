@@ -11,5 +11,5 @@ public interface MemberHasTeamDao extends JpaRepository<MemberHasTeam, String> {
     List<MemberHasTeam> findMemberHasTeamByMemberId(String memberId);
     Optional<MemberHasTeam> findMemberHasTeamByMemberIdAndTeamId(String memberId,String teamId);
     List<MemberHasTeam> findByTeamIdInAndIsUse(ArrayList<String> teamIds, boolean isUse);
-
+    List<MemberHasTeam> findByTeamId(String teamId);
 }

@@ -1,5 +1,7 @@
 package com.web.tip.member;
 
+import com.web.tip.common.MemberHasTeam;
+import com.web.tip.common.MemberHasTeamDao;
 import com.web.tip.config.security.TokenProvider;
 import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
@@ -7,6 +9,7 @@ import com.web.tip.jwt.TokenDto;
 import com.web.tip.member.request.SignUpRequest;
 import com.web.tip.member.request.UpdatePasswordRequest;
 import com.web.tip.member.response.MemberResponse;
+import com.web.tip.member.response.TeamMemberResponse;
 import com.web.tip.member.security.Authority;
 import com.web.tip.mypage.MemberDetail;
 import com.web.tip.mypage.MemberDetailDto;
@@ -37,6 +40,7 @@ public class MemberService {
     private RedisTemplate<String, Object> redisTemplate;
     private MemberDetailService memberDetailService;
     private IdGenerator idGenerator;
+    private MemberHasTeamDao memberHasTeamDao;
 
     @Transactional
     public boolean nicknameCheck(String nickname) {
@@ -226,6 +230,28 @@ public class MemberService {
         memberList.forEach(v -> result.add(new MemberResponse(v.getId(), v.getName(), MemberDetailDto.entityToDto(v.getMemberDetail()))));
 
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamMemberResponse> getMembersByTeam(String teamId){
+        List<MemberHasTeam> memberHasTeams = memberHasTeamDao.findByTeamId(teamId);
+        if(memberHasTeams.isEmpty())
+            return Collections.emptyList();
+
+        List<TeamMemberResponse> memberResponses = new ArrayList<>();
+        for(MemberHasTeam memberHasTeam: memberHasTeams){
+            if(!memberHasTeam.isUse())
+                continue;
+            Member member = memberDao.findMemberById(memberHasTeam.getMemberId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            memberResponses.add(TeamMemberResponse.builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .email(member.getNickname())
+                    .build()
+            );
+        }
+        return memberResponses;
     }
 
     @Transactional

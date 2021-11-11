@@ -65,7 +65,7 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        :class="[bookmarkFilter ? 'bg-menuGray' : 'bg-itemGray' ]"
+        :class="[bookmarkFilter ? 'bg-menuGray' : 'bg-itemGray']"
         @click="activeBookmarkFilter()"
       >
         즐겨찾기
@@ -74,7 +74,7 @@
 
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamFilter" :key="index">
-        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :TodoStomp="stompClient" :bookmarkFilter="bookmarkFilter" />
+        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :bookmarkFilter="bookmarkFilter" />
       </div>
     </div>
     <TodoFilter
@@ -124,7 +124,7 @@ export default {
     this.set_project_name(this.projectName);
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
     teamFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -139,20 +139,21 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id']),
+    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp']),
     connect() {
       const serverURL = 'http://localhost:8082/socket';
       let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect(
+      let stompClient = Stomp.over(socket, { debug: false });
+      stompClient.connect(
         {},
         () => {
           // 소켓 연결 성공
           this.connected = true;
+          this.set_stomp(stompClient);
 
-          this.stompClient.debug = () => {};
+          stompClient.debug = () => {};
 
-          this.stompClient.send(
+          stompClient.send(
             '/server/getTodo',
             JSON.stringify({
               projectId: this.projectId,
@@ -161,7 +162,7 @@ export default {
           );
 
           // subscribe 로 alarm List 가져오기
-          this.stompClient.subscribe('/client/todo/' + this.projectId, (res) => {
+          stompClient.subscribe('/client/todo/' + this.projectId, (res) => {
             this.todoList = JSON.parse(res.body);
             this.getTeamList();
           });
@@ -216,7 +217,7 @@ export default {
               memberName: this.todoList[i].memberName,
               modifyDate: this.todoList[i].modifyDate,
               regDate: this.todoList[i].regDate,
-              isBookmark:false,
+              isBookmark: false,
             });
 
             break;
@@ -225,15 +226,15 @@ export default {
       }
       this.getBookmarkList();
     },
-    async getBookmarkList(){
+    async getBookmarkList() {
       let tmp = [];
       await getBookmark(
         {
-          projectId : this.projectId,
-          memberId : this.id
+          projectId: this.projectId,
+          memberId: this.id,
         },
         (res) => {
-          res.object.forEach(bookmark => {
+          res.object.forEach((bookmark) => {
             tmp.push(bookmark.todoId);
           });
         },
@@ -244,14 +245,13 @@ export default {
       );
       for (var i = 0; i < this.teamInfoList.length; i++) {
         for (var j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
-          if (tmp.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1 ) {
+          if (tmp.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1) {
             this.teamInfoList[i].todoInfoList[j].isBookmark = true;
           }
         }
       }
-
     },
-    activeBookmarkFilter(){
+    activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
     horizontalScroll() {
