@@ -67,7 +67,7 @@
                     focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
                   "
                   v-model="selectTeam"
-                  @input="inputTeam"
+                  @change="inputTeam"
                 >
                   <option disabled value="" hidden>팀을 선택해주세요.</option>
                   <option v-for="(team, index) in teamList" :key="index" :value="team">
@@ -203,10 +203,13 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
+import { getMembersByTeam } from '@/api/auth.js';
+import { getTeam } from '@/api/team.js';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'TODOMOVEMODAL',
-  props: ['todoId'],
+  props: ['todoInfo'],
   data() {
     return {
       teamList: [],
@@ -223,24 +226,27 @@ export default {
   created() {
     // 팀을 선택하면 멤버를 부를지 멤버를 선택하면 팀을 부를지는 로직 개발자가 선택할 것
     // 여기서는 팀을 선택하면 멤버를 선택한다고 가정하고 페이지를 구성
-    this.teamList = [
-      {
-        teamId: '1',
-        teamName: 'Frontend',
+    
+    getTeam(
+      this.$route.params.projectId,
+      (res) => {
+        // team 가져옴
+        this.teamList = [];
+
+        res.object.forEach((value) => {
+          this.teamList.push({
+            teamId: value.id,
+            teamName: value.name
+          });
+        });
+
       },
-      {
-        teamId: '2',
-        teamName: 'Backend',
-      },
-      {
-        teamId: '3',
-        teamName: 'QA',
-      },
-      {
-        teamId: '4',
-        teamName: '인사',
-      },
-    ];
+      () => {
+        console.log('team 가져오기 실패');
+      }
+    );
+    
+    
   },
   methods: {
     onClickOutside() {
@@ -252,81 +258,37 @@ export default {
     typingSearchName(e) {
       this.searchName = e.target.value;
     },
-    inputTeam(e) {
-      if (!e.target.value) {
+    inputTeam() {
+      if (this.selectTeam == []) {
         this.isValid = false;
         return;
       }
 
+
       // 선택된 팀원의 값은 초기화 해야한다.
       this.checkedMember = [];
 
-      // e.target.value에 팀명이 담기게 되므로 이를 이용해서 백엔드에서
+      // this.selectTema에 팀명이 담기게 되므로 이를 이용해서 백엔드에서
       // 해당 팀의 팀원 리스트를 아래 memberList에 담으면 된다.
-      this.memberList = [
-        {
-          id: 'cyi',
-          email: 'cyi@naver.com',
-          name: '조용일',
+      console.log(this.selectTeam);
+      getMembersByTeam(
+        this.selectTeam.teamId,
+        (res) => {
+          this.memberList = res.object;
         },
-        {
-          id: 'cjo',
-          email: 'cjo@naver.com',
-          name: '최준오',
-        },
-        {
-          id: 'ckj',
-          email: 'ckj@naver.com',
-          name: '최광진',
-        },
-        {
-          id: 'jsp',
-          email: 'jsp@naver.com',
-          name: '조성표',
-        },
-        {
-          id: 'cyi1',
-          email: 'cyi@naver.com',
-          name: '조용일',
-        },
-        {
-          id: 'cjo1',
-          email: 'cjo@naver.com',
-          name: '최준오',
-        },
-        {
-          id: 'ckj1',
-          email: 'ckj@naver.com',
-          name: '최광진',
-        },
-        {
-          id: 'jsp1',
-          email: 'jsp@naver.com',
-          name: '조성표',
-        },
-        {
-          id: 'cyi2',
-          email: 'cyi@naver.com',
-          name: '조용일',
-        },
-        {
-          id: 'cjo2',
-          email: 'cjo@naver.com',
-          name: '최준오',
-        },
-        {
-          id: 'ckj2',
-          email: 'ckj@naver.com',
-          name: '최광진',
-        },
-        {
-          id: 'jsp2',
-          email: 'jsp@naver.com',
-          name: '조성표',
-        },
-      ];
+        () => {}
+      );
+
+      // this.memberList = [
+      //   {
+      //     id: 'cyi',
+      //     email: 'cyi@naver.com',
+      //     name: '조용일',
+      //   }
+      // ];
 
       this.isValid = true;
+      
     },
     sendTodo() {
       // 팀 이름 입력이 필수!
@@ -339,10 +301,59 @@ export default {
 
       // console.log(this.selectTeam, this.checkedMember, this.todoId);
       // console.log(this.checkedMember.name);
-
+      
       if (this.checkedMember.length === 0) {
+        this.stomp.send('/sever/moveTodo/team',
+        
+          JSON.stringify({
+            id: this.todoInfo.id,
+            title: this.todoInfo.title,
+            status: "new",
+            projectId: this.todoInfo.projectId,
+            teamId: this.todoInfo.teamId,
+            teamName: this.todoInfo.teamName,
+            memberId: null,
+            memberName: null,
+            modifyDate: this.todoInfo.modifyDate,
+            regDate: this.todoInfo.regDate,
+          },{})
+        );
+
         console.log('해당하는 팀에 New로 보내줌');
       } else {
+
+        console.log("todo ", this.todoInfo);
+        console.log("checkedMember ",this.checkedMember);
+        console.log("send Dto ",{
+            id: this.todoInfo.id,
+            title: this.todoInfo.title,
+            status: "접수",
+            projectId: this.todoInfo.projectId,
+            teamId: this.todoInfo.teamId,
+            teamName: this.todoInfo.teamName,
+            memberId: this.checkedMember.id,
+            memberName: this.checkedMember.name,
+            modifyDate: this.todoInfo.modifyDate,
+            regDate: this.todoInfo.regDate,
+          });
+
+
+        this.stomp.send('/sever/moveTodo/team',
+        
+          {
+            id: this.todoInfo.id,
+            title: this.todoInfo.title,
+            status: "접수",
+            projectId: this.todoInfo.projectId,
+            teamId: this.todoInfo.teamId,
+            teamName: this.todoInfo.teamName,
+            memberId: this.checkedMember.id,
+            memberName: this.checkedMember.name,
+            modifyDate: this.todoInfo.modifyDate,
+            regDate: this.todoInfo.regDate,
+          },{}
+        );
+
         console.log('해당하는 팀에 접수로 보내줌');
       }
     },
@@ -355,6 +366,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['stomp']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);
