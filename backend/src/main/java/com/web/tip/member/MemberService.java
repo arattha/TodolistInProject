@@ -222,7 +222,7 @@ public class MemberService {
     @Transactional
     public Object getAllMembers() {
 
-        List<Member> memberList = memberDao.findAll();
+        List<Member> memberList = memberDao.findMemberByIsUse(true);
         if (memberList.isEmpty()) {
             return Collections.emptyList();
         }

@@ -127,15 +127,15 @@ export default {
         },
       ],
       todoInfoList: [],
+      bookmarkList:[],
       bookmarkFilter : false,
       filters:null,
       isShow:false,
     };
   },
-  created() {
-    this.setStatusTodo();
-    this.access();
-    console.log(this.statusInfoList);
+  async created() {
+    await this.getBookmarkList();
+    await this.connect();
   },
   computed: {
     ...mapGetters(['projectId','id','projectName','stomp']),
@@ -153,8 +153,8 @@ export default {
     },
   },
   methods: {
-    async access(){
-      await this.stomp.send(
+    connect(){
+      this.stomp.send(
         '/server/getTodo',
         JSON.stringify({
           projectId: this.projectId,
@@ -162,10 +162,9 @@ export default {
         {}
       );
     // subscribe 로 alarm List 가져오기
-      await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
         this.todoInfoList = JSON.parse(res.body);
         this.setStatusTodo();
-        this.getBookmarkList();
       });
     },
     todoFilter() {
@@ -204,7 +203,7 @@ export default {
           this.statusInfoList[4].todoList.push(this.todoInfoList[i]);
         }
       }
-      this.getBookmarkList();
+      this.updateBookmarkList();
     },
     changeStatus(val) {
       if (val.status === 'New') {
@@ -220,7 +219,7 @@ export default {
       }
     },
     async getBookmarkList() {
-      let tmp = [];
+      this.bookmarkList = [];
       await getBookmark(
         {
           projectId: this.projectId,
@@ -228,7 +227,7 @@ export default {
         },
         (res) => {
           res.object.forEach((bookmark) => {
-            tmp.push(bookmark.todoId);
+            this.bookmarkList.push(bookmark.todoId);
           });
         },
         (error) => {
@@ -236,9 +235,12 @@ export default {
           console.log(error);
         }
       );
+      
+    },
+    updateBookmarkList(){
       for (var i = 0; i < this.statusInfoList.length; i++) {
         for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
-          if (tmp.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
+          if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
             this.statusInfoList[i].todoList[j].isBookmark = true;
           } else {
             this.statusInfoList[i].todoList[j].isBookmark = false;
