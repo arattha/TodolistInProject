@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '../store';
-import Home from '../views/Home.vue';
+import { reissuUser } from '@/api/auth.js';
+// import Home from '../views/Home.vue';
 // import store from '@/store/index';
 
 Vue.use(VueRouter);
@@ -10,7 +11,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import('@/views/Login.vue'),
   },
   {
     path: '/login',
@@ -90,15 +91,6 @@ const routes = [
       },
     ],
   },
-
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  },
 ];
 
 const router = new VueRouter({
@@ -108,12 +100,37 @@ const router = new VueRouter({
   duplicateNavigationPolicy: 'ignore',
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.name === 'Project') {
     store.dispatch('set_project_name', '');
+    next();
+  } else if (to.name !== 'Login') {
+    if (store.getters.id) {
+      await reissuUser(
+        store.getters.id,
+        (res) => {
+          // 재발급 요청에 성공할 경우
+          if (res.object) {
+            if (to.name === 'Home') {
+              next('/projects');
+            } else {
+              next();
+            }
+          } else {
+            // 재발급 요청에 실패했을 경우
+            next('/login');
+          }
+        },
+        (error) => {
+          alert('문제가 발생했습니다. 다시 시도해주세요.');
+          console.log(error);
+          // next('/login');
+        }
+      );
+    }
+  } else {
+    next();
   }
-
-  next();
 });
 
 export default router;
