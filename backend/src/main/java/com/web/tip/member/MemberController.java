@@ -125,21 +125,19 @@ public class MemberController {
 
     @PostMapping("/reissu")
     @ApiOperation(value = "토큰 재발급")
-    public Object reissuance(@RequestBody String mid, HttpServletRequest request, HttpServletResponse response) {
+    public Object reissuance(@RequestBody final Object mid, HttpServletRequest request, HttpServletResponse response) {
         BasicResponse result = new BasicResponse();
 
         result.status = true;
         result.data = SUCCESS;
 
         String accessToken = getAccessTokenToCookie(request);
-
         if (accessToken == null || "".equals(accessToken) || accessToken.length() <= 0) {
             result.object = false;
         } else {
             result.object = true;
 
-            Optional<TokenDto> getToken = memberService.reissuance(mid, accessToken);
-
+            Optional<TokenDto> getToken = memberService.reissuance(mid.toString(), accessToken);
             Cookie cookie = getAuthCookie(getToken);
             response.addCookie(cookie);
         }
