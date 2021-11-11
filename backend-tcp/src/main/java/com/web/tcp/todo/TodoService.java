@@ -141,7 +141,7 @@ public class TodoService {
             diff.put("after", todoDto.getStatus());
             diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
 
-            todo.changeStatus(todoDto.getStatus());
+            todoTmp.changeStatus(todoDto.getStatus());
             todoTmp.changeModifyDate();
 
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());

@@ -137,7 +137,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['stomp']),
+    ...mapGetters(['projectId','id','projectName','stomp']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;

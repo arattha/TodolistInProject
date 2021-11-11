@@ -93,8 +93,6 @@ import TotalKanban from '@/components/TotalKanban.vue';
 import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
 import { getTeam } from '@/api/team.js';
 import { getBookmark } from '@/api/bookmark.js';
 
@@ -141,37 +139,19 @@ export default {
   methods: {
     ...mapActions(['set_project_name', 'set_project_id', 'set_stomp']),
     connect() {
-      const serverURL = 'http://localhost:8082/socket';
-      let socket = new SockJS(serverURL);
-      let stompClient = Stomp.over(socket, { debug: false });
-      stompClient.connect(
-        {},
-        () => {
-          // 소켓 연결 성공
-          this.connected = true;
-          this.set_stomp(stompClient);
-
-          stompClient.debug = () => {};
-
-          stompClient.send(
-            '/server/getTodo',
-            JSON.stringify({
-              projectId: this.projectId,
-            }),
-            {}
-          );
+      this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
 
           // subscribe 로 alarm List 가져오기
-          stompClient.subscribe('/client/todo/' + this.projectId, (res) => {
-            this.todoList = JSON.parse(res.body);
-            this.getTeamList();
-          });
-        },
-        (error) => {
-          // 소켓 연결 실패
-          console.log('소켓 연결 실패', error);
-        }
-      );
+      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.todoList = JSON.parse(res.body);
+        this.getTeamList();
+      });
     },
     getTeamList() {
       getTeam(
