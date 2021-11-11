@@ -29,8 +29,8 @@
         @start="setTodoId"
         @add="updateTeam($event, status)"
       >
-        <div class="mb-6" v-for="(todoInfo, index) in todoList" :key="index + todoInfo.status">
-          <Todo-Card :todoInfo="todoInfo" />
+        <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index + todoInfo.status + todoInfo.isBookmark">
+          <Todo-Card :todoInfo="todoInfo" :key="index + todoInfo.isBookmark" />
         </div>
       </draggable>
     </div>
@@ -44,14 +44,12 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'STATUSKANBAN',
-  props: ['status', 'todoList'],
+  props: ['status', 'todoList', 'bookmarkFilter'],
   components: {
     TodoCard,
     draggable,
   },
-  created() {
-    console.log(this.todoList);
-  },
+  created() {},
   methods: {
     setTodoId(e) {
       // console.log("setTodoId :", e.oldIndex);
@@ -82,6 +80,18 @@ export default {
   },
   computed: {
     ...mapGetters(['projectId','id','projectName','stomp']),
+    todoFilter: function () {
+      let bookmarkFilter = this.bookmarkFilter;
+      if (!bookmarkFilter) {
+          return this.todoList; //filter가 없을 때는 원본 반환
+      } else {
+        return this.todoList.filter(function (todo) {
+          if (todo.isBookmark) {
+            return true;
+          }
+        });
+      }
+    },
     dragOptions() {
       return {
         animation: 200,

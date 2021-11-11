@@ -65,6 +65,7 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
+        :class="[bookmarkFilter ? 'bg-menuGray' : 'bg-itemGray']"
         @click="activeBookmarkFilter()"
       >
         즐겨찾기
@@ -72,169 +73,181 @@
     </div>
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <Status-Kanban
-        v-for="(statusInfo, index) in statusInfoList"
+        v-for="(statusInfo, index) in statusFilter"
         :key="index"
         :status="statusInfo.status"
         :todoList="statusInfo.todoList"
+        :bookmarkFilter="bookmarkFilter"
         @changeStatus="changeStatus"
       />
     </div>
+    <MyTodoFilter
+      v-if="isShow"
+      @closeModal="closeModal"
+      @cleanFilter="cleanFilter"
+      @applyFilter="applyFilter"
+    />
   </div>
 </template>
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import MyTodoFilter from '@/components/MyTodoFilter.vue';
+import { getBookmark } from '@/api/bookmark.js';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'MYTODO',
   components: {
     StatusKanban,
+    MyTodoFilter
   },
   data() {
     return {
-      statusInfoList: {
-        newStatus: {
+      statusInfoList: [
+        {
           status: 'New',
           todoList: [],
         },
-        accepStatus: {
+        {
           status: '접수',
           todoList: [],
         },
-        progressStatus: {
+        {
           status: '진행',
           todoList: [],
         },
-        doneStatus: {
+        {
           status: '완료',
           todoList: [],
         },
-        notProgressStatus: {
+        {
           status: '진행하지않음',
           todoList: [],
-        },
-      },
-      todoInfoList: [
-        {
-          id: 1111,
-          title: 1,
-          status: 'New',
-          projectId: 1,
-          teamId: 1,
-          memberId: 1,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          isBookmark: false,
-        },
-        {
-          id: 2222,
-          title: 2,
-          status: '진행',
-          projectId: 2,
-          teamId: 2,
-          memberId: 2,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          isBookmark: false,
-        },
-        {
-          id: 5555,
-          title: 5,
-          status: '접수',
-          projectId: 5,
-          teamId: 5,
-          memberId: 5,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          isBookmark: false,
-        },
-        {
-          id: 3333,
-          title: 3,
-          status: '완료',
-          projectId: 3,
-          teamId: 3,
-          memberId: 3,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          isBookmark: false,
-        },
-        {
-          id: 4444,
-          title: 4,
-          status: '진행하지않음',
-          projectId: 4,
-          teamId: 4,
-          memberId: 4,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          isBookmark: false,
         },
       ],
-      todoList:[],
+      todoInfoList: [],
+      bookmarkFilter : false,
+      filters:null,
+      isShow:false,
     };
   },
   created() {
     this.setStatusTodo();
-    this.stomp.send(
-      '/server/getTodo',
-      JSON.stringify({
-        projectId: this.projectId,
-      }),
-      {}
-    );
-
-    // subscribe 로 alarm List 가져오기
-    this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-      this.todoInfoList = JSON.parse(res.body);
-      this.setStatusTodo();
-    });
-
+    this.access();
+    console.log(this.statusInfoList);
   },
   computed: {
     ...mapGetters(['projectId','id','projectName','stomp']),
+    statusFilter: function () {
+      let filters = this.filters;
+      if (filters == null) {
+        return this.statusInfoList; //filter가 없을 때는 원본 반환
+      } else {
+        return this.statusInfoList.filter(function (status) {
+          if (filters.status.indexOf(status.status) > -1) {
+            return true;
+          }
+        });
+      }
+    },
   },
   methods: {
+    async access(){
+      await this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
+    // subscribe 로 alarm List 가져오기
+      await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.todoInfoList = JSON.parse(res.body);
+        this.setStatusTodo();
+        this.getBookmarkList();
+      });
+    },
+    todoFilter() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
+    },
+    applyFilter(filters) {
+      this.filters = filters;
+      this.isShow = false;
+    },
+    cleanFilter() {
+      this.filters = null;
+      this.isShow = false;
+    },
     setStatusTodo() {
-      this.statusInfoList.newStatus.todoList = [];
-      this.statusInfoList.accepStatus.todoList = [];
-      this.statusInfoList.progressStatus.todoList = [];
-      this.statusInfoList.doneStatus.todoList = [];
-      this.statusInfoList.notProgressStatus.todoList = [];
+      this.statusInfoList[0].todoList = [];
+      this.statusInfoList[1].todoList = [];
+      this.statusInfoList[2].todoList = [];
+      this.statusInfoList[3].todoList = [];
+      this.statusInfoList[4].todoList = [];
 
       for (let i = 0; i < this.todoInfoList.length; ++i) {
         if(this.todoInfoList[i].memberId != this.id) continue;
+
         if (this.todoInfoList[i].status === 'New') {
-          this.statusInfoList.newStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[0].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '접수') {
-          this.statusInfoList.accepStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[1].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '진행') {
-          this.statusInfoList.progressStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[2].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '완료') {
-          this.statusInfoList.doneStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[3].todoList.push(this.todoInfoList[i]);
         } else {
-          this.statusInfoList.notProgressStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[4].todoList.push(this.todoInfoList[i]);
         }
       }
+      this.getBookmarkList();
     },
     changeStatus(val) {
       if (val.status === 'New') {
-        this.statusInfoList.newStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[0].todoList[val.index].status = val.status;
       } else if (val.status === '접수') {
-        this.statusInfoList.accepStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[1].todoList[val.index].status = val.status;
       } else if (val.status === '진행') {
-        this.statusInfoList.progressStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[2].todoList[val.index].status = val.status;
       } else if (val.status === '완료') {
-        this.statusInfoList.doneStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[3].todoList[val.index].status = val.status;
       } else {
-        this.statusInfoList.notProgressStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[4].todoList[val.index].status = val.status;
       }
+    },
+    async getBookmarkList() {
+      let tmp = [];
+      await getBookmark(
+        {
+          projectId: this.projectId,
+          memberId: this.id,
+        },
+        (res) => {
+          res.object.forEach((bookmark) => {
+            tmp.push(bookmark.todoId);
+          });
+        },
+        (error) => {
+          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+          console.log(error);
+        }
+      );
+      for (var i = 0; i < this.statusInfoList.length; i++) {
+        for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
+          if (tmp.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
+            this.statusInfoList[i].todoList[j].isBookmark = true;
+          } else {
+            this.statusInfoList[i].todoList[j].isBookmark = false;
+          }
+        }
+      }
+    },
+    activeBookmarkFilter() {
+      this.bookmarkFilter = !this.bookmarkFilter;
     },
   },
 };
