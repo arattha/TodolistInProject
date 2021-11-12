@@ -31,7 +31,6 @@ export default {
       this.stompClient.connect({}, () => {
 
         this.set_stomp(this.stompClient);
-
         // 소켓 연결 성공
         this.connected = true;
         this.stompClient.debug = () => {};

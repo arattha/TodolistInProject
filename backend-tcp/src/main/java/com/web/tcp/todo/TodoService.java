@@ -96,12 +96,48 @@ public class TodoService {
                 todoDtoList.add(todoDto);
             }
 
+            return refactoring(todoDtoList, projectId);
+
         } catch (Exception e){
             e.printStackTrace();
             return null;
         }
 
-        return todoDtoList;
+    }
+
+    private Object refactoring(List<TodoDto> todoDtoList, String projectId) {
+
+        try {
+
+            List<Team> teamList = teamDao.findTeamByProjectId(projectId);
+            int size = teamList.size();
+
+            List<Object> list = new ArrayList<>();
+            for(int i = 0 ; i < size ; i++){
+                Map<String, Object> teamInfo = new HashMap<>();
+                teamInfo.put("teamId", teamList.get(i).getId());
+                teamInfo.put("teamName", teamList.get(i).getName());
+//                teamInfo.put("todoInfoList", todoDao.findTodoByTeamId(teamList.get(i).getId()));
+
+                List<TodoDto> tmp = new ArrayList<>();
+                for(TodoDto todoDto : todoDtoList){
+                    if(todoDto.getTeamId().equals(teamList.get(i).getId())){
+                        tmp.add(todoDto);
+                    }
+                }
+                teamInfo.put("todoInfoList", tmp);
+
+                list.add(teamInfo);
+            }
+            System.out.println(list);
+            return list;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Transactional
@@ -133,7 +169,7 @@ public class TodoService {
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
 
-            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String writer = member.getName();
 
             diff.put("writer", writer);
@@ -147,7 +183,7 @@ public class TodoService {
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
-            todoDao.save(todoTmp);
+            todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
             alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
@@ -175,9 +211,14 @@ public class TodoService {
 
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
-
-            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-            String writer = member.getName();
+            System.out.println("todoTmp : " + todoTmp);
+            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
+            String writer = "";
+            if(member == null ){
+                writer = "()";
+            } else {
+                writer = member.getName();
+            }
 
             Team team = teamDao.findTeamById(todoTmp.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
             String beforeTeam = team.getName();
@@ -207,7 +248,7 @@ public class TodoService {
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
-            todoDao.save(todoTmp);
+            todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
             alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
         } catch (Exception e){
@@ -242,7 +283,7 @@ public class TodoService {
                 writer = member.getName();
             }
 
-            Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            Member nextMember = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String nextWriter = nextMember.getName();
 
             if(writer.equals("")){
@@ -261,7 +302,7 @@ public class TodoService {
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
-            todoDao.save(todoTmp);
+            todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
 
             if(!writer.equals("")) alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 

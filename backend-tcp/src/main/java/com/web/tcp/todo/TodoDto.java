@@ -27,6 +27,8 @@ public class TodoDto {
     private String teamId;
     private String teamName;
 
+    private boolean isBookmark;
+
     private LocalDateTime modifyDate;
     private LocalDateTime regDate;
 }

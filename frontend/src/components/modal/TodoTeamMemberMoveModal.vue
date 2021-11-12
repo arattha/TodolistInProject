@@ -303,59 +303,48 @@ export default {
       // console.log(this.checkedMember.name);
       
       if (this.checkedMember.length === 0) {
-        this.stomp.send('/sever/moveTodo/team',
-        
+        console.log("asdfasdfasdf :",this.selectTeam);
+        this.stomp.send(
+          '/server/moveTodo/team',
           JSON.stringify({
             id: this.todoInfo.id,
             title: this.todoInfo.title,
-            status: "new",
+            status: "New",
             projectId: this.todoInfo.projectId,
-            teamId: this.todoInfo.teamId,
-            teamName: this.todoInfo.teamName,
+            teamId: this.selectTeam.teamId,
+            teamName: this.selectTeam.teamName,
             memberId: null,
             memberName: null,
             modifyDate: this.todoInfo.modifyDate,
             regDate: this.todoInfo.regDate,
-          },{})
+          }),
+          {}
         );
 
         console.log('해당하는 팀에 New로 보내줌');
       } else {
 
-        console.log("todo ", this.todoInfo);
-        console.log("checkedMember ",this.checkedMember);
-        console.log("send Dto ",{
+        this.stomp.send(
+          '/server/moveTodo/team',
+          JSON.stringify({
             id: this.todoInfo.id,
             title: this.todoInfo.title,
-            status: "접수",
+            status: this.todoInfo.status,
             projectId: this.todoInfo.projectId,
-            teamId: this.todoInfo.teamId,
-            teamName: this.todoInfo.teamName,
+            teamId: this.selectTeam.id,
+            teamName: this.selectTeam.name,
             memberId: this.checkedMember.id,
             memberName: this.checkedMember.name,
             modifyDate: this.todoInfo.modifyDate,
             regDate: this.todoInfo.regDate,
-          });
-
-
-        this.stomp.send('/sever/moveTodo/team',
-        
-          {
-            id: this.todoInfo.id,
-            title: this.todoInfo.title,
-            status: "접수",
-            projectId: this.todoInfo.projectId,
-            teamId: this.todoInfo.teamId,
-            teamName: this.todoInfo.teamName,
-            memberId: this.checkedMember.id,
-            memberName: this.checkedMember.name,
-            modifyDate: this.todoInfo.modifyDate,
-            regDate: this.todoInfo.regDate,
-          },{}
+          }),
+          {}
         );
 
         console.log('해당하는 팀에 접수로 보내줌');
       }
+
+      this.closeModal();
     },
     uncheck(val) {
       if (val === this.checkedMember) {
