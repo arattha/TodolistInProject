@@ -129,7 +129,6 @@ export default {
         },
       ],
       todoInfoList: [],
-      bookmarkList: [],
       bookmarkFilter: false,
       filters: null,
       isShow: false,
@@ -140,7 +139,7 @@ export default {
     await this.connect();
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -155,7 +154,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_totalAlarmCnt', 'set_stomp']),
+    ...mapActions(['set_totalAlarmCnt', 'set_stomp', 'set_bookmarkList']),
     connect() {
       this.stomp.send(
         '/server/getMyTodo',
@@ -169,6 +168,7 @@ export default {
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
         this.statusInfoList = JSON.parse(res.body);
+        this.updateList();
       });
     },
     todoFilter() {
@@ -205,16 +205,17 @@ export default {
       );
     },
     async getBookmarkList() {
-      this.bookmarkList = [];
       await getBookmark(
         {
           projectId: this.projectId,
           memberId: this.id,
         },
         (res) => {
+          let tmp = [];
           res.object.forEach((bookmark) => {
-            this.bookmarkList.push(bookmark.todoId);
+            tmp.push(bookmark.todoId);
           });
+          this.set_bookmarkList(tmp);
         },
         (error) => {
           alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
@@ -222,13 +223,13 @@ export default {
         }
       );
     },
-    updateBookmarkList() {
+    updateList() {
       for (var i = 0; i < this.statusInfoList.length; i++) {
         for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
           if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
-            this.statusInfoList[i].todoList[j].isBookmark = true;
+            this.statusInfoList[i].todoList[j].bookmark = true;
           } else {
-            this.statusInfoList[i].todoList[j].isBookmark = false;
+            this.statusInfoList[i].todoList[j].bookmark = false;
           }
         }
       }

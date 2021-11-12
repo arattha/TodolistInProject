@@ -96,7 +96,7 @@ export default {
     };
   },
   created() {
-    console.log("teamInfoList in kanban:",this.teamInfo);
+    //console.log("teamInfoList in kanban:",this.teamInfo);
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
@@ -155,7 +155,7 @@ export default {
       } else {
         let bookmarkedTodoList = [];
         this.teamInfo.todoInfoList.forEach((todo) => {
-          if (todo.isBookmark) bookmarkedTodoList.push(todo);
+          if (todo.bookmark) bookmarkedTodoList.push(todo);
         });
         if (filters == null) {
           return bookmarkedTodoList;
