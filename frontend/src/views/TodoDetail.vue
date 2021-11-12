@@ -234,7 +234,7 @@ export default {
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt']),
+    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
     connect() {
       this.stomp.send(
         '/server/getTodoInfo',
@@ -244,7 +244,6 @@ export default {
         {}
       );
 
-      // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
         var todo = JSON.parse(res.body);
 
@@ -261,6 +260,21 @@ export default {
     },
     changeStatus(status) {
       this.todoInfo.status = status;
+      console.log("info :",this.todoInfo);
+      this.stomp.send('/server/movoTodo/status',
+      JSON.stringify({
+        id: this.todoInfo.id,
+        title: this.todoInfo.title,
+        status: this.todoInfo.status,
+        projectId: this.todoInfo.projectId,
+        teamId: this.todoInfo.teamId,
+        teamName: this.todoInfo.teamName,
+        memberId: this.todoInfo.id,
+        memberName: this.todoInfo.name,
+        modifyDate: this.todoInfo.modifyDate,
+        regDate: this.todoInfo.regDate,
+      }),
+      {});
     },
     todoContentAdd() {
       this.showModal();
