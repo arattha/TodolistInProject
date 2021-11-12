@@ -193,6 +193,8 @@ import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default {
   name: 'TODODETAIL',
@@ -232,8 +234,10 @@ export default {
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail']),
+    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
     connect() {
+      console.log("todoid ", this.todoId);
+      console.log("stomp", this.stomp);
       this.stomp.send(
         '/server/getTodoInfo',
         JSON.stringify({
@@ -242,10 +246,9 @@ export default {
         {}
       );
 
-      // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
         var todo = JSON.parse(res.body);
-
+        console.log("todo :",todo);
         this.todoInfo.id = todo.id;
         this.todoInfo.title = todo.title;
         this.todoInfo.memberId = todo.memberId;
@@ -259,6 +262,21 @@ export default {
     },
     changeStatus(status) {
       this.todoInfo.status = status;
+      console.log("todoinfo in detail :",this.todoInfo);
+      this.stomp.send('/server/movoTodo/status',
+      JSON.stringify({
+        id: this.todoInfo.id,
+        title: this.todoInfo.title,
+        status: this.todoInfo.status,
+        projectId: this.todoInfo.projectId,
+        teamId: this.todoInfo.teamId,
+        teamName: this.todoInfo.teamName,
+        memberId: this.todoInfo.id,
+        memberName: this.todoInfo.name,
+        modifyDate: this.todoInfo.modifyDate,
+        regDate: this.todoInfo.regDate,
+      }),
+      {});
     },
     todoContentAdd() {
       this.showModal();
@@ -306,6 +324,41 @@ export default {
     closeTeamMemberMoveModal() {
       this.isTeamMemberMoveModalShow = false;
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // just use `this` this.name = to.params.name next()
+    if (to.fullPath !== from.fullPath) {
+      this.stomp.disconnect();
+      const serverURL = 'http://localhost:8082/socket';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect({}, () => {
+
+        this.set_stomp(this.stompClient);
+        // 소켓 연결 성공
+        this.connected = true;
+        this.stompClient.debug = () => {};
+        this.stompClient.send(
+          '/server/getAlarm',
+          JSON.stringify({
+            memberId: this.id,
+          }),
+          {}
+        );
+
+        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
+          this.alarmList = JSON.parse(res.body);
+          this.set_totalAlarmCnt(this.alarmList.length);
+        });
+
+        next();
+      });
+    } else {
+      next();
+    }
+
+
+
   },
 };
 </script>

@@ -45,12 +45,24 @@ public class TodoController {
         }
     }
 
+    // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
+    // 해당 프로젝트를 구독 중인 client들에게 send
+    @MessageMapping(value = "/getMyTodo")
+    public void getTodo(String projectId, String memberId){
+
+        try{
+            projectId = (String) StringToJson(projectId).get("projectId");
+            memberId = (String) StringToJson(memberId).get("memberId");
+            template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     // client가 '/server/moveTodo'경로로 이동한 TodoDto 전송
     // 수정된 Todo의 목록들을 해당 프로젝트를 구독 중인 client들에게 전송
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
-
-        System.out.println("fasdnkllkfn  : " + todoDto);
 
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);

@@ -95,6 +95,8 @@ import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
 import { getMyTeam } from '@/api/team.js';
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default {
   name: 'PJTTODO',
@@ -150,21 +152,22 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_team_id']),
-    async connect() {
-      this.stomp.send(
-        '/server/getTodo',
-        JSON.stringify({
-          projectId: this.projectId,
-        }),
-        {}
-      );
+    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt', 'set_team_id']),
+    connect() {
+        this.stomp.send(
+          '/server/getTodo',
+          JSON.stringify({
+            projectId: this.projectId,
+          }),
+          {}
+        );
 
-      // subscribe 로 alarm List 가져오기
-      await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-        this.teamInfoList = JSON.parse(res.body);
-      });
-      this.updateList();
+        // subscribe 로 alarm List 가져오기
+        this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+          this.teamInfoList = JSON.parse(res.body);
+          console.log("teamInfoList in TotalTodo :", this.teamInfoList);
+        });
+        this.updateList();
     },
     updateList() {
       for (var i = 0; i < this.teamInfoList.length; i++) {
@@ -199,7 +202,7 @@ export default {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
     horizontalScroll() {
-      console.log('hi', this);
+      // console.log('hi', this);
     },
     onWheel(e) {
       let item = document.getElementById('scroll_div');
@@ -230,6 +233,38 @@ export default {
     closeTeamAddModal() {
       this.isShowTeamAddModal = false;
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // just use `this` this.name = to.params.name next()
+    if (to.fullPath !== from.fullPath) {
+      this.stomp.disconnect();
+      const serverURL = 'http://localhost:8082/socket';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect({}, () => {
+
+        this.set_stomp(this.stompClient);
+        // 소켓 연결 성공
+        this.connected = true;
+        this.stompClient.debug = () => {};
+        this.stompClient.send(
+          '/server/getAlarm',
+          JSON.stringify({
+            memberId: this.id,
+          }),
+          {}
+        );
+
+        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
+          this.alarmList = JSON.parse(res.body);
+          this.set_totalAlarmCnt(this.alarmList.length);
+        });
+
+        next();
+      });
+    } else {
+      next();
+    }
   },
 };
 </script>

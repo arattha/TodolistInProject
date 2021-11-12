@@ -137,8 +137,7 @@ export default {
       deleteTodoContent(
         this.detail.id,
         this.id,
-        (res) => {
-          console.log(res);
+        () => {
           this.toggle_reload_todo_detail(true);
         },
         (error) => {

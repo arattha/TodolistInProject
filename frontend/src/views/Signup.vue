@@ -360,8 +360,6 @@ export default {
     },
     async signup() {
 
-      console.log('회원가입');
-
       let data = {
         nickname: this.user.id,
         password: this.user.password,
