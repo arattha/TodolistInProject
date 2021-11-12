@@ -156,7 +156,7 @@ export default {
     clickOutside: vClickOutside.directive,
   },
   created() {
-    console.log(this.todoHistory.diff);
+    // console.log(this.todoHistory.diff);
   },
   methods: {
     onClickOutside() {

@@ -153,7 +153,6 @@ export default {
         // subscribe 로 alarm List 가져오기
         await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
           this.teamInfoList = JSON.parse(res.body);
-          console.log("totaltodo");
         });
         this.updateList();
 
@@ -194,7 +193,7 @@ export default {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
     horizontalScroll() {
-      console.log('hi', this);
+      // console.log('hi', this);
     },
     onWheel(e) {
       let item = document.getElementById('scroll_div');

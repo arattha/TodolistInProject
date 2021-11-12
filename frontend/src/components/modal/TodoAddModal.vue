@@ -224,7 +224,6 @@ export default {
     getMembersByTeam(
       this.teamId,
       (res) => {
-        console.log(res);
         this.memberList = res.object;
       },
       (error) => {

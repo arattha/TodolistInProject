@@ -77,7 +77,7 @@ export default {
       this.$router.push('/projects/done');
     },
     addPjt() {
-      console.log('프로젝트 추가');
+      // console.log('프로젝트 추가');
     },
   },
 };

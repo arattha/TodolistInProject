@@ -202,12 +202,10 @@ export default {
         return;
       }
 
-      console.log('현재 사용자 아이디: ' + this.id);
       modifyTodoContent(
         { id: this.detailId, contents: this.inputContent, memberId: this.id },
-        (res) => {
-          console.log(res);
-          console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
+        () => {
+          // console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
           this.closeModal(true);
         },
         (error) => {

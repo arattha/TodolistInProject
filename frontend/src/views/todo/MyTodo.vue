@@ -169,7 +169,6 @@ export default {
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
         this.statusInfoList = JSON.parse(res.body);
-        console.log("mytodo", this.statusInfoList);
       });
     },
     todoFilter() {

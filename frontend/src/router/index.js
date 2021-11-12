@@ -106,13 +106,11 @@ router.beforeEach(async (to, from, next) => {
     store.dispatch('set_project_name', '');
     next();
   } else if (to.name !== 'Login' && to.name !== 'Signup') {
-    console.log('들어옴');
     if (store.getters.id) {
       await reissuUser(
         store.getters.id,
         (res) => {
           // 재발급 요청에 성공할 경우
-          console.log(res.object);
           if (res.object) {
             if (to.name === 'Home') {
               next('/projects');

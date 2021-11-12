@@ -270,7 +270,6 @@ export default {
 
       // this.selectTema에 팀명이 담기게 되므로 이를 이용해서 백엔드에서
       // 해당 팀의 팀원 리스트를 아래 memberList에 담으면 된다.
-      console.log(this.selectTeam);
       getMembersByTeam(
         this.selectTeam.teamId,
         (res) => {
@@ -298,12 +297,8 @@ export default {
 
       // selectTeam에는 보내고자하는 팀이
       // checkMember에는 보내고자하는 팀원이 들어간다.
-
-      // console.log(this.selectTeam, this.checkedMember, this.todoId);
-      // console.log(this.checkedMember.name);
       
       if (this.checkedMember.length === 0) {
-        console.log("asdfasdfasdf :",this.selectTeam);
         this.stomp.send(
           '/server/moveTodo/team',
           JSON.stringify({
@@ -321,9 +316,7 @@ export default {
           {}
         );
 
-        console.log('해당하는 팀에 New로 보내줌');
       } else {
-
         this.stomp.send(
           '/server/moveTodo/team',
           JSON.stringify({
@@ -331,8 +324,8 @@ export default {
             title: this.todoInfo.title,
             status: this.todoInfo.status,
             projectId: this.todoInfo.projectId,
-            teamId: this.selectTeam.id,
-            teamName: this.selectTeam.name,
+            teamId: this.selectTeam.teamId,
+            teamName: this.selectTeam.teamName,
             memberId: this.checkedMember.id,
             memberName: this.checkedMember.name,
             modifyDate: this.todoInfo.modifyDate,
@@ -341,7 +334,6 @@ export default {
           {}
         );
 
-        console.log('해당하는 팀에 접수로 보내줌');
       }
 
       this.closeModal();
