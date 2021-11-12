@@ -80,7 +80,7 @@ import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 import { mapGetters } from 'vuex';
 export default {
-  name: 'TOTALKANBAN',
+  name: 'MYTODOADDMODAL',
   components: {
     TodoCard,
     TodoAddModal,
@@ -137,7 +137,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName','stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;

@@ -94,6 +94,7 @@ import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
+import { getMyTeam } from '@/api/team.js';
 
 export default {
   name: 'PJTTODO',
@@ -105,7 +106,7 @@ export default {
   data() {
     return {
       teamInfoList: [],
-      bookmarkList:[],
+      bookmarkList: [],
       todoList: [],
       teamList: [],
       isShow: false,
@@ -121,6 +122,17 @@ export default {
     this.set_project_id(this.projectId);
     this.connect();
     this.set_project_name(this.projectName);
+    getMyTeam(
+      this.projectId,
+      this.id,
+      (res) => {
+        console.log(res);
+        this.set_team_id(res.object.id);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   },
   computed: {
     ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'isFirst']),
@@ -138,28 +150,26 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp']),
+    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_team_id']),
     async connect() {
-        this.stomp.send(
-          '/server/getTodo',
-          JSON.stringify({
-            projectId: this.projectId,
-          }),
-          {}
-        );
+      this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
 
-        // subscribe 로 alarm List 가져오기
-        await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-          this.teamInfoList = JSON.parse(res.body);
-        });
-        this.updateList();
-
+      // subscribe 로 alarm List 가져오기
+      await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.teamInfoList = JSON.parse(res.body);
+      });
+      this.updateList();
     },
     updateList() {
       for (var i = 0; i < this.teamInfoList.length; i++) {
         for (var j = 0; j < this.teamInfoList[i].length; j++) {
-
-          if(this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1){
+          if (this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1) {
             this.teamInfoList[i].todoInfoList[j].isBookmark = true;
           } else {
             this.teamInfoList[i].todoInfoList[j].isBookmark = false;
@@ -168,7 +178,6 @@ export default {
       }
     },
     async getBookmarkList() {
-      
       this.bookmarkList = [];
       await getBookmark(
         {
@@ -185,7 +194,6 @@ export default {
           console.log(error);
         }
       );
-      
     },
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;

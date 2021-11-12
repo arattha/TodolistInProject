@@ -2,6 +2,7 @@ package com.web.tcp.todo;
 
 import com.web.tcp.alarm.AlarmController;
 import com.web.tcp.alarm.AlarmService;
+import com.web.tcp.common.MemberHasTeamDao;
 import com.web.tcp.error.CustomException;
 import com.web.tcp.error.ErrorCode;
 import com.web.tcp.member.Member;
@@ -13,6 +14,7 @@ import com.web.tcp.todoRecord.TodoRecordDao;
 import com.web.tcp.util.IdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,6 +27,7 @@ import java.util.*;
 public class TodoService {
 
     MemberDao memberDao;
+    MemberHasTeamDao memberHasTeamDao;
     TeamDao teamDao;
     TodoDao todoDao;
     TodoRecordDao todoRecordDao;
@@ -33,62 +36,62 @@ public class TodoService {
 
     @Transactional
     public boolean addTodo(TodoDto todoDto) {
-
-        try{
-
-            IdGenerator idGenerator = new IdGenerator();
-            String tid = idGenerator.generateId();
-            while(todoDao.existsById(tid)){
-                tid = idGenerator.generateId();
-            }
-
-            todoDto.setId(tid);
-            todoDto.setRegDate(LocalDateTime.now());
-            todoDto.setModifyDate(LocalDateTime.now());
-            Todo todo = TodoAdaptor.dtoToEntity(todoDto);
-
-            todoDao.save(todo);
-
-            String todoRecordId = idGenerator.generateId();
-            while(todoRecordDao.existsById(todoRecordId)){
-                todoRecordId = idGenerator.generateId();
-            }
-
-            Map<String, String> diff = new HashMap<>();
-            diff.put("message", todo.getTitle() + "이(가) 생성되었습니다.");
-            TodoRecord todoRecord = TodoRecord.builder()
-                    .id(todoRecordId)
-                    .diff(diff)
-                    .todo_id(todo.getId())
-                    .modifyDate(LocalDateTime.now())
-                    .build();
-
-            todoRecordDao.save(todoRecord);
-            return true;
-
-        } catch(Exception e){
-            e.printStackTrace();
+        IdGenerator idGenerator = new IdGenerator();
+        String tid = idGenerator.generateId();
+        while (todoDao.existsById(tid)) {
+            tid = idGenerator.generateId();
         }
 
-        return false;
+        todoDto.setId(tid);
+        todoDto.setRegDate(LocalDateTime.now());
+        todoDto.setModifyDate(LocalDateTime.now());
+        Todo todo = TodoAdaptor.dtoToEntity(todoDto);
+
+        try {
+            createTodoRecord(todoDao.save(todo));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void createTodoRecord(Todo todo) throws JpaSystemException {
+        IdGenerator idGenerator = new IdGenerator();
+        String todoRecordId = idGenerator.generateId();
+        while (todoRecordDao.existsById(todoRecordId)) {
+            todoRecordId = idGenerator.generateId();
+        }
+
+        Map<String, String> diff = new HashMap<>();
+        diff.put("message", todo.getTitle() + "이(가) 생성되었습니다.");
+        TodoRecord todoRecord = TodoRecord.builder()
+                .id(todoRecordId)
+                .diff(diff)
+                .todo_id(todo.getId())
+                .modifyDate(LocalDateTime.now())
+                .build();
+
+        todoRecordDao.save(todoRecord);
     }
 
     @Transactional
     public Object getTodoList(String projectId) {
 
         List<TodoDto> todoDtoList = new ArrayList<>();
-        try{
+        try {
             TodoDto todoDto = null;
 
             List<Todo> todoList = todoDao.findTodosByProjectId(projectId);
-            for(Todo todo : todoList) {
+            for (Todo todo : todoList) {
                 todoDto = TodoAdaptor.entityToDto(todo);
 
                 Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
                 todoDto.setTeamName(team.getName());
 
                 todoDto.setMemberName("담당자 없음");
-                if(Optional.ofNullable(todo.getMemberId()).isPresent()){
+                if (Optional.ofNullable(todo.getMemberId()).isPresent()) {
                     Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
                     todoDto.setMemberName(member.getName());
                 }
@@ -98,7 +101,7 @@ public class TodoService {
 
             return refactoring(todoDtoList, projectId);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -113,14 +116,14 @@ public class TodoService {
             int size = teamList.size();
 
             List<Object> list = new ArrayList<>();
-            for(int i = 0 ; i < size ; i++){
+            for (int i = 0; i < size; i++) {
                 Map<String, Object> teamInfo = new HashMap<>();
                 teamInfo.put("teamId", teamList.get(i).getId());
                 teamInfo.put("teamName", teamList.get(i).getName());
 
                 List<TodoDto> tmp = new ArrayList<>();
-                for(TodoDto todoDto : todoDtoList){
-                    if(todoDto.getTeamId().equals(teamList.get(i).getId())){
+                for (TodoDto todoDto : todoDtoList) {
+                    if (todoDto.getTeamId().equals(teamList.get(i).getId())) {
                         tmp.add(todoDto);
                     }
                 }
@@ -161,7 +164,7 @@ public class TodoService {
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
-            while(todoRecordDao.existsById(todoRecordId)){
+            while (todoRecordDao.existsById(todoRecordId)) {
                 todoRecordId = idGenerator.generateId();
             }
 
@@ -185,7 +188,7 @@ public class TodoService {
             todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
             alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 
             return false;
@@ -204,7 +207,7 @@ public class TodoService {
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
-            while(todoRecordDao.existsById(todoRecordId)){
+            while (todoRecordDao.existsById(todoRecordId)) {
                 todoRecordId = idGenerator.generateId();
             }
 
@@ -213,7 +216,7 @@ public class TodoService {
             System.out.println("todoTmp : " + todoTmp);
             Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String writer = "";
-            if(member == null ){
+            if (member == null) {
                 writer = "()";
             } else {
                 writer = member.getName();
@@ -250,7 +253,7 @@ public class TodoService {
             todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
             alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 
             return false;
@@ -269,7 +272,7 @@ public class TodoService {
 
             IdGenerator idGenerator = new IdGenerator();
             String todoRecordId = idGenerator.generateId();
-            while(todoRecordDao.existsById(todoRecordId)){
+            while (todoRecordDao.existsById(todoRecordId)) {
                 todoRecordId = idGenerator.generateId();
             }
 
@@ -277,7 +280,7 @@ public class TodoService {
             Map<String, String> diff = new HashMap<>();
 
             String writer = "";
-            if(todoTmp.getMemberId() != null) {
+            if (todoTmp.getMemberId() != null) {
                 Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
                 writer = member.getName();
             }
@@ -285,7 +288,7 @@ public class TodoService {
             Member nextMember = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String nextWriter = nextMember.getName();
 
-            if(writer.equals("")){
+            if (writer.equals("")) {
                 diff.put("before", writer);
                 diff.put("after", nextWriter);
                 diff.put("message", "할일의 담당자가 " + nextWriter + "님으로 변경되었습니다.");
@@ -303,9 +306,10 @@ public class TodoService {
             todoRecordDao.save(todoRecord);
             todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
 
-            if(!writer.equals("")) alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
+            if (!writer.equals(""))
+                alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 
             return false;
@@ -318,7 +322,7 @@ public class TodoService {
         Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
         TodoDto todoDto = TodoAdaptor.entityToDto(todo);
         todoDto.setMemberName("담당자 없음");
-        if(Optional.ofNullable(todo.getMemberId()).isPresent()) {
+        if (Optional.ofNullable(todo.getMemberId()).isPresent()) {
             Member member = memberDao.findMemberById(todoDto.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
             todoDto.setMemberName(member.getName());
         }
@@ -329,7 +333,7 @@ public class TodoService {
         return todoDto;
     }
 
-    private TodoRecord setTodoRecord(String todoRecordId, Map<String, String> diff, String todoId){
+    private TodoRecord setTodoRecord(String todoRecordId, Map<String, String> diff, String todoId) {
         return TodoRecord.builder()
                 .id(todoRecordId)
                 .diff(diff)
