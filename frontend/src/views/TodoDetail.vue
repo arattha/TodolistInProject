@@ -9,12 +9,12 @@
           <div class="flex items-end justify-center text-3xl ml-5">
             <i
               class="fas fa-star text-white cursor-pointer"
-              v-if="!userInfo.isBookmark"
+              v-if="!userInfo.bookmark"
               @click="toggleBookmark()"
             ></i>
             <i
               class="fas fa-star text-yellow-400 cursor-pointer"
-              v-if="userInfo.isBookmark"
+              v-if="userInfo.bookmark"
               @click="toggleBookmark()"
             ></i>
           </div>
@@ -222,7 +222,7 @@ export default {
         name: '',
         teamName: '',
         // 즐겨찾기 여부
-        isBookmark: true,
+        bookmark: true,
       },
     };
   },
@@ -282,7 +282,7 @@ export default {
       this.showModal();
     },
     toggleBookmark() {
-      this.userInfo.isBookmark = !this.userInfo.isBookmark;
+      this.userInfo.bookmark = !this.userInfo.bookmark;
     },
     goDetail() {
       this.curPage = 0;
