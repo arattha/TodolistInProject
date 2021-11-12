@@ -86,7 +86,8 @@ public class AlarmService {
             // 2. 1에서 얻은 member 목록에 담당자가 없다면 따로 담당자에게 alarm 추가 기능 구현
 
             Todo todo = todoDao.findTodoById(todoId).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-            Member manageMember = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+            Member manageMember = memberDao.findMemberById(todo.getMemberId()).orElse(null);
 
             boolean isInclude = false;      // memberList에 manageMemberId가 포함되어 있는지 확인할 변수
 
@@ -96,7 +97,7 @@ public class AlarmService {
 
             for (String memberId : memberIdList) {
 
-                if(memberId.equals(manageMember.getId())) isInclude = true;
+                if(manageMember != null && memberId.equals(manageMember.getId())) isInclude = true;
 
                 while (alarmDao.existsById(aid)) {
                     aid = idGenerator.generateId();
@@ -113,7 +114,7 @@ public class AlarmService {
             }
 
             // 담당자가 북마크된 memberList에 없으므로 따로 추가해준다.
-            if(!isInclude){
+            if(manageMember != null && !isInclude){
                 while (alarmDao.existsById(aid)) {
                     aid = idGenerator.generateId();
                 }
