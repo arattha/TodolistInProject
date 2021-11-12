@@ -94,6 +94,7 @@ import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
+import { getMyTeam } from '@/api/team.js';
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
@@ -121,6 +122,17 @@ export default {
     this.set_project_id(this.projectId);
     this.connect();
     this.set_project_name(this.projectName);
+    getMyTeam(
+      this.projectId,
+      this.id,
+      (res) => {
+        console.log(res);
+        this.set_team_id(res.object.id);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   },
   computed: {
     ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
@@ -138,7 +150,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt', 'set_bookmarkList']),
+    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt', 'set_bookmarkList', 'set_team_id']),
     connect() {
         this.stomp.send(
           '/server/getTodo',

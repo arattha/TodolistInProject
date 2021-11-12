@@ -21,9 +21,9 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        @click="teamAdd()"
+        @click="addMyTodo()"
       >
-        할일추가
+        내 할일추가
       </button>
       <button
         class="
@@ -83,16 +83,18 @@
     </div>
     <MyTodoFilter
       v-if="isShow"
-      @closeModal="closeModal"
+      @closeModal="closeFilter"
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
+    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
+import MyTodoAddModal from '@/components/modal/MyTodoAddModal.vue';
 import { getBookmark } from '@/api/bookmark.js';
 import { mapGetters, mapActions } from "vuex";
 import Stomp from "webstomp-client";
@@ -103,6 +105,7 @@ export default {
   components: {
     StatusKanban,
     MyTodoFilter,
+    MyTodoAddModal,
   },
   data() {
     return {
@@ -132,6 +135,7 @@ export default {
       bookmarkFilter: false,
       filters: null,
       isShow: false,
+      isModalShow: false,
     };
   },
   async created() {
@@ -171,10 +175,19 @@ export default {
         this.updateList();
       });
     },
+    addMyTodo() {
+      this.showModal();
+    },
+    showModal() {
+      this.isModalShow = true;
+    },
+    closeModal() {
+      this.isModalShow = false;
+    },
     todoFilter() {
       this.isShow = true;
     },
-    closeModal() {
+    closeFilter() {
       this.isShow = false;
     },
     applyFilter(filters) {
