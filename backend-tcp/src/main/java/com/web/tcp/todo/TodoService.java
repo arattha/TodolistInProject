@@ -139,6 +139,63 @@ public class TodoService {
 
     }
 
+    public Object getTodoMyList(String projectId, String memberId) {
+        List<TodoDto> todoDtoList = new ArrayList<>();
+        try{
+            TodoDto todoDto = null;
+
+            List<Todo> todoList = todoDao.findTodosByProjectIdAndMemberId(projectId, memberId);
+            for(Todo todo : todoList) {
+                todoDto = TodoAdaptor.entityToDto(todo);
+
+                Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+                todoDto.setTeamName(team.getName());
+                Member member = memberDao.findMemberById(todo.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                todoDto.setMemberName(member.getName());
+
+                todoDtoList.add(todoDto);
+            }
+
+            return refactoringMyTodo(todoDtoList);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Object refactoringMyTodo(List<TodoDto> todoDtoList) {
+
+        try {
+
+            String statusList[] = new String[] {"New", "접수", "진행", "완료", "진행하지않음"};
+            List<Object> list = new ArrayList<>();
+
+            for(String status : statusList){
+                Map<String, Object> teamInfo = new HashMap<>();
+                teamInfo.put("status", status);
+
+                List<TodoDto> tmp = new ArrayList<>();
+                for(TodoDto todoDto : todoDtoList){
+                    if(todoDto.getStatus().equals(status)){
+                        tmp.add(todoDto);
+                    }
+                }
+                teamInfo.put("todoList", tmp);
+
+                list.add(teamInfo);
+            }
+
+            return list;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     @Transactional
     public Todo getTodo(String todoTitle) {
 
@@ -210,7 +267,7 @@ public class TodoService {
 
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
-            System.out.println("todoTmp : " + todoTmp);
+
             Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String writer = "";
             if(member == null ){
@@ -337,4 +394,5 @@ public class TodoService {
                 .modifyDate(LocalDateTime.now())
                 .build();
     }
+
 }

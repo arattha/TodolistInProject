@@ -94,13 +94,15 @@
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default {
   name: 'MYTODO',
   components: {
     StatusKanban,
-    MyTodoFilter
+    MyTodoFilter,
   },
   data() {
     return {
@@ -127,10 +129,10 @@ export default {
         },
       ],
       todoInfoList: [],
-      bookmarkList:[],
-      bookmarkFilter : false,
-      filters:null,
-      isShow:false,
+      bookmarkList: [],
+      bookmarkFilter: false,
+      filters: null,
+      isShow: false,
     };
   },
   async created() {
@@ -138,7 +140,7 @@ export default {
     await this.connect();
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName','stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -153,18 +155,21 @@ export default {
     },
   },
   methods: {
-    connect(){
+    ...mapActions(['set_totalAlarmCnt', 'set_stomp']),
+    connect() {
       this.stomp.send(
-        '/server/getTodo',
+        '/server/getMyTodo',
         JSON.stringify({
           projectId: this.projectId,
+          memberId: this.id,
         }),
         {}
       );
-    // subscribe 로 alarm List 가져오기
-      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-        this.todoInfoList = JSON.parse(res.body);
-        this.setStatusTodo();
+      
+      // subscribe 로 alarm List 가져오기
+      this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
+        this.statusInfoList = JSON.parse(res.body);
+        console.log("mytodo", this.statusInfoList);
       });
     },
     todoFilter() {
@@ -181,30 +186,6 @@ export default {
       this.filters = null;
       this.isShow = false;
     },
-    setStatusTodo() {
-      this.statusInfoList[0].todoList = [];
-      this.statusInfoList[1].todoList = [];
-      this.statusInfoList[2].todoList = [];
-      this.statusInfoList[3].todoList = [];
-      this.statusInfoList[4].todoList = [];
-
-      for (let i = 0; i < this.todoInfoList.length; ++i) {
-        if(this.todoInfoList[i].memberId != this.id) continue;
-
-        if (this.todoInfoList[i].status === 'New') {
-          this.statusInfoList[0].todoList.push(this.todoInfoList[i]);
-        } else if (this.todoInfoList[i].status === '접수') {
-          this.statusInfoList[1].todoList.push(this.todoInfoList[i]);
-        } else if (this.todoInfoList[i].status === '진행') {
-          this.statusInfoList[2].todoList.push(this.todoInfoList[i]);
-        } else if (this.todoInfoList[i].status === '완료') {
-          this.statusInfoList[3].todoList.push(this.todoInfoList[i]);
-        } else {
-          this.statusInfoList[4].todoList.push(this.todoInfoList[i]);
-        }
-      }
-      this.updateBookmarkList();
-    },
     changeStatus(val) {
       if (val.status === 'New') {
         this.statusInfoList[0].todoList[val.index].status = val.status;
@@ -217,6 +198,12 @@ export default {
       } else {
         this.statusInfoList[4].todoList[val.index].status = val.status;
       }
+
+      this.stomp.send(
+        'server/moveTodo/status',
+        this.statusInfoList[0].todoList[val.index],
+        {}
+      );
     },
     async getBookmarkList() {
       this.bookmarkList = [];
@@ -235,9 +222,8 @@ export default {
           console.log(error);
         }
       );
-      
     },
-    updateBookmarkList(){
+    updateBookmarkList() {
       for (var i = 0; i < this.statusInfoList.length; i++) {
         for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
           if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
@@ -251,6 +237,36 @@ export default {
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // just use `this` this.name = to.params.name next()
+    if (to.fullPath !== from.fullPath) {
+      this.stomp.disconnect();
+      const serverURL = 'http://localhost:8082/socket';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect({}, () => {
+
+        this.set_stomp(this.stompClient);
+        // 소켓 연결 성공
+        this.connected = true;
+        this.stompClient.debug = () => {};
+        this.stompClient.send(
+          '/server/getAlarm',
+          JSON.stringify({
+            memberId: this.id,
+          }),
+          {}
+        );
+
+        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
+          this.alarmList = JSON.parse(res.body);
+          this.set_totalAlarmCnt(this.alarmList.length);
+        });
+      });
+    }
+
+    next();
   },
 };
 </script>
