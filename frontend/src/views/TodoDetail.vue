@@ -55,7 +55,7 @@
               보내기
             </button>
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
-              <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
+              <img :src="'http://localhost:8080/img/' + id" />
             </div>
             <div class="flex flex-col">
               <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
@@ -229,7 +229,6 @@ export default {
   },
   created() {
     this.curPage = 0;
-    this.goDetail();
     this.connect();
   },
   methods: {

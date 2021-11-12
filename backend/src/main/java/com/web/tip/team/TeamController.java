@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@ApiResponses(value = { @ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
+@ApiResponses(value = {@ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
         @ApiResponse(code = 403, message = "Forbidden", response = BasicResponse.class),
         @ApiResponse(code = 404, message = "Not Found", response = BasicResponse.class),
-        @ApiResponse(code = 500, message = "Failure", response = BasicResponse.class) })
+        @ApiResponse(code = 500, message = "Failure", response = BasicResponse.class)})
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -29,13 +29,13 @@ public class TeamController {
 
     @GetMapping
     @ApiOperation(value = "프로젝트 내 팀리스트 반환")
-    public Object getProjectTeam(@RequestParam String projectId){
+    public Object getProjectTeam(@RequestParam String projectId) {
         log.info("팀 리스트 목록 반환");
 
         List<TeamDto> teamList = (List<TeamDto>) teamService.getAllTeam(projectId);
         BasicResponse result = new BasicResponse();
 
-        if(teamList != null){
+        if (teamList != null) {
 
             result.status = true;
             result.data = "success";
@@ -56,33 +56,22 @@ public class TeamController {
     @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
     public Object getProjectMembers(@RequestParam String projectId) {
         log.info("프로젝트 내 멤버리스트 반환");
-
         List<MemberHasTeamDto> teamList = (List<MemberHasTeamDto>) teamService.getAllMembers(projectId);
+
         BasicResponse result = new BasicResponse();
+        result.status = true;
+        result.data = "success";
+        result.object = teamList;
 
-        if (!teamList.isEmpty()) {
-
-            result.status = true;
-            result.data = "success";
-            result.object = teamList;
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
-
-        } else {
-            result.status = false;
-            result.data = "fail";
-            result.object = null;
-
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/ncheck")
-    @ApiOperation(value = "프로젝트 내 멤버리스트 반환")
+    @ApiOperation(value = "프로젝트 내 이름 중복 체크")
     public Object teamNameCheck(@RequestParam String projectId, @RequestParam String teamName) {
         log.info("프로젝트 내 이름 중복 체크");
 
-        boolean check = teamService.teamNameCheck(projectId,teamName);
+        boolean check = teamService.teamNameCheck(projectId, teamName);
         BasicResponse result = new BasicResponse();
 
         if (check) {
@@ -104,13 +93,13 @@ public class TeamController {
 
     @PostMapping
     @ApiOperation(value = "프로젝트 내 새 팀 생성")
-    public Object createProjectTeam(@RequestBody CreationTeamRequest newTeam){
+    public Object createProjectTeam(@RequestBody CreationTeamRequest newTeam) {
         log.info("새 팀 생성");
 
         boolean flag = teamService.createProjectTeam(newTeam);
         BasicResponse result = new BasicResponse();
 
-        if(flag){
+        if (flag) {
             result.status = true;
             result.data = "success";
 
@@ -124,13 +113,13 @@ public class TeamController {
 
     @PutMapping
     @ApiOperation(value = "프로젝트 내 팀 멤버 수정")
-    public Object modifyProjectTeamMember(@RequestBody ModificationTeamRequest modifyTeam){
+    public Object modifyProjectTeamMember(@RequestBody ModificationTeamRequest modifyTeam) {
         log.info("팀 멤버 수정");
 
         boolean flag = teamService.modifyProjectTeamMember(modifyTeam);
         BasicResponse result = new BasicResponse();
 
-        if(flag){
+        if (flag) {
             result.status = true;
             result.data = "success";
 
@@ -144,13 +133,13 @@ public class TeamController {
 
     @PatchMapping
     @ApiOperation(value = "팀 이름 수정")
-    public Object modifyProjectTeamName(@RequestBody TeamDto teamDto){
+    public Object modifyProjectTeamName(@RequestBody TeamDto teamDto) {
         log.info("팀 이름 수정");
 
         boolean flag = teamService.modifyProjectTeamName(teamDto);
         BasicResponse result = new BasicResponse();
 
-        if(flag){
+        if (flag) {
             result.status = true;
             result.data = "success";
 
@@ -165,13 +154,13 @@ public class TeamController {
 
     @DeleteMapping
     @ApiOperation(value = "프로젝트 내 팀 삭제")
-    public Object deleteProjectTeam(@RequestParam String teamId){
+    public Object deleteProjectTeam(@RequestParam String teamId) {
         log.info("팀 삭제");
 
         boolean flag = teamService.deleteProjectTeam(teamId);
         BasicResponse result = new BasicResponse();
 
-        if(flag) {
+        if (flag) {
             result.status = true;
             result.data = "success";
 

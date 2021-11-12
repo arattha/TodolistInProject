@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-11/12 h-32 bg-contentGray rounded-lg my-3 shadow-lg py-3 px-5">
+  <div class="flex flex-col w-11/12 max-h-36 bg-contentGray rounded-lg my-3 shadow-lg py-3 px-5">
     <div class="flex justify-between w-full h-full">
       <div class="flex">
         <div class="flex items-center font-black text-lg">
@@ -8,12 +8,12 @@
       </div>
     </div>
     <div
-      class="flex"
+      class="flex w-full h-full"
       :class="{ 'justify-between': todoHistory.isContent, 'justify-end': !todoHistory.isContent }"
     >
       <button
         class="
-          my-auto
+          mt-3
           bg-itemGray
           text-black text-sm
           font-semibold
@@ -31,20 +31,36 @@
           focus:ring-offset-purple-200
         "
         v-if="todoHistory.isContent"
+        @click="showModal"
       >
         비교하기
       </button>
-      <div class="flex justify-end text-xs items-center">{{ todoHistory.modifyDate }}</div>
+      <div class="flex justify-end text-xs items-end">{{ todoHistory.modifyDate }}</div>
     </div>
+    <Todo-Detail-Diff-Modal v-if="isShow" @closeModal="closeModal" :todoHistory="todoHistory" />
   </div>
 </template>
 
 <script>
+import TodoDetailDiffModal from '@/components/modal/TodoDetailDiffModal.vue';
 export default {
   name: 'TODOHISTORYCARD',
   props: ['todoHistory'],
+  components: {
+    TodoDetailDiffModal,
+  },
   data() {
-    return {};
+    return {
+      isShow: false,
+    };
+  },
+  methods: {
+    showModal() {
+      this.isShow = true;
+    },
+    closeModal() {
+      this.isShow = false;
+    },
   },
 };
 </script>

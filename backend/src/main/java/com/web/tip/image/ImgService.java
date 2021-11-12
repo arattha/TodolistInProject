@@ -27,14 +27,14 @@ public class ImgService {
     MemberDetailDao memberDetailDao;
 
     public Resource getFile(final String id) {
-        MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Resource img = new FileSystemResource("//home//ubuntu//upload//" + Optional.ofNullable(memberDetail.getProfileImg())
-                .orElse("default.png"));
+        Resource img = new FileSystemResource("//home//ubuntu//upload//default.png");
 
-        if (!img.exists()) {
-            img = new FileSystemResource("//home//ubuntu//upload//default.png");
+        if(Optional.ofNullable(id).isPresent() && !"null".equals(id)) {
+            MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(id)
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            img = new FileSystemResource("//home//ubuntu//upload//" + Optional.ofNullable(memberDetail.getProfileImg())
+                    .orElse("default.png"));
         }
 
         return img;

@@ -11,7 +11,7 @@
       bottom-0
       w-screen
       h-screen
-      z-100
+      z-50
       bg-buttonGray bg-opacity-75
     "
   >
