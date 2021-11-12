@@ -246,7 +246,7 @@ export default {
 
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
         var todo = JSON.parse(res.body);
-
+        console.log("todo :",todo);
         this.todoInfo.id = todo.id;
         this.todoInfo.title = todo.title;
         this.todoInfo.memberId = todo.memberId;
@@ -260,7 +260,7 @@ export default {
     },
     changeStatus(status) {
       this.todoInfo.status = status;
-      console.log("info :",this.todoInfo);
+      console.log("todoinfo in detail :",this.todoInfo);
       this.stomp.send('/server/movoTodo/status',
       JSON.stringify({
         id: this.todoInfo.id,

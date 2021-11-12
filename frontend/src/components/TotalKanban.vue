@@ -96,6 +96,7 @@ export default {
     };
   },
   created() {
+    console.log("teamInfoList in kanban:",this.teamInfo);
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
