@@ -109,7 +109,7 @@ public class TodoService {
 
         try {
 
-            List<Team> teamList = teamDao.findTeamByProjectId(projectId);
+            List<Team> teamList = teamDao.findTeamByProjectIdAndIsUse(projectId, true);
             int size = teamList.size();
 
             List<Object> list = new ArrayList<>();
@@ -117,7 +117,6 @@ public class TodoService {
                 Map<String, Object> teamInfo = new HashMap<>();
                 teamInfo.put("teamId", teamList.get(i).getId());
                 teamInfo.put("teamName", teamList.get(i).getName());
-//                teamInfo.put("todoInfoList", todoDao.findTodoByTeamId(teamList.get(i).getId()));
 
                 List<TodoDto> tmp = new ArrayList<>();
                 for(TodoDto todoDto : todoDtoList){
@@ -129,7 +128,7 @@ public class TodoService {
 
                 list.add(teamInfo);
             }
-            System.out.println(list);
+
             return list;
 
         } catch (Exception e) {
