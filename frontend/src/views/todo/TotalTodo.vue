@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt']),
-    async connect() {
+    connect() {
         this.stomp.send(
           '/server/getTodo',
           JSON.stringify({
@@ -151,8 +151,9 @@ export default {
         );
 
         // subscribe 로 alarm List 가져오기
-        await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
           this.teamInfoList = JSON.parse(res.body);
+          console.log("teamInfoList in TotalTodo :", this.teamInfoList);
         });
         this.updateList();
 
