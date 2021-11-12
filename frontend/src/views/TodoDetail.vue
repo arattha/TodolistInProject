@@ -350,10 +350,15 @@ export default {
           this.alarmList = JSON.parse(res.body);
           this.set_totalAlarmCnt(this.alarmList.length);
         });
+
+        next();
       });
+    } else {
+      next();
     }
 
-    next();
+
+
   },
 };
 </script>
