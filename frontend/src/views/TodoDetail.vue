@@ -236,6 +236,8 @@ export default {
   methods: {
     ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
     connect() {
+      console.log("todoid ", this.todoId);
+      console.log("stomp", this.stomp);
       this.stomp.send(
         '/server/getTodoInfo',
         JSON.stringify({
