@@ -252,33 +252,35 @@ export default {
     },
     todoAdd() {
       // 팀 이름 입력이 필수!
-      console.log(this.checkedMember.id);
       if (!this.isValid) {
         return;
       }
-      if (this.checkedMember) {
+
+      if (Object.keys(this.checkedMember).length !== 0) {
         this.stomp.send(
           '/server/addTodo',
           JSON.stringify({
             title: this.todoName,
-            status: 'New',
+            status: '접수',
             memberId: this.checkedMember.id,
             projectId: this.projectId,
             teamId: this.teamId,
           })
         );
-        return;
+      } else {
+        this.stomp.send(
+          '/server/addTodo',
+          JSON.stringify({
+            title: this.todoName,
+            status: 'New',
+            projectId: this.projectId,
+            teamId: this.teamId,
+          })
+        );
       }
-      this.stomp.send(
-        '/server/addTodo',
-        JSON.stringify({
-          title: this.todoName,
-          status: 'New',
-          projectId: this.projectId,
-          teamId: this.teamId,
-        })
-      );
-      console.log(this.todoName, this.checkedMember);
+
+      this.checkedMember = {};
+      this.closeModal();
     },
   },
   computed: {
