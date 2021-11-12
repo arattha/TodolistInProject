@@ -93,7 +93,6 @@ import TotalKanban from '@/components/TotalKanban.vue';
 import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
-import { getTeam } from '@/api/team.js';
 import { getBookmark } from '@/api/bookmark.js';
 
 export default {
@@ -118,14 +117,13 @@ export default {
 
   async created() {
     await this.getBookmarkList();
-    this.getTeamList();
     this.isShow = false;
     this.set_project_id(this.projectId);
     this.connect();
     this.set_project_name(this.projectName);
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'isFirst']),
     teamFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -141,76 +139,30 @@ export default {
   },
   methods: {
     ...mapActions(['set_project_name', 'set_project_id', 'set_stomp']),
-    connect() {
-      this.stomp.send(
-        '/server/getTodo',
-        JSON.stringify({
-          projectId: this.projectId,
-        }),
-        {}
-      );
+    async connect() {
+        this.stomp.send(
+          '/server/getTodo',
+          JSON.stringify({
+            projectId: this.projectId,
+          }),
+          {}
+        );
 
-          // subscribe 로 alarm List 가져오기
-      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-        this.todoList = JSON.parse(res.body);
+        // subscribe 로 alarm List 가져오기
+        await this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+          this.teamInfoList = JSON.parse(res.body);
+        });
         this.updateList();
-      });
-    },
-    getTeamList() {
-      getTeam(
-        this.projectId,
-        (res) => {
-          // team 가져옴
 
-          var tmp = res.object;
-
-          this.teamInfoList = [];
-
-          tmp.forEach((value) => {
-            this.teamInfoList.push({
-              teamId: value.id,
-              teamName: value.name,
-              totalCnt: 330,
-              addCnt: 30,
-              doneCnt: 30,
-              progressCnt: 20,
-              todoInfoList: [],
-            });
-          });
-
-          this.updateList();
-        },
-        () => {
-          console.log('team 가져오기 실패');
-        }
-      );
     },
     updateList() {
-      for (var i = 0; i < this.todoList.length; i++) {
-        var teamId = this.todoList[i].teamId;
+      for (var i = 0; i < this.teamInfoList.length; i++) {
+        for (var j = 0; j < this.teamInfoList[i].length; j++) {
 
-        if(this.bookmarkList.indexOf(this.todoList[i].id) > -1){
-          this.todoList[i].isBookmark = true;
-        } else {
-          this.todoList[i].isBookmark = false;
-        }
-
-        for (var j = 0; j < this.teamInfoList.length; j++) {
-          if (this.teamInfoList[j].teamId == teamId) {
-            this.teamInfoList[j].todoInfoList.push({
-              id: this.todoList[i].id,
-              title: this.todoList[i].title,
-              status: this.todoList[i].status,
-              projectId: this.todoList[i].projectId,
-              teamId: teamId,
-              memberId: this.todoList[i].memberId,
-              memberName: this.todoList[i].memberName,
-              modifyDate: this.todoList[i].modifyDate,
-              regDate: this.todoList[i].regDate,
-              isBookmark: this.todoList[i].isBookmark,
-            });
-
-            break;
+          if(this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1){
+            this.teamInfoList[i].todoInfoList[j].isBookmark = true;
+          } else {
+            this.teamInfoList[i].todoInfoList[j].isBookmark = false;
           }
         }
       }

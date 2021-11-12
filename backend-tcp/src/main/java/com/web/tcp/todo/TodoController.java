@@ -49,7 +49,9 @@ public class TodoController {
     // 수정된 Todo의 목록들을 해당 프로젝트를 구독 중인 client들에게 전송
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
-        System.out.println(todoDto);
+
+        System.out.println("fasdnkllkfn  : " + todoDto);
+
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);
         } else if(type.equals("team")) {

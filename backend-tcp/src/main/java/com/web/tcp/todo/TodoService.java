@@ -96,12 +96,48 @@ public class TodoService {
                 todoDtoList.add(todoDto);
             }
 
+            return refactoring(todoDtoList, projectId);
+
         } catch (Exception e){
             e.printStackTrace();
             return null;
         }
 
-        return todoDtoList;
+    }
+
+    private Object refactoring(List<TodoDto> todoDtoList, String projectId) {
+
+        try {
+
+            List<Team> teamList = teamDao.findTeamByProjectId(projectId);
+            int size = teamList.size();
+
+            List<Object> list = new ArrayList<>();
+            for(int i = 0 ; i < size ; i++){
+                Map<String, Object> teamInfo = new HashMap<>();
+                teamInfo.put("teamId", teamList.get(i).getId());
+                teamInfo.put("teamName", teamList.get(i).getName());
+//                teamInfo.put("todoInfoList", todoDao.findTodoByTeamId(teamList.get(i).getId()));
+
+                List<TodoDto> tmp = new ArrayList<>();
+                for(TodoDto todoDto : todoDtoList){
+                    if(todoDto.getTeamId().equals(teamList.get(i).getId())){
+                        tmp.add(todoDto);
+                    }
+                }
+                teamInfo.put("todoInfoList", tmp);
+
+                list.add(teamInfo);
+            }
+            System.out.println(list);
+            return list;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Transactional
