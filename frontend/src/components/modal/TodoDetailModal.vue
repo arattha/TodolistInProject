@@ -200,8 +200,8 @@ export default {
       }
       createTodoContent(
         { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
-        (res) => {
-          console.log(res);
+        () => {
+          // console.log(res);
           this.closeModal(false);
         },
         (error) => {

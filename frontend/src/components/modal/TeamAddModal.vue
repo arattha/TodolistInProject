@@ -287,7 +287,6 @@ export default {
           teamName : this.teamName,
         },
         (res) => {
-          console.log(res);
           if(res.status){
             this.isValid = true;
           } else {
@@ -316,8 +315,7 @@ export default {
           teamName: this.teamName,
           memberList: mlist
         },
-        (res) => {
-          console.log("성공",res);
+        () => {
         },
         (error) => {
           console.log(error);

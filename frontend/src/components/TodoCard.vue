@@ -136,7 +136,6 @@ export default {
         return;
       }
 
-      console.log('이동 : ' + this.todoInfo.title + ' 상세 페이지');
       this.set_todo_id(this.todoInfo.id);
       this.$router.push(`/${this.todoInfo.id}/detail`);
     },

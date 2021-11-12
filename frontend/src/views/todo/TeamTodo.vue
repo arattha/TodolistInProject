@@ -202,7 +202,6 @@ export default {
       // stautsInfoList를 초기화
       this.setStatusInfoList();
 
-      console.log(this.selectTeam);
       // selectTeam에 팀명이 담기게 되므로 이를 이용해서 백엔드에서
       // 해당 팀의 팀원 리스트를 아래 todoInfoList 담으면 된다.
       this.todoInfoList = [
