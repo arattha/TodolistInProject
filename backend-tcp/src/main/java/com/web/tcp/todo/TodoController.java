@@ -64,6 +64,7 @@ public class TodoController {
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
 
+        System.out.println(todoDto);
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);
         } else if(type.equals("team")) {
@@ -76,6 +77,7 @@ public class TodoController {
 
         String projectId = todoDto.getProjectId();
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
+        template.convertAndSend("/client/detail/" + todoDto.getId(), todoService.getTodoInfo(todoDto.getId()));
     }
 
     // client가 '/server/getTodoInfo'경로로 Member의 Id와 Todo의 Id 전송

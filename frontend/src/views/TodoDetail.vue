@@ -183,7 +183,8 @@
     <Todo-Team-Member-Move-Modal
       v-if="isTeamMemberMoveModalShow"
       @closeModal="closeTeamMemberMoveModal"
-      :todoId="todoInfo.id"
+      :todoInfo="todoInfo"
+      :isDetail="true"
     />
   </div>
 </template>
@@ -251,11 +252,17 @@ export default {
       
     },
     changeStatus(status) {
-      console.log(this.todoInfo);
+      
       this.todoInfo.status = status;
+
+      let date = new Date();
+      this.todoInfo.modifyDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" 
+      + date.getHours() + ":" + (date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()) + ":" + date.getSeconds();
+
       this.stomp.send('/server/moveTodo/status',
         JSON.stringify(this.todoInfo),
       {});
+      
     },
     todoContentAdd() {
       this.showModal();
