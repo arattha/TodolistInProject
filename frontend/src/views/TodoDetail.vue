@@ -64,10 +64,10 @@
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
             <div class="flex justify-start lg:justify-end lg:items-center text-sm mr-5 lg:mr-0">
-              생성일 : {{ todoInfo.regDate }}
+              생성일 : {{ todoInfo.regDate.split('T')[0] }}
             </div>
             <div class="flex lg:justify-end lg:items-center text-sm">
-              변경일 : {{ todoInfo.modifyDate }}
+              변경일 : {{ todoInfo.modifyDate.split('T')[0] }}
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['id', 'todoId', 'stomp']),
+    ...mapGetters(['id', 'todoId', 'stomp', 'projectId']),
   },
   created() {
     this.curPage = 0;
@@ -236,8 +236,6 @@ export default {
   methods: {
     ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
     connect() {
-      console.log("todoid ", this.todoId);
-      console.log("stomp", this.stomp);
       this.stomp.send(
         '/server/getTodoInfo',
         JSON.stringify({
@@ -247,35 +245,16 @@ export default {
       );
 
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
-        var todo = JSON.parse(res.body);
-        console.log("todo :",todo);
-        this.todoInfo.id = todo.id;
-        this.todoInfo.title = todo.title;
-        this.todoInfo.memberId = todo.memberId;
-        this.todoInfo.memberName = todo.memberName;
-        this.todoInfo.teamName = todo.teamName;
-        this.todoInfo.status = todo.status;
-        this.todoInfo.modifyDate = todo.modifyDate.split('T')[0];
-        this.todoInfo.regDate = todo.regDate.split('T')[0];
+        
+        this.todoInfo = JSON.parse(res.body);
       });
       
     },
     changeStatus(status) {
+      console.log(this.todoInfo);
       this.todoInfo.status = status;
-      console.log("todoinfo in detail :",this.todoInfo);
-      this.stomp.send('/server/movoTodo/status',
-      JSON.stringify({
-        id: this.todoInfo.id,
-        title: this.todoInfo.title,
-        status: this.todoInfo.status,
-        projectId: this.todoInfo.projectId,
-        teamId: this.todoInfo.teamId,
-        teamName: this.todoInfo.teamName,
-        memberId: this.todoInfo.id,
-        memberName: this.todoInfo.name,
-        modifyDate: this.todoInfo.modifyDate,
-        regDate: this.todoInfo.regDate,
-      }),
+      this.stomp.send('/server/moveTodo/status',
+        JSON.stringify(this.todoInfo),
       {});
     },
     todoContentAdd() {

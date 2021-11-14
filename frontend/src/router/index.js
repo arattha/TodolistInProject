@@ -101,7 +101,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.name);
+  
   if (to.name === 'Project') {
     store.dispatch('set_project_name', '');
     next();
