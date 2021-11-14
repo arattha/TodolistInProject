@@ -161,7 +161,6 @@ export default {
   async created() {
 
     await this.getTeamList();
-    this.setStatusInfoList();
     this.changeTeam();
 
     /* 
@@ -201,7 +200,6 @@ export default {
               teamName: value.name
             });
           });
-          console.log("team List : ",this.teamList);
     
           this.getBookmarkList();
           const findTeam = this.teamList.find((val) => {
@@ -211,7 +209,7 @@ export default {
           });
 
           this.selectTeam = findTeam;
-          console.log("seteam",this.selectTeam);
+          this.setStatusInfoList();
         },
         () => {
           console.log('team 가져오기 실패');
@@ -220,19 +218,20 @@ export default {
     
     },
     setStatusInfoList() {
-      
+      console.log("here", this.selectTeam);
       this.stomp.send(
         '/server/getTeamTodo',
         JSON.stringify({
           projectId: this.projectId,
-          teamId: this.selectTeam.id,
+          teamId: this.selectTeam.teamId,
         }),
         {}
       );
       
       // subscribe 로 alarm List 가져오기
-      this.stomp.subscribe('/client/todo/' + this.projectId + '/team/' + this.selectTeam.id, (res) => {
+      this.stomp.subscribe('/client/todo/' + this.projectId + '/team/' + this.selectTeam.teamId, (res) => {
         this.statusInfoList = JSON.parse(res.body);
+        console.log("hihi",this.statusInfoList);
       });
 
     },

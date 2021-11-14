@@ -48,12 +48,27 @@ public class TodoController {
     // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
     // 해당 프로젝트를 구독 중인 client들에게 send
     @MessageMapping(value = "/getMyTodo")
-    public void getTodo(String projectId, String memberId){
+    public void getMyTodo(String projectId, String memberId){
 
         try{
             projectId = (String) StringToJson(projectId).get("projectId");
             memberId = (String) StringToJson(memberId).get("memberId");
             template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
+    // 해당 프로젝트를 구독 중인 client들에게 send
+    @MessageMapping(value = "/getTeamTodo")
+    public void getTeamTodo(String projectId, String teamId){
+
+        try{
+            projectId = (String) StringToJson(projectId).get("projectId");
+            teamId = (String) StringToJson(teamId).get("teamId");
+            System.out.println(projectId + " " + teamId);
+            template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
         } catch(Exception e){
             e.printStackTrace();
         }
