@@ -1,11 +1,11 @@
 <template>
   <div>
-    <ul class="flex bg-indigo-50 rounded-md border-2">
+    <ul class="flex bg-itemGray rounded-md border-2">
       <li
         class="px-3 py-2 border-r-2 h-full w-full"
         :class="{
           'opacity-50': curPage === 1 || totalPageCnt === 0 || totalOffset === 0,
-          'hover:bg-indigo-200': curPage !== 1 && totalPageCnt !== 0 && totalOffset !== 0,
+          'hover:bg-menuGray': curPage !== 1 && totalPageCnt !== 0 && totalOffset !== 0,
           ' cursor-pointer': curPage !== 1 && totalPageCnt !== 0 && totalOffset !== 0,
         }"
         @click="goFirst"
@@ -16,7 +16,7 @@
         class="px-3 py-2 border-r-2 h-full w-full"
         :class="{
           'opacity-50': isFirst,
-          'hover:bg-indigo-200': !isFirst,
+          'hover:bg-menuGray': !isFirst,
           ' cursor-pointer': !isFirst,
         }"
         @click="prevOffset"
@@ -24,8 +24,13 @@
         <i class="fas fa-chevron-left"></i>
       </li>
       <li
-        class="float-left px-3 py-2 h-full w-full hover:bg-indigo-200 border-r-2"
-        :class="{ 'bg-indigo-200': page === curPage, 'cursor-pointer': page !== curPage }"
+        class="float-left px-3 py-2 h-full w-full hover:bg-menuGray border-r-2"
+        :class="{
+          'hover:bg-itemGray': page === curPage,
+          'cursor-pointer': page !== curPage,
+          'font-black': page === curPage,
+          'bg-menuGray': page === curPage,
+        }"
         v-for="page in pageList"
         :key="page"
         @click="sendPage(page)"
@@ -36,7 +41,7 @@
         class="px-3 py-2 h-full w-full border-r-2"
         :class="{
           'opacity-50': isLast,
-          'hover:bg-indigo-200': !isLast,
+          'hover:bg-menuGray': !isLast,
           ' cursor-pointer': !isLast,
         }"
         @click="nextOffset"
@@ -47,8 +52,7 @@
         class="px-3 py-2 h-full w-full"
         :class="{
           'opacity-50': curPage === totalPageCnt || totalPageCnt === 0 || totalOffset === 0,
-          'hover:bg-indigo-200':
-            curPage !== totalPageCnt && totalPageCnt !== 0 && totalOffset !== 0,
+          'hover:bg-menuGray': curPage !== totalPageCnt && totalPageCnt !== 0 && totalOffset !== 0,
           ' cursor-pointer': curPage !== totalPageCnt && totalPageCnt !== 0 && totalOffset !== 0,
         }"
         @click="goLast"
