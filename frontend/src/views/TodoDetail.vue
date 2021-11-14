@@ -55,7 +55,7 @@
               보내기
             </button>
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
-              <img :src="'http://localhost:8080/img/' + id" />
+              <img :src="'http://localhost:8080/img/' + todoInfo.id" />
             </div>
             <div class="flex flex-col">
               <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
@@ -193,8 +193,8 @@ import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'TODODETAIL',
@@ -236,8 +236,8 @@ export default {
   methods: {
     ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
     connect() {
-      console.log("todoid ", this.todoId);
-      console.log("stomp", this.stomp);
+      console.log('todoid ', this.todoId);
+      console.log('stomp', this.stomp);
       this.stomp.send(
         '/server/getTodoInfo',
         JSON.stringify({
@@ -248,7 +248,7 @@ export default {
 
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
         var todo = JSON.parse(res.body);
-        console.log("todo :",todo);
+        console.log('todo :', todo);
         this.todoInfo.id = todo.id;
         this.todoInfo.title = todo.title;
         this.todoInfo.memberId = todo.memberId;
@@ -258,25 +258,26 @@ export default {
         this.todoInfo.modifyDate = todo.modifyDate.split('T')[0];
         this.todoInfo.regDate = todo.regDate.split('T')[0];
       });
-      
     },
     changeStatus(status) {
       this.todoInfo.status = status;
-      console.log("todoinfo in detail :",this.todoInfo);
-      this.stomp.send('/server/movoTodo/status',
-      JSON.stringify({
-        id: this.todoInfo.id,
-        title: this.todoInfo.title,
-        status: this.todoInfo.status,
-        projectId: this.todoInfo.projectId,
-        teamId: this.todoInfo.teamId,
-        teamName: this.todoInfo.teamName,
-        memberId: this.todoInfo.id,
-        memberName: this.todoInfo.name,
-        modifyDate: this.todoInfo.modifyDate,
-        regDate: this.todoInfo.regDate,
-      }),
-      {});
+      console.log('todoinfo in detail :', this.todoInfo);
+      this.stomp.send(
+        '/server/movoTodo/status',
+        JSON.stringify({
+          id: this.todoInfo.id,
+          title: this.todoInfo.title,
+          status: this.todoInfo.status,
+          projectId: this.todoInfo.projectId,
+          teamId: this.todoInfo.teamId,
+          teamName: this.todoInfo.teamName,
+          memberId: this.todoInfo.id,
+          memberName: this.todoInfo.name,
+          modifyDate: this.todoInfo.modifyDate,
+          regDate: this.todoInfo.regDate,
+        }),
+        {}
+      );
     },
     todoContentAdd() {
       this.showModal();
@@ -333,7 +334,6 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-
         this.set_stomp(this.stompClient);
         // 소켓 연결 성공
         this.connected = true;
@@ -356,9 +356,6 @@ export default {
     } else {
       next();
     }
-
-
-
   },
 };
 </script>
