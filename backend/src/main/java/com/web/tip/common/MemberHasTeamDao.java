@@ -11,10 +11,9 @@ import java.util.Optional;
 public interface MemberHasTeamDao extends JpaRepository<MemberHasTeam, String> {
 
     List<MemberHasTeam> findMemberHasTeamByMemberId(String memberId);
-    Optional<MemberHasTeam> findMemberHasTeamByMemberIdAndTeamId(String memberId,String teamId);
     List<MemberHasTeam> findByTeamIdInAndIsUse(ArrayList<String> teamIds, boolean isUse);
     List<MemberHasTeam> findByTeamId(String teamId);
 
-    @Query("select mt from MemberHasTeam mt where mt.memberId = :memberId AND mt.teamId in :teamIds")
-    Optional<MemberHasTeam> findMemberHasTeamByMemberIdAndTeamIdIn(String memberId, List<String> teamIds);
+    @Query("select mt from MemberHasTeam mt where mt.memberId = :memberId AND mt.teamId in :teamIds And mt.isUse = :isUse")
+    Optional<MemberHasTeam> findMemberHasTeamByMemberIdAndTeamIdInAndIsUse(String memberId, List<String> teamIds, boolean isUse);
 }
