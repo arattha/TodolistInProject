@@ -122,8 +122,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.name);
-  if (to.name === 'Project') {
+  if (to.path === '/projects' || to.path === '/projects/done') {
     store.dispatch('set_project_name', '');
     next();
   } else if (to.name !== 'Login' && to.name !== 'Signup') {

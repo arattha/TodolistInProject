@@ -65,6 +65,8 @@ export default {
   created() {
     if (this.$route.path === '/projects') {
       this.pageType = 'total';
+    } else {
+      this.pageType = 'done';
     }
   },
   methods: {
