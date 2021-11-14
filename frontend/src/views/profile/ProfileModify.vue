@@ -33,7 +33,7 @@
               md:w-64 md:h-64
             "
           >
-            <img src="@/images/logo.png" class="object-cover" />
+            <img :src="uploadImg" class="object-cover" />
 
             <label
               for="getImgInput"
@@ -240,6 +240,7 @@ export default {
   },
   created() {
     this.memberId = this.$route.params.memberId;
+    this.uploadImg = 'http://localhost:8080/img/' + this.memberId;
     getProfile(
       this.memberId,
       (res) => {
@@ -264,11 +265,13 @@ export default {
       },
       userModifyInfo: {},
       img: '',
+      uploadImg: '',
     };
   },
   methods: {
     imgUpload(e) {
       const inputImg = e.target.files;
+      this.uploadImg = URL.createObjectURL(inputImg[0]);
       this.img = inputImg[0];
       console.log('이미지 업로드 로직!', inputImg[0]);
     },

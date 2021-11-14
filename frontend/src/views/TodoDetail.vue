@@ -55,7 +55,7 @@
               보내기
             </button>
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
-              <img :src="'http://localhost:8080/img/' + id" />
+              <img :src="'http://localhost:8080/img/' + todoInfo.id" />
             </div>
             <div class="flex flex-col">
               <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
@@ -354,7 +354,6 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-
         this.set_stomp(this.stompClient);
         // 소켓 연결 성공
         this.connected = true;
@@ -377,9 +376,6 @@ export default {
     } else {
       next();
     }
-
-
-
   },
 };
 </script>
