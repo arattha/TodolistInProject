@@ -95,10 +95,11 @@
     </div>
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full pb-2 w-full">
       <Status-Kanban
-        v-for="(statusInfo, index) in statusInfoList"
+        v-for="(statusInfo, index) in statusFilter"
         :key="index"
         :status="statusInfo.status"
         :todoList="statusInfo.todoList"
+        :bookmarkFilter="bookmarkFilter"
         @changeStatus="changeStatus"
       />
     </div>
@@ -113,6 +114,7 @@
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
 import { mapGetters, mapActions } from "vuex";
 
@@ -120,6 +122,7 @@ export default {
   name: 'TEAMTODO',
   components: {
     StatusKanban,
+    MyTodoFilter
   },
   data() {
     return {
@@ -194,6 +197,18 @@ export default {
   },
   computed:{
     ...mapGetters(['projectId', 'id', 'bookmarkList']),
+    statusFilter: function () {
+      let filters = this.filters;
+      if (filters == null) {
+        return this.statusInfoList; //filter가 없을 때는 원본 반환
+      } else {
+        return this.statusInfoList.filter(function (status) {
+          if (filters.status.indexOf(status.status) > -1) {
+            return true;
+          }
+        });
+      }
+    },
   },
   methods: {
     ...mapActions(['set_bookmarkList','push_bookmarkList']),
@@ -351,6 +366,20 @@ export default {
           }
         }
       }
+    },
+    todoFilter() {
+      this.isShow = true;
+    },
+    closeFilter() {
+      this.isShow = false;
+    },
+    applyFilter(filters) {
+      this.filters = filters;
+      this.isShow = false;
+    },
+    cleanFilter() {
+      this.filters = null;
+      this.isShow = false;
     },
   },
 };
