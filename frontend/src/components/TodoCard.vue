@@ -22,7 +22,7 @@
           <div class="rounded-full w-10 h-10 mr-3 flex">
             <img
               class="rounded-full flex object-cover w-full h-full"
-              :src="'http://localhost:8080/img/' + todoInfo.id"
+              :src="'http://localhost:8080/img/' + todoInfo.memberId"
             />
           </div>
           <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
