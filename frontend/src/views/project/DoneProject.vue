@@ -30,7 +30,7 @@ export default {
   methods: {
     getProject() {
       getProjectList(
-        false,
+        true,
         this.id,
         (res) => {
           this.pjtInfoList = [];
