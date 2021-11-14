@@ -83,6 +83,17 @@ export default {
 
     console.log('id : ', this.memberId);
   },
+  watch: {
+    $route(to) {
+      if (to.path === `/profile/${this.memberId}`) {
+        this.pageType = 'myProfile';
+      } else if (to.path === `/profile/${this.memberId}/modify`) {
+        this.pageType = 'modifyProfile';
+      } else {
+        this.pageType = 'modifyPwProfile';
+      }
+    },
+  },
   data() {
     return {
       memberId: '',

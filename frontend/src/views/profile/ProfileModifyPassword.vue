@@ -112,6 +112,7 @@
 <script>
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
 import { alpha_num, required, min, max, confirmed } from 'vee-validate/dist/rules';
+import { changePassword } from '@/api/myPage.js';
 
 setInteractionMode('eager');
 
@@ -146,9 +147,12 @@ export default {
     ValidationObserver,
     ValidationProvider,
   },
-  created() {},
+  created() {
+    this.memberId = this.$route.params.memberId;
+  },
   data() {
     return {
+      memberId: '',
       user: {
         password: '',
         passwordChk: '',
@@ -156,12 +160,17 @@ export default {
     };
   },
   methods: {
-    imgUpload(e) {
-      const inputImg = e.target.files;
-      console.log('이미지 업로드 로직!', inputImg[0]);
-    },
     modifyPassword() {
-      console.log('비밀번호 변경 로직 작성 : ', this.user);
+      changePassword(
+        { id: this.memberId, password: this.user.password },
+        (res) => {
+          console.log(res);
+          this.$router.push('/profile/' + this.memberId);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     },
   },
 };

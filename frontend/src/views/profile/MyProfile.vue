@@ -34,7 +34,7 @@
     <div class="flex flex-col justify-center xl:items-start items-center w-1/2 xl:my-0 my-5">
       <div class="flex flex-col mb-5">
         <div class="font-black text-4xl">{{ userInfo.name }}</div>
-        <div class="text-2xl">{{ userInfo.team }}</div>
+        <!-- <div class="text-2xl">{{ userInfo.team }}</div> -->
       </div>
       <div class="flex flex-col">
         <div class="text-lg">{{ userInfo.email }}</div>
@@ -45,20 +45,39 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { getProfile } from '@/api/myPage.js';
+
 export default {
   name: 'MyProfile',
   components: {},
-  created() {},
+  created() {
+    getProfile(
+      this.id,
+      (res) => {
+        console.log(res);
+        this.userInfo = res.object;
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  },
   data() {
     return {
       userInfo: {
-        id: 1,
         name: '조성표',
-        team: '프론트엔드팀',
+        nickname: 'test',
+        authority: '',
         email: 'cspcsp@tip.com',
         phone: '01012341234',
+        profileImg: '',
       },
     };
   },
+  computed: {
+    ...mapGetters(['id']),
+  },
+  methods: {},
 };
 </script>

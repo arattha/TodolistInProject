@@ -105,7 +105,7 @@
             />
             <p class="text-red-500 font-black text-sm">{{ errors[0] }}</p>
           </ValidationProvider>
-          <div class="text-2xl mb-5">{{ userModifyInfo.team }}</div>
+          <!-- <div class="text-2xl mb-5">{{ userModifyInfo.team }}</div> -->
           <ValidationProvider
             class="mb-5 xl:w-7/12 w-11/12"
             name="이메일"
@@ -192,6 +192,7 @@
 <script>
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
 import { numeric, email, required, min, max } from 'vee-validate/dist/rules';
+import { getProfile, updateProfile } from '@/api/myPage.js';
 
 setInteractionMode('eager');
 
@@ -238,15 +239,22 @@ export default {
     ValidationProvider,
   },
   created() {
-    console.log('hi');
-    this.userModifyInfo.id = this.userInfo.id;
-    this.userModifyInfo.name = this.userInfo.name;
-    this.userModifyInfo.team = this.userInfo.team;
-    this.userModifyInfo.email = this.userInfo.email;
-    this.userModifyInfo.phone = this.userInfo.phone;
+    this.memberId = this.$route.params.memberId;
+    getProfile(
+      this.memberId,
+      (res) => {
+        console.log(res);
+        this.userInfo = JSON.parse(JSON.stringify(res.object));
+        this.userModifyInfo = res.object;
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   },
   data() {
     return {
+      memberId: '',
       userInfo: {
         id: 1,
         name: '조성표',
@@ -255,20 +263,49 @@ export default {
         phone: '01012341234',
       },
       userModifyInfo: {},
+      img: '',
     };
   },
   methods: {
     imgUpload(e) {
       const inputImg = e.target.files;
+      this.img = inputImg[0];
       console.log('이미지 업로드 로직!', inputImg[0]);
     },
     modifyProfile() {
+      console.log(this.userInfo);
+      console.log(this.userModifyInfo);
       if (JSON.stringify(this.userInfo) === JSON.stringify(this.userModifyInfo)) {
-        console.log('두 객체가 완전히 같으므로 수정안하도록 로직을 짜주세요');
+        alert('바뀐 내용이 없습니다!');
         return;
       }
 
-      console.log(this.userModifyInfo);
+      var formData = new FormData();
+      formData.append('id', this.memberId);
+      if (this.userInfo.email !== this.userModifyInfo.email) {
+        formData.append('email', this.userModifyInfo.email);
+      }
+      if (this.userInfo.name !== this.userModifyInfo.name) {
+        formData.append('name', this.userModifyInfo.name);
+      }
+      if (this.userInfo.phone !== this.userModifyInfo.phone) {
+        formData.append('phone', this.userModifyInfo.phone);
+      }
+      if (this.img !== '') {
+        formData.append('multipartFile', this.img);
+      }
+
+      console.log(formData);
+      updateProfile(
+        formData,
+        (res) => {
+          console.log(res);
+          this.$router.push('/profile/' + this.memberId);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     },
   },
 };
