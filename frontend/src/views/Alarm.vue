@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col w-full h-full">
     <Header />
     <div class="flex my-5 mx-16 h-10">
       <button
@@ -51,59 +51,54 @@
     </div>
 
     <div
-      v-if="alarmList"
       class="
         flex flex-col
-        justify-center
         items-center
-        mx-16
-        w-11/12
-        h-full
+        justify-center
         rounded-lg
         shadow-lg
-        py-5
         bg-itemGray
+        overflow-y-auto
+        mx-16
       "
     >
-      <div
-        class="
-          flex flex-shrink-0
-          justify-center
-          items-center
-          bg-contentGray
-          w-11/12
-          h-20
-          hover:bg-menuGray
-          rounded-lg
-          shadow-lg
-          my-2
-        "
-        v-for="(alarm, index) in alarmList"
-        :key="index"
-      >
-        <input class="w-10 h-5" type="checkbox" v-model="checkList" :value="alarm.id" />
-        <div class="flex flex-row h-full w-full cursor-pointer" @click="goTodo(alarm.todoId)">
+      <div v-if="alarmList" class="h-full overflow-y-auto scroll_type2 w-full">
+        <div
+          class="
+            flex
+            mx-auto
+            justify-center
+            items-center
+            bg-contentGray
+            w-11/12
+            h-40
+            md:h-24
+            hover:bg-menuGray
+            rounded-lg
+            shadow-md
+            md:my-3
+            my-5
+          "
+          v-for="(alarm, index) in alarmList"
+          :key="index"
+        >
+          <input class="flex w-10 h-5" type="checkbox" v-model="checkList" :value="alarm.id" />
           <div
-            class="
-              md:flex
-              items-center
-              p-2
-              border-r-2 border-l-2 border-itemGray
-              h-full
-              w-10/12
-              mr-2
-            "
+            class="flex flex-col h-full w-full cursor-pointer border-itemGray border-l py-3 px-2"
+            @click="goTodo(alarm.todoId)"
           >
-            {{ alarm.content }}
-          </div>
-          <div class="flex justify-center items-center h-full w-2/12 text-center">
-            {{ alarm.regDate.split('T')[0] }}<br />{{ alarm.regDate.split('T')[1] }}
+            <div class="flex justify-center md:justify-start items-center h-full w-full">
+              {{ alarm.content }}
+            </div>
+            <div class="flex justify-end items-center text-center text-xs">
+              {{ alarm.regDate.split('T')[0] }}&nbsp;{{ alarm.regDate.split('T')[1] }}
+            </div>
           </div>
         </div>
       </div>
     </div>
     <Pagination
-      class="flex justify-center items-center mt-3"
+      class="flex justify-center items-center my-5"
       :pageCnt="pageCnt"
       :pageSize="pageSize"
       @paging="pagingMethod"
