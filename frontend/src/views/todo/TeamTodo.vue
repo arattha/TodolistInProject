@@ -102,11 +102,20 @@
         @changeStatus="changeStatus"
       />
     </div>
+    <MyTodoFilter
+      v-if="isShow"
+      @closeModal="closeFilter"
+      @cleanFilter="cleanFilter"
+      @applyFilter="applyFilter"
+    />
   </div>
 </template>
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import { getBookmark } from '@/api/bookmark.js';
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: 'TEAMTODO',
   components: {
@@ -116,32 +125,36 @@ export default {
     return {
       teamList: [],
       selectTeam: '',
-      statusInfoList: {
-        newStatus: {
+      statusInfoList: [
+        {
           status: 'New',
           todoList: [],
         },
-        accepStatus: {
+        {
           status: '접수',
           todoList: [],
         },
-        progressStatus: {
+        {
           status: '진행',
           todoList: [],
         },
-        doneStatus: {
+        {
           status: '완료',
           todoList: [],
         },
-        notProgressStatus: {
+        {
           status: '진행하지않음',
           todoList: [],
         },
-      },
+      ],
       todoInfoList: [],
+      bookmarkFilter: false,
+      filters: null,
+      isShow: false,
     };
   },
   created() {
+    this.getBookmarkList();
     this.setStatusInfoList();
     // 뷰 인스턴스 생성 시 프로젝트에 있는 팀을
     // teamList에 담아준다.
@@ -172,31 +185,41 @@ export default {
 
     this.selectTeam = findTeam;
     this.changeTeam();
+
+    /* 
+      할일 가져오고 this.updateList 연결해줄것
+    
+    */
+
+  },
+  computed:{
+    ...mapGetters(['projectId', 'id', 'bookmarkList']),
   },
   methods: {
+    ...mapActions(['set_bookmarkList','push_bookmarkList']),
     setStatusInfoList() {
-      this.statusInfoList = {
-        newStatus: {
+      this.statusInfoList = [
+        {
           status: 'New',
           todoList: [],
         },
-        accepStatus: {
+        {
           status: '접수',
           todoList: [],
         },
-        progressStatus: {
+        {
           status: '진행',
           todoList: [],
         },
-        doneStatus: {
+        {
           status: '완료',
           todoList: [],
         },
-        notProgressStatus: {
+        {
           status: '진행하지않음',
           todoList: [],
         },
-      };
+      ];
     },
     changeTeam() {
       // stautsInfoList를 초기화
@@ -206,7 +229,7 @@ export default {
       // 해당 팀의 팀원 리스트를 아래 todoInfoList 담으면 된다.
       this.todoInfoList = [
         {
-          id: 1111,
+          id: '1111',
           title: 1,
           status: 'New',
           projectId: 1,
@@ -215,10 +238,10 @@ export default {
           memberName: 'test',
           modifyDate: '2021-11-10',
           regDate: '2021-11-09',
-          isBookmark: false,
+          bookmark: false,
         },
         {
-          id: 2222,
+          id: '2222',
           title: 2,
           status: '진행',
           projectId: 2,
@@ -227,10 +250,10 @@ export default {
           memberName: 'test',
           modifyDate: '2021-11-10',
           regDate: '2021-11-09',
-          isBookmark: false,
+          bookmark: false,
         },
         {
-          id: 5555,
+          id: '5555',
           title: 5,
           status: '접수',
           projectId: 5,
@@ -239,10 +262,10 @@ export default {
           memberName: 'test',
           modifyDate: '2021-11-10',
           regDate: '2021-11-09',
-          isBookmark: false,
+          bookmark: false,
         },
         {
-          id: 3333,
+          id: '3333',
           title: 3,
           status: '완료',
           projectId: 3,
@@ -251,10 +274,10 @@ export default {
           memberName: 'test',
           modifyDate: '2021-11-10',
           regDate: '2021-11-09',
-          isBookmark: false,
+          bookmark: false,
         },
         {
-          id: 4444,
+          id: '4444',
           title: 4,
           status: '진행하지않음',
           projectId: 4,
@@ -263,7 +286,7 @@ export default {
           memberName: 'test',
           modifyDate: '2021-11-10',
           regDate: '2021-11-09',
-          isBookmark: false,
+          bookmark: false,
         },
       ];
 
@@ -273,15 +296,15 @@ export default {
     setStatusTodo() {
       for (let i = 0; i < this.todoInfoList.length; ++i) {
         if (this.todoInfoList[i].status === 'New') {
-          this.statusInfoList.newStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[0].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '접수') {
-          this.statusInfoList.accepStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[1].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '진행') {
-          this.statusInfoList.progressStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[2].todoList.push(this.todoInfoList[i]);
         } else if (this.todoInfoList[i].status === '완료') {
-          this.statusInfoList.doneStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[3].todoList.push(this.todoInfoList[i]);
         } else {
-          this.statusInfoList.notProgressStatus.todoList.push(this.todoInfoList[i]);
+          this.statusInfoList[4].todoList.push(this.todoInfoList[i]);
         }
       }
     },
@@ -296,6 +319,37 @@ export default {
         this.statusInfoList.doneStatus.todoList[val.index].status = val.status;
       } else {
         this.statusInfoList.notProgressStatus.todoList[val.index].status = val.status;
+      }
+    },
+    async getBookmarkList() {
+      await getBookmark(
+        {
+          projectId: this.projectId,
+          memberId: this.id,
+        },
+        (res) => {
+          let tmp = [];
+          res.object.forEach((bookmark) => {
+            tmp.push(bookmark.todoId);
+          });
+          this.set_bookmarkList(tmp);
+        },
+        (error) => {
+          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+          console.log(error);
+        }
+      );
+    },
+    updateList() {
+      console.log(this.bookmarkList);
+      for (var i = 0; i < this.statusInfoList.length; i++) {
+        for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
+          if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
+            this.statusInfoList[i].todoList[j].bookmark = true;
+          } else {
+            this.statusInfoList[i].todoList[j].bookmark = false;
+          }
+        }
       }
     },
   },
