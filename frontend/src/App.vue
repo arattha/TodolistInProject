@@ -16,8 +16,8 @@ export default {
       cnt: '',
     }
   },
-  created() {
-    this.connect();
+  async created() {
+    await this.connect();
   },
   computed:{
     ...mapGetters(['id'])

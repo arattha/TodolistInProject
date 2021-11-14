@@ -285,7 +285,7 @@ export default {
       //
       let changedText = DOMPurify.sanitize(changeContent);
 
-      console.log(this.projectName, this.startDate, this.endDate, changedText);
+      // console.log(this.projectName, this.startDate, this.endDate, changedText);
 
       var data = {
         name: this.projectName,

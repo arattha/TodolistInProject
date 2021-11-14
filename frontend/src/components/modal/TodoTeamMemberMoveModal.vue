@@ -209,7 +209,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'TODOMOVEMODAL',
-  props: ['todoInfo'],
+  props: ['todoInfo', 'isDetail'],
   data() {
     return {
       teamList: [],
@@ -226,9 +226,9 @@ export default {
   created() {
     // 팀을 선택하면 멤버를 부를지 멤버를 선택하면 팀을 부를지는 로직 개발자가 선택할 것
     // 여기서는 팀을 선택하면 멤버를 선택한다고 가정하고 페이지를 구성
-    
+
     getTeam(
-      this.$route.params.projectId,
+      this.projectId,
       (res) => {
         // team 가져옴
         this.teamList = [];
@@ -289,7 +289,7 @@ export default {
       this.isValid = true;
       
     },
-    sendTodo() {
+    async sendTodo() {
       // 팀 이름 입력이 필수!
       if (!this.isValid) {
         return;
@@ -297,43 +297,34 @@ export default {
 
       // selectTeam에는 보내고자하는 팀이
       // checkMember에는 보내고자하는 팀원이 들어간다.
+      let date = new Date();
+      let tmp = this.todoInfo;
+      tmp.status = "접수";
+      tmp.teamId = this.selectTeam.teamId;
+      tmp.teamName = this.selectTeam.teamName;
+      tmp.memberId = this.checkedMember.id;
+      tmp.memberName = this.checkedMember.name;
+      tmp.modifyDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" 
+      + date.getHours() + ":" + (date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()) + ":" + date.getSeconds();
       
       if (this.checkedMember.length === 0) {
-        this.stomp.send(
+        tmp.status = "New";
+        tmp.memberId = null;
+        tmp.memberName = null;
+        await this.stomp.send(
           '/server/moveTodo/team',
-          JSON.stringify({
-            id: this.todoInfo.id,
-            title: this.todoInfo.title,
-            status: "New",
-            projectId: this.todoInfo.projectId,
-            teamId: this.selectTeam.teamId,
-            teamName: this.selectTeam.teamName,
-            memberId: null,
-            memberName: null,
-            modifyDate: this.todoInfo.modifyDate,
-            regDate: this.todoInfo.regDate,
-          }),
+          JSON.stringify(tmp),
           {}
         );
 
       } else {
-        this.stomp.send(
+        await this.stomp.send(
           '/server/moveTodo/team',
-          JSON.stringify({
-            id: this.todoInfo.id,
-            title: this.todoInfo.title,
-            status: this.todoInfo.status,
-            projectId: this.todoInfo.projectId,
-            teamId: this.selectTeam.teamId,
-            teamName: this.selectTeam.teamName,
-            memberId: this.checkedMember.id,
-            memberName: this.checkedMember.name,
-            modifyDate: this.todoInfo.modifyDate,
-            regDate: this.todoInfo.regDate,
-          }),
+          JSON.stringify(tmp),
           {}
         );
 
+        
       }
 
       this.closeModal();
@@ -347,7 +338,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['stomp']),
+    ...mapGetters(['stomp', 'projectId']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);

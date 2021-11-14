@@ -9,13 +9,13 @@
           <div class="flex items-end justify-center text-3xl ml-5">
             <i
               class="fas fa-star text-white cursor-pointer"
-              v-if="!userInfo.bookmark"
-              @click="toggleBookmark()"
+              v-if="!isBookmark"
+              @click="bookmark()"
             ></i>
             <i
               class="fas fa-star text-yellow-400 cursor-pointer"
-              v-if="userInfo.bookmark"
-              @click="toggleBookmark()"
+              v-if="isBookmark"
+              @click="bookmark()"
             ></i>
           </div>
         </div>
@@ -64,10 +64,10 @@
           </div>
           <div class="flex lg:flex-col mt-2 lg:mt-8">
             <div class="flex justify-start lg:justify-end lg:items-center text-sm mr-5 lg:mr-0">
-              생성일 : {{ todoInfo.regDate }}
+              생성일 : {{ todoInfo.regDate.split('T')[0] }}
             </div>
             <div class="flex lg:justify-end lg:items-center text-sm">
-              변경일 : {{ todoInfo.modifyDate }}
+              변경일 : {{ todoInfo.modifyDate.split('T')[0] }}
             </div>
           </div>
         </div>
@@ -183,7 +183,8 @@
     <Todo-Team-Member-Move-Modal
       v-if="isTeamMemberMoveModalShow"
       @closeModal="closeTeamMemberMoveModal"
-      :todoId="todoInfo.id"
+      :todoInfo="todoInfo"
+      :isDetail="true"
     />
   </div>
 </template>
@@ -193,8 +194,9 @@ import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
+import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default {
   name: 'TODODETAIL',
@@ -222,22 +224,20 @@ export default {
         name: '',
         teamName: '',
         // 즐겨찾기 여부
-        bookmark: true,
       },
+      isBookmark: false,
     };
   },
   computed: {
-    ...mapGetters(['id', 'todoId', 'stomp']),
+    ...mapGetters(['id', 'todoId', 'stomp','bookmarkList']),
   },
   created() {
     this.curPage = 0;
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
+    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp', 'push_bookmarkList','delete_bookmark']),
     connect() {
-      console.log('todoid ', this.todoId);
-      console.log('stomp', this.stomp);
       this.stomp.send(
         '/server/getTodoInfo',
         JSON.stringify({
@@ -247,43 +247,63 @@ export default {
       );
 
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
-        var todo = JSON.parse(res.body);
-        console.log('todo :', todo);
-        this.todoInfo.id = todo.id;
-        this.todoInfo.title = todo.title;
-        this.todoInfo.memberId = todo.memberId;
-        this.todoInfo.memberName = todo.memberName;
-        this.todoInfo.teamName = todo.teamName;
-        this.todoInfo.status = todo.status;
-        this.todoInfo.modifyDate = todo.modifyDate.split('T')[0];
-        this.todoInfo.regDate = todo.regDate.split('T')[0];
+        
+        this.todoInfo = JSON.parse(res.body);
       });
+          
+
+      if(this.bookmarkList.indexOf(this.todoId) > -1){
+        this.isBookmark = true;
+      }
     },
     changeStatus(status) {
+      
       this.todoInfo.status = status;
-      console.log('todoinfo in detail :', this.todoInfo);
-      this.stomp.send(
-        '/server/movoTodo/status',
-        JSON.stringify({
-          id: this.todoInfo.id,
-          title: this.todoInfo.title,
-          status: this.todoInfo.status,
-          projectId: this.todoInfo.projectId,
-          teamId: this.todoInfo.teamId,
-          teamName: this.todoInfo.teamName,
-          memberId: this.todoInfo.id,
-          memberName: this.todoInfo.name,
-          modifyDate: this.todoInfo.modifyDate,
-          regDate: this.todoInfo.regDate,
-        }),
-        {}
-      );
+
+      let date = new Date();
+      this.todoInfo.modifyDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" 
+      + date.getHours() + ":" + (date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()) + ":" + date.getSeconds();
+
+      this.stomp.send('/server/moveTodo/status',
+        JSON.stringify(this.todoInfo),
+      {});
+      
     },
     todoContentAdd() {
       this.showModal();
     },
-    toggleBookmark() {
-      this.userInfo.bookmark = !this.userInfo.bookmark;
+    bookmark() {
+      if (!this.isBookmark) {
+        addBookmark(
+          {
+            memberId: this.id,
+            todoId: this.todoId,
+          },
+          () => {
+            this.push_bookmarkList(this.todoId);
+            this.isBookmark = true;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      } else {
+        deleteBookmark(
+          {
+            memberId: this.id,
+            todoId: this.todoId,
+          },
+          () => {
+            this.delete_bookmark(this.todoId);
+            this.isBookmark = false;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      }
     },
     goDetail() {
       this.curPage = 0;
