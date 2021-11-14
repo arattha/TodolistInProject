@@ -91,9 +91,7 @@ export default {
     TodoTeamMemberMoveModal,
   },
   props: ['todoInfo'],
-  created() {
-    console.log(this.todoInfo.memberId);
-  },
+  created() {},
   computed: {
     ...mapGetters(['id', 'bookmarkList']),
   },
