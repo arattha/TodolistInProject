@@ -56,8 +56,11 @@
           class="h-full w-16 grid justify-items-center items-center cursor-pointer hover:opacity-50"
           @click="goProfile()"
         >
-          <div class= "rounded-full w-10 h-10 mr-3 flex">
-            <img class="rounded-full flex object-cover w-full h-full" :src="'http://localhost:8080/img/' + id" />
+          <div class="rounded-full w-10 h-10 mr-3 flex">
+            <img
+              class="rounded-full flex object-cover w-full h-full"
+              :src="'http://localhost:8080/img/' + id"
+            />
           </div>
         </div>
       </div>
@@ -78,7 +81,7 @@ export default {
     };
   },
   components: {},
-  created(){
+  created() {
     if (this.totalAlarmCnt > 9) this.cnt = '9+';
     else if (this.totalAlarmCnt == 0) this.cnt = '';
     else this.cnt = this.totalAlarmCnt;
@@ -93,18 +96,18 @@ export default {
       });
     },
     goProfile() {
-      this.$router.push('/profile');
+      this.$router.push(`/profile/${this.id}`);
     },
   },
   computed: {
     ...mapGetters(['projectName', 'id', 'totalAlarmCnt']),
   },
-  watch:{
-    totalAlarmCnt(){
+  watch: {
+    totalAlarmCnt() {
       if (this.totalAlarmCnt > 9) this.cnt = '9+';
       else if (this.totalAlarmCnt == 0) this.cnt = '';
       else this.cnt = this.totalAlarmCnt;
-    }
-  }
+    },
+  },
 };
 </script>
