@@ -20,7 +20,7 @@
         @change="changeTeam"
       >
         <option v-for="(team, index) in teamList" :key="index" :value="team">
-          {{ team.teamName }}
+          {{ team.name }}
         </option>
       </select>
       <!-- <button
@@ -117,6 +117,7 @@ import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
 import { mapGetters, mapActions } from "vuex";
+import { getTeam } from "@/api/team.js";
 
 export default {
   name: 'TEAMTODO',
@@ -126,6 +127,7 @@ export default {
   },
   data() {
     return {
+      teamId:'',
       teamList: [],
       selectTeam: '',
       statusInfoList: [
@@ -156,37 +158,10 @@ export default {
       isShow: false,
     };
   },
-  created() {
-    this.getBookmarkList();
+  async created() {
+
+    await this.getTeamList();
     this.setStatusInfoList();
-    // 뷰 인스턴스 생성 시 프로젝트에 있는 팀을
-    // teamList에 담아준다.
-    this.teamList = [
-      {
-        teamId: '1231231231231',
-        teamName: 'Frontend',
-      },
-      {
-        teamId: '2342342342342',
-        teamName: 'Backend',
-      },
-      {
-        teamId: '4534534534534',
-        teamName: 'QA',
-      },
-      {
-        teamId: '8915234789531',
-        teamName: '인사',
-      },
-    ];
-
-    const findTeam = this.teamList.find((val) => {
-      if (val.teamId === this.$route.params.teamId) {
-        return true;
-      }
-    });
-
-    this.selectTeam = findTeam;
     this.changeTeam();
 
     /* 
@@ -196,7 +171,7 @@ export default {
 
   },
   computed:{
-    ...mapGetters(['projectId', 'id', 'bookmarkList']),
+    ...mapGetters(['projectId', 'id', 'bookmarkList', 'stomp']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -212,101 +187,59 @@ export default {
   },
   methods: {
     ...mapActions(['set_bookmarkList','push_bookmarkList']),
+    getTeamList(){
+      
+      getTeam(
+        this.projectId,
+        (res) => {
+          // team 가져옴
+          this.teamList = [];
+          console.log("res ", res.object);
+          res.object.forEach((value) => {
+            this.teamList.push({
+              teamId: value.id,
+              teamName: value.name
+            });
+          });
+          console.log("team List : ",this.teamList);
+    
+          this.getBookmarkList();
+          const findTeam = this.teamList.find((val) => {
+            if (val.teamId === this.$route.params.teamId) {
+              return true;
+            }
+          });
+
+          this.selectTeam = findTeam;
+          console.log("seteam",this.selectTeam);
+        },
+        () => {
+          console.log('team 가져오기 실패');
+        }
+      );
+    
+    },
     setStatusInfoList() {
-      this.statusInfoList = [
-        {
-          status: 'New',
-          todoList: [],
-        },
-        {
-          status: '접수',
-          todoList: [],
-        },
-        {
-          status: '진행',
-          todoList: [],
-        },
-        {
-          status: '완료',
-          todoList: [],
-        },
-        {
-          status: '진행하지않음',
-          todoList: [],
-        },
-      ];
+      
+      this.stomp.send(
+        '/server/getTeamTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+          teamId: this.selectTeam.id,
+        }),
+        {}
+      );
+      
+      // subscribe 로 alarm List 가져오기
+      this.stomp.subscribe('/client/todo/' + this.projectId + '/team/' + this.selectTeam.id, (res) => {
+        this.statusInfoList = JSON.parse(res.body);
+      });
+
     },
     changeTeam() {
+
       // stautsInfoList를 초기화
       this.setStatusInfoList();
-
-      // selectTeam에 팀명이 담기게 되므로 이를 이용해서 백엔드에서
-      // 해당 팀의 팀원 리스트를 아래 todoInfoList 담으면 된다.
-      this.todoInfoList = [
-        {
-          id: '1111',
-          title: 1,
-          status: 'New',
-          projectId: 1,
-          teamId: 1,
-          memberId: 1,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          bookmark: false,
-        },
-        {
-          id: '2222',
-          title: 2,
-          status: '진행',
-          projectId: 2,
-          teamId: 2,
-          memberId: 2,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          bookmark: false,
-        },
-        {
-          id: '5555',
-          title: 5,
-          status: '접수',
-          projectId: 5,
-          teamId: 5,
-          memberId: 5,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          bookmark: false,
-        },
-        {
-          id: '3333',
-          title: 3,
-          status: '완료',
-          projectId: 3,
-          teamId: 3,
-          memberId: 3,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          bookmark: false,
-        },
-        {
-          id: '4444',
-          title: 4,
-          status: '진행하지않음',
-          projectId: 4,
-          teamId: 4,
-          memberId: 4,
-          memberName: 'test',
-          modifyDate: '2021-11-10',
-          regDate: '2021-11-09',
-          bookmark: false,
-        },
-      ];
-
-      // 해당 메소드는 각 상태 별로 할일을 넣게 해준다.
-      this.setStatusTodo();
     },
     setStatusTodo() {
       for (let i = 0; i < this.todoInfoList.length; ++i) {
@@ -324,6 +257,7 @@ export default {
       }
     },
     changeStatus(val) {
+      console.log(val);
       if (val.status === 'New') {
         this.statusInfoList.newStatus.todoList[val.index].status = val.status;
       } else if (val.status === '접수') {
@@ -335,6 +269,15 @@ export default {
       } else {
         this.statusInfoList.notProgressStatus.todoList[val.index].status = val.status;
       }
+
+      // this.stomp.send(
+      //   '/server/moveTodo/status',
+      //   JSON.stringify({
+      //     projectId: this.projectId,
+      //     teamId: this.selectTeam.id,
+      //   }),
+      //   {}
+      // );
     },
     async getBookmarkList() {
       await getBookmark(
