@@ -42,6 +42,7 @@ public class MemberDetailService {
     }
 
     public MemberDetailDto updateMemberDetail(UpdateMemberRequest updateMemberRequest) {
+
         Member member = memberDao.findMemberById(updateMemberRequest.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -59,8 +60,7 @@ public class MemberDetailService {
                     }
                 });
 
-        MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(updateMemberRequest.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        MemberDetail memberDetail = member.getMemberDetail();
 
         MemberDetail updatedMember = MemberDetail.builder()
                 .member(member)
