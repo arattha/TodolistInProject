@@ -45,15 +45,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import { getProfile } from '@/api/myPage.js';
 
 export default {
   name: 'MyProfile',
   components: {},
   created() {
+    this.memberId = this.$route.params.memberId;
     getProfile(
-      this.id,
+      this.memberId,
       (res) => {
         console.log(res);
         this.userInfo = res.object;
@@ -65,6 +65,7 @@ export default {
   },
   data() {
     return {
+      memberId: '',
       userInfo: {
         name: '조성표',
         nickname: 'test',
@@ -74,9 +75,6 @@ export default {
         profileImg: '',
       },
     };
-  },
-  computed: {
-    ...mapGetters(['id']),
   },
   methods: {},
 };
