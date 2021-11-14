@@ -18,7 +18,6 @@ const getters = {
   nickname(state) {
     return state.nickname;
   },
-  // get_id: (state) => state.id,
 };
 
 const mutations = {
