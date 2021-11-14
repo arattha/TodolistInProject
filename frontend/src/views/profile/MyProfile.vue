@@ -28,7 +28,7 @@
           md:w-64 md:h-64
         "
       >
-        <img src="@/images/logo.png" class="object-cover" />
+        <img :src="'http://localhost:8080/img/' + memberId" class="object-cover" />
       </div>
     </div>
     <div class="flex flex-col justify-center xl:items-start items-center w-1/2 xl:my-0 my-5">
