@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     goMain() {
-      this.$router.push('/');
+      this.$router.push('/projects');
     },
     goAlarm() {
       this.$router.push({
