@@ -1,33 +1,108 @@
 <template>
-  <div>
+  <div class="flex flex-col w-full h-full">
     <Header />
+    <div class="flex my-5 mx-16 h-10">
+      <button
+        class="
+          bg-itemGray
+          text-black
+          lg:text-base
+          text-sm
+          font-semibold
+          w-20
+          lg:w-24 lg:py-2 lg:px-2
+          mr-8
+          rounded-lg
+          shadow-md
+          hover:bg-menuGray
+          focus:outline-none
+          focus:ring-2
+          focus:ring-headerGray
+          focus:ring-offset-2
+          focus:ring-offset-purple-200
+        "
+        @click="remove"
+      >
+        선택 삭제
+      </button>
+      <button
+        class="
+          bg-itemGray
+          text-black
+          lg:text-base
+          text-sm
+          font-semibold
+          w-20
+          lg:w-24 lg:py-2 lg:px-2
+          mr-8
+          rounded-lg
+          shadow-md
+          hover:bg-menuGray
+          focus:outline-none
+          focus:ring-2
+          focus:ring-headerGray
+          focus:ring-offset-2
+          focus:ring-offset-purple-200
+        "
+        @click="removeAll"
+      >
+        모두 삭제
+      </button>
+    </div>
 
-    <button @click="remove">선택한 알림 삭제</button>
-    <button @click="removeAll">모든 알림 삭제</button>
-
-    <div v-if="alarmList">
-      <div v-for="(alarm, index) in alarmList" :key="index">
-        <input type="checkbox" v-model="checkList" :value="alarm.id" />
+    <div
+      class="
+        flex flex-col
+        items-center
+        justify-center
+        rounded-lg
+        shadow-lg
+        bg-itemGray
+        overflow-y-auto
+        mx-16
+      "
+    >
+      <div v-if="alarmList" class="h-full overflow-y-auto scroll_type2 w-full">
         <div
           class="
-            flex flex-row
-            h-14
-            border-b-2 border-r-2 border-l-2
-            cursor-pointer
-            hover:bg-indigo-200
+            flex
+            mx-auto
+            justify-center
+            items-center
+            bg-contentGray
+            w-11/12
+            h-40
+            md:h-24
+            hover:bg-menuGray
+            rounded-lg
+            shadow-md
+            md:my-3
+            my-5
           "
-          @click="goTodo(alarm.todoId)"
+          v-for="(alarm, index) in alarmList"
+          :key="index"
         >
-          <div class="md:flex justify-center items-center p-2 h-full w-full border-r-2 mr-2">
-            {{ alarm.content }}
-          </div>
-          <div class="flex justify-center items-center h-full w-32 text-center">
-            {{ alarm.regDate.split('T')[0] }}<br />{{ alarm.regDate.split('T')[1] }}
+          <input class="flex w-10 h-5" type="checkbox" v-model="checkList" :value="alarm.id" />
+          <div
+            class="flex flex-col h-full w-full cursor-pointer border-itemGray border-l py-3 px-2"
+            @click="goTodo(alarm.todoId)"
+          >
+            <div class="flex justify-center md:justify-start items-center h-full w-full">
+              {{ alarm.content }}
+            </div>
+            <div class="flex justify-end items-center text-center text-xs">
+              {{ alarm.regDate.split('T')[0] }}&nbsp;{{ alarm.regDate.split('T')[1] }}
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <Pagination class="mt-3" :pageCnt="pageCnt" :pageSize="pageSize" @paging="pagingMethod" />
+    <Pagination
+      class="flex justify-center items-center my-5"
+      :pageCnt="pageCnt"
+      :pageSize="pageSize"
+      @paging="pagingMethod"
+    />
   </div>
 </template>
 

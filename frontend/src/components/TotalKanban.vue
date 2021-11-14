@@ -80,7 +80,7 @@ import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
 import { mapGetters } from 'vuex';
 export default {
-  name: 'TOTALKANBAN',
+  name: 'MYTODOADDMODAL',
   components: {
     TodoCard,
     TodoAddModal,
@@ -96,6 +96,7 @@ export default {
     };
   },
   created() {
+    //console.log("teamInfoList in kanban:",this.teamInfo);
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
@@ -137,7 +138,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName','stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;
@@ -154,7 +155,7 @@ export default {
       } else {
         let bookmarkedTodoList = [];
         this.teamInfo.todoInfoList.forEach((todo) => {
-          if (todo.isBookmark) bookmarkedTodoList.push(todo);
+          if (todo.bookmark) bookmarkedTodoList.push(todo);
         });
         if (filters == null) {
           return bookmarkedTodoList;

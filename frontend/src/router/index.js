@@ -91,6 +91,27 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/profile/:memberId',
+    component: () => import('@/views/Profile.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Profile',
+        component: () => import('@/views/profile/MyProfile.vue'),
+      },
+      {
+        path: 'modify',
+        name: 'ProfileModify',
+        component: () => import('@/views/profile/ProfileModify.vue'),
+      },
+      {
+        path: 'modify/pw',
+        name: 'ProfileModifyPassword',
+        component: () => import('@/views/profile/ProfileModifyPassword.vue'),
+      },
+    ],
+  },
 ];
 
 const router = new VueRouter({
@@ -101,8 +122,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  
-  if (to.name === 'Project') {
+  if (to.path === '/projects' || to.path === '/projects/done') {
     store.dispatch('set_project_name', '');
     next();
   } else if (to.name !== 'Login' && to.name !== 'Signup') {

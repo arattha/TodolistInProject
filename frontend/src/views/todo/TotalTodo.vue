@@ -94,6 +94,7 @@ import TodoFilter from '@/components/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
+import { getMyTeam } from '@/api/team.js';
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
@@ -107,7 +108,6 @@ export default {
   data() {
     return {
       teamInfoList: [],
-      bookmarkList:[],
       todoList: [],
       teamList: [],
       isShow: false,
@@ -116,16 +116,26 @@ export default {
       isShowTeamAddModal: false,
     };
   },
-
-  async created() {
-    await this.getBookmarkList();
+  created() {
+    this.getBookmarkList();
     this.isShow = false;
     this.set_project_id(this.projectId);
     this.connect();
     this.set_project_name(this.projectName);
+    getMyTeam(
+      this.projectId,
+      this.id,
+      (res) => {
+        console.log(res);
+        this.set_team_id(res.object.id);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'isFirst']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
     teamFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -140,7 +150,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt']),
+    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt', 'set_bookmarkList', 'set_team_id']),
     connect() {
         this.stomp.send(
           '/server/getTodo',
@@ -149,45 +159,41 @@ export default {
           }),
           {}
         );
-
         // subscribe 로 alarm List 가져오기
         this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
           this.teamInfoList = JSON.parse(res.body);
+          this.updateList();
         });
-        this.updateList();
-
     },
     updateList() {
-      for (var i = 0; i < this.teamInfoList.length; i++) {
-        for (var j = 0; j < this.teamInfoList[i].length; j++) {
-
+      for (let i = 0; i < this.teamInfoList.length; i++) {
+        for (let j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
           if(this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1){
-            this.teamInfoList[i].todoInfoList[j].isBookmark = true;
+            this.teamInfoList[i].todoInfoList[j].bookmark = true;
           } else {
-            this.teamInfoList[i].todoInfoList[j].isBookmark = false;
+            this.teamInfoList[i].todoInfoList[j].bookmark = false;
           }
         }
       }
     },
     async getBookmarkList() {
-      
-      this.bookmarkList = [];
       await getBookmark(
         {
           projectId: this.projectId,
           memberId: this.id,
         },
         (res) => {
+          let tmp = [];
           res.object.forEach((bookmark) => {
-            this.bookmarkList.push(bookmark.todoId);
+            tmp.push(bookmark.todoId);
           });
+          this.set_bookmarkList(tmp);
         },
         (error) => {
           alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
           console.log(error);
         }
       );
-      
     },
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;

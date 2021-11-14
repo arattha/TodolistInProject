@@ -29,7 +29,7 @@
         </div>
         <div class="flex justify-center items-center">
           <div id="bookmark" class="mr-5 z-30">
-            <i class="bookmark fas fa-star" :class="{'text-yellow-400' : todoInfo.isBookmark , 'text-white' : !todoInfo.isBookmark}"></i>
+            <i class="bookmark fas fa-star" :class="{'text-yellow-400' : todoInfo.bookmark , 'text-white' : !todoInfo.bookmark}"></i>
           </div>
           <Todo-Status :status="todoInfo.status" :isDetail="false" />
         </div>
@@ -90,19 +90,20 @@ export default {
   props: ['todoInfo'],
   created() {},
   computed: {
-    ...mapGetters(['id']),
+    ...mapGetters(['id','bookmarkList']),
   },
   methods: {
-    ...mapActions(['set_todo_id']),
+    ...mapActions(['set_todo_id','push_bookmarkList','delete_bookmark']),
     bookmark() {
-      if (!this.todoInfo.isBookmark) {
+      if (!this.todoInfo.bookmark) {
         addBookmark(
           {
             memberId: this.id,
             todoId: this.todoInfo.id,
           },
           () => {
-            this.todoInfo.isBookmark = true;
+            this.push_bookmarkList(this.todoInfo.id);
+            this.todoInfo.bookmark = true;
           },
           (error) => {
             alert('북마크 실패');
@@ -116,7 +117,8 @@ export default {
             todoId: this.todoInfo.id,
           },
           () => {
-            this.todoInfo.isBookmark = false;
+            this.delete_bookmark(this.todoInfo.id);
+            this.todoInfo.bookmark = false;
           },
           (error) => {
             alert('북마크 실패');

@@ -21,9 +21,9 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        @click="teamAdd()"
+        @click="addMyTodo()"
       >
-        할일추가
+        내 할일추가
       </button>
       <button
         class="
@@ -83,16 +83,18 @@
     </div>
     <MyTodoFilter
       v-if="isShow"
-      @closeModal="closeModal"
+      @closeModal="closeFilter"
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
+    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" />
   </div>
 </template>
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
+import MyTodoAddModal from '@/components/modal/MyTodoAddModal.vue';
 import { getBookmark } from '@/api/bookmark.js';
 import { mapGetters, mapActions } from "vuex";
 import Stomp from "webstomp-client";
@@ -103,6 +105,7 @@ export default {
   components: {
     StatusKanban,
     MyTodoFilter,
+    MyTodoAddModal,
   },
   data() {
     return {
@@ -129,10 +132,10 @@ export default {
         },
       ],
       todoInfoList: [],
-      bookmarkList: [],
       bookmarkFilter: false,
       filters: null,
       isShow: false,
+      isModalShow: false,
     };
   },
   async created() {
@@ -140,7 +143,7 @@ export default {
     await this.connect();
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -155,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_totalAlarmCnt', 'set_stomp']),
+    ...mapActions(['set_totalAlarmCnt', 'set_stomp', 'set_bookmarkList']),
     connect() {
       this.stomp.send(
         '/server/getMyTodo',
@@ -169,12 +172,22 @@ export default {
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
         this.statusInfoList = JSON.parse(res.body);
+        this.updateList();
       });
+    },
+    addMyTodo() {
+      this.showModal();
+    },
+    showModal() {
+      this.isModalShow = true;
+    },
+    closeModal() {
+      this.isModalShow = false;
     },
     todoFilter() {
       this.isShow = true;
     },
-    closeModal() {
+    closeFilter() {
       this.isShow = false;
     },
     applyFilter(filters) {
@@ -205,16 +218,17 @@ export default {
       );
     },
     async getBookmarkList() {
-      this.bookmarkList = [];
       await getBookmark(
         {
           projectId: this.projectId,
           memberId: this.id,
         },
         (res) => {
+          let tmp = [];
           res.object.forEach((bookmark) => {
-            this.bookmarkList.push(bookmark.todoId);
+            tmp.push(bookmark.todoId);
           });
+          this.set_bookmarkList(tmp);
         },
         (error) => {
           alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
@@ -222,13 +236,13 @@ export default {
         }
       );
     },
-    updateBookmarkList() {
+    updateList() {
       for (var i = 0; i < this.statusInfoList.length; i++) {
         for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
           if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
-            this.statusInfoList[i].todoList[j].isBookmark = true;
+            this.statusInfoList[i].todoList[j].bookmark = true;
           } else {
-            this.statusInfoList[i].todoList[j].isBookmark = false;
+            this.statusInfoList[i].todoList[j].bookmark = false;
           }
         }
       }

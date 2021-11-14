@@ -29,8 +29,8 @@
         @start="setTodoId"
         @add="updateTeam($event, status)"
       >
-        <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index + todoInfo.status + todoInfo.isBookmark">
-          <Todo-Card :todoInfo="todoInfo" :key="index + todoInfo.isBookmark" />
+        <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index + todoInfo.status">
+          <Todo-Card :todoInfo="todoInfo" :key="index + todoInfo.bookmark" />
         </div>
       </draggable>
     </div>
@@ -86,7 +86,7 @@ export default {
           return this.todoList; //filter가 없을 때는 원본 반환
       } else {
         return this.todoList.filter(function (todo) {
-          if (todo.isBookmark) {
+          if (todo.bookmark) {
             return true;
           }
         });

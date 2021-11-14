@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApiResponses(value = {@ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
         @ApiResponse(code = 403, message = "Forbidden", response = BasicResponse.class),
@@ -50,6 +51,26 @@ public class TeamController {
 
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/myTeam")
+    @ApiOperation(value = "내 팀 가져오기")
+    public Object getMyTeam(@RequestParam String projectId, @RequestParam String memberId){
+        log.info("내 팀 가져오기");
+        Optional<TeamDto> team = teamService.getMyTeam(projectId, memberId);
+
+        BasicResponse result = new BasicResponse();
+        result.status = false;
+        result.data = "fail";
+
+        if(team.isPresent()) {
+            result.status = true;
+            result.data = "success";
+            result.object = team;
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
     }
 
     @GetMapping("/members")

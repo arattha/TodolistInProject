@@ -9,13 +9,13 @@
           <div class="flex items-end justify-center text-3xl ml-5">
             <i
               class="fas fa-star text-white cursor-pointer"
-              v-if="!userInfo.isBookmark"
-              @click="toggleBookmark()"
+              v-if="!isBookmark"
+              @click="bookmark()"
             ></i>
             <i
               class="fas fa-star text-yellow-400 cursor-pointer"
-              v-if="userInfo.isBookmark"
-              @click="toggleBookmark()"
+              v-if="isBookmark"
+              @click="bookmark()"
             ></i>
           </div>
         </div>
@@ -194,6 +194,7 @@ import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
+import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
@@ -223,19 +224,19 @@ export default {
         name: '',
         teamName: '',
         // 즐겨찾기 여부
-        isBookmark: true,
       },
+      isBookmark: false,
     };
   },
   computed: {
-    ...mapGetters(['id', 'todoId', 'stomp', 'projectId']),
+    ...mapGetters(['id', 'todoId', 'stomp','bookmarkList']),
   },
   created() {
     this.curPage = 0;
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp']),
+    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp', 'push_bookmarkList','delete_bookmark']),
     connect() {
       this.stomp.send(
         '/server/getTodoInfo',
@@ -249,7 +250,11 @@ export default {
         
         this.todoInfo = JSON.parse(res.body);
       });
-      
+          
+
+      if(this.bookmarkList.indexOf(this.todoId) > -1){
+        this.isBookmark = true;
+      }
     },
     changeStatus(status) {
       
@@ -267,8 +272,38 @@ export default {
     todoContentAdd() {
       this.showModal();
     },
-    toggleBookmark() {
-      this.userInfo.isBookmark = !this.userInfo.isBookmark;
+    bookmark() {
+      if (!this.isBookmark) {
+        addBookmark(
+          {
+            memberId: this.id,
+            todoId: this.todoId,
+          },
+          () => {
+            this.push_bookmarkList(this.todoId);
+            this.isBookmark = true;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      } else {
+        deleteBookmark(
+          {
+            memberId: this.id,
+            todoId: this.todoId,
+          },
+          () => {
+            this.delete_bookmark(this.todoId);
+            this.isBookmark = false;
+          },
+          (error) => {
+            alert('북마크 실패');
+            console.log(error);
+          }
+        );
+      }
     },
     goDetail() {
       this.curPage = 0;
