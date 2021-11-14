@@ -75,7 +75,7 @@ public class TeamService {
             teams.add(team.getId());
         }
 
-        Optional<MemberHasTeam> memberHasTeam = memberHasTeamDao.findMemberHasTeamByMemberIdAndTeamIdIn(memberId, teams);
+        Optional<MemberHasTeam> memberHasTeam = memberHasTeamDao.findMemberHasTeamByMemberIdAndTeamIdInAndIsUse(memberId, teams, true);
         if(!memberHasTeam.isPresent())
             return Optional.empty();
 
