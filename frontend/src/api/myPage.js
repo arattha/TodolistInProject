@@ -22,4 +22,15 @@ function updateProfile(data, callback, errorCallback) {
     });
 }
 
-export { getProfile, updateProfile };
+function changePassword(data, callback, errorCallback) {
+  axiosServiceWithAuth
+    .put('/member/update_password', data)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export { getProfile, updateProfile, changePassword };

@@ -193,7 +193,6 @@
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
 import { numeric, email, required, min, max } from 'vee-validate/dist/rules';
 import { getProfile, updateProfile } from '@/api/myPage.js';
-import { mapGetters } from 'vuex';
 
 setInteractionMode('eager');
 
@@ -240,8 +239,9 @@ export default {
     ValidationProvider,
   },
   created() {
+    this.memberId = this.$route.params.memberId;
     getProfile(
-      this.id,
+      this.memberId,
       (res) => {
         console.log(res);
         this.userInfo = JSON.parse(JSON.stringify(res.object));
@@ -254,6 +254,7 @@ export default {
   },
   data() {
     return {
+      memberId: '',
       userInfo: {
         id: 1,
         name: '조성표',
@@ -264,9 +265,6 @@ export default {
       userModifyInfo: {},
       img: '',
     };
-  },
-  computed: {
-    ...mapGetters(['id']),
   },
   methods: {
     imgUpload(e) {
@@ -283,9 +281,12 @@ export default {
       }
 
       var formData = new FormData();
-      formData.append('id', this.id);
+      formData.append('id', this.memberId);
       if (this.userInfo.email !== this.userModifyInfo.email) {
         formData.append('email', this.userModifyInfo.email);
+      }
+      if (this.userInfo.name !== this.userModifyInfo.name) {
+        formData.append('name', this.userModifyInfo.name);
       }
       if (this.userInfo.phone !== this.userModifyInfo.phone) {
         formData.append('phone', this.userModifyInfo.phone);
@@ -299,7 +300,7 @@ export default {
         formData,
         (res) => {
           console.log(res);
-          this.$router.push('/profile/' + this.id);
+          this.$router.push('/profile/' + this.memberId);
         },
         (error) => {
           console.error(error);
