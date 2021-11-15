@@ -130,6 +130,11 @@ public class TodoController {
         }
     }
 
+    @MessageMapping(value = "/addTodoContent")
+    public void addTodoContent(TodoContentDto todoContentDto){
+        todoService.addTodoContent(todoContentDto);
+    }
+
     private JSONObject StringToJson(String str) throws ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(str);

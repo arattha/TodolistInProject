@@ -16,8 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -55,6 +55,17 @@ public class TodoService {
         }
 
         return true;
+    }
+
+    @Transactional
+    public void addTodoContent(TodoContentDto todoContentDto){
+        Todo todo = todoDao.findTodoById(todoContentDto.getTodoId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        Member member = memberDao.findMemberById(todoContentDto.getMemberId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String content = todo.getTitle() + ": " + member.getName() + "님께서 " + todo.getTitle() +"의 상세 정보를 생성했습니다.";
+       alarmController.spreadAlarm(content, todoContentDto.getTodoId());
     }
 
     private void createTodoRecord(Todo todo) throws JpaSystemException {

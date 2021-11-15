@@ -7,7 +7,6 @@ import com.web.tip.error.CustomException;
 import com.web.tip.error.ErrorCode;
 import com.web.tip.error.JpaErrorCode;
 import com.web.tip.error.JpaException;
-import com.web.tip.project.Project;
 import com.web.tip.project.ProjectDao;
 import com.web.tip.util.IdGenerator;
 import lombok.AllArgsConstructor;

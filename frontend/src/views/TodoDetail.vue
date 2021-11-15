@@ -211,7 +211,13 @@
       >
       </router-view>
     </div>
-    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" :stomp="stompClient"/>
+    <Todo-Detail-Modal
+      v-if="isShow"
+      @closeModal="closeModal"
+      :todoId="todoId"
+      :memberId="id"
+      :stomp="stompClient"
+    />
     <Todo-Team-Member-Move-Modal
       v-if="isTeamMemberMoveModalShow"
       @closeModal="closeTeamMemberMoveModal"
@@ -235,8 +241,8 @@ import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
 import TodoUpdateModal from '@/components/modal/TodoUpdateModal.vue';
 import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'TODODETAIL',
@@ -255,7 +261,7 @@ export default {
       todoInfo: {
         id: '',
         title: '',
-        memberId: '',
+        memberId: null,
         memberName: '',
         teamName: '',
         status: '',
@@ -278,14 +284,17 @@ export default {
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'push_bookmarkList','delete_bookmark']),
+    ...mapActions([
+      'toggle_reload_todo_detail',
+      'set_totalAlarmCnt',
+      'push_bookmarkList',
+      'delete_bookmark',
+    ]),
     connect() {
-
       const serverURL = 'http://localhost:8082/socket';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-        
         // 소켓 연결 성공
         this.connected = true;
         this.stompClient.debug = () => {};
@@ -301,8 +310,6 @@ export default {
           this.todoInfo = JSON.parse(res.body);
         });
       });
-
-      
 
       if (this.bookmarkList.indexOf(this.todoId) > -1) {
         this.isBookmark = true;

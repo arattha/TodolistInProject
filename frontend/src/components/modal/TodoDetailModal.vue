@@ -158,7 +158,7 @@ export default {
       isValid: true,
     };
   },
-  props: ['todoId', 'memberId'],
+  props: ['todoId', 'memberId', 'stomp'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
@@ -197,9 +197,11 @@ export default {
         alert('최대 1000byte 까지 입력이 가능합니다.');
         return;
       }
+      let data = { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent };
       createTodoContent(
-        { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
+        data,
         () => {
+          this.stomp.send('/server/addTodoContent', JSON.stringify(data));
           this.closeModal(false);
         },
         (error) => {
