@@ -53,14 +53,61 @@
         </div>
 
         <div
-          class="h-full w-16 grid justify-items-center items-center cursor-pointer hover:opacity-50"
-          @click="goProfile()"
+          class="h-full w-16 relative grid justify-items-center items-center cursor-pointer"
+          @click="toggleMenu()"
         >
-          <div class="rounded-full w-10 h-10 mr-3 flex">
+          <div class="rounded-full w-10 h-10 mr-3 flex hover:opacity-50">
             <img
               class="rounded-full flex object-cover w-full h-full"
               :src="'http://localhost:8080/img/' + id"
             />
+          </div>
+          <div
+            class="
+              flex flex-col
+              absolute
+              top-12
+              right-4
+              h-20
+              w-24
+              bg-contentGray
+              rounded-md
+              shadow-md
+              border
+            "
+            v-if="isShowMenu"
+            v-click-outside="onClickOutside"
+          >
+            <div
+              class="
+                flex
+                justify-center
+                items-center
+                h-1/2
+                hover:bg-itemGray
+                cursor-pointer
+                text-sm
+                font-bold
+              "
+              @click="goProfile"
+            >
+              내 정보
+            </div>
+            <div
+              class="
+                flex
+                justify-center
+                items-center
+                h-1/2
+                hover:bg-itemGray
+                cursor-pointer
+                text-sm
+                font-bold
+              "
+              @click="logout"
+            >
+              로그아웃
+            </div>
           </div>
         </div>
       </div>
@@ -69,25 +116,31 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import vClickOutside from 'v-click-outside';
+import { logoutUser } from '@/api/auth.js';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Header',
+  directives: {
+    clickOutside: vClickOutside.directive,
+  },
   data() {
     return {
       showAlert: false,
+      isShowMenu: false,
       alarmList: [],
       cnt: '',
     };
   },
   components: {},
   created() {
-
     if (this.totalAlarmCnt > 9) this.cnt = '9+';
     else if (this.totalAlarmCnt == 0) this.cnt = '';
     else this.cnt = this.totalAlarmCnt;
   },
   methods: {
+    ...mapActions(['toggle_isLogin', 'set_id', 'set_nickname']),
     goMain() {
       this.$router.push('/projects');
     },
@@ -98,6 +151,31 @@ export default {
     },
     goProfile() {
       this.$router.push(`/profile/${this.id}`);
+    },
+    onClickOutside() {
+      this.isShowMenu = false;
+    },
+    toggleMenu() {
+      this.isShowMenu = !this.isShowMenu;
+    },
+    logout() {
+      logoutUser(
+        this.id,
+        () => {
+          this.set_id('');
+          this.set_nickname('');
+          this.toggle_isLogin(false);
+
+          this.$router.push('/login');
+        },
+        () => {
+          this.set_id('');
+          this.set_nickname('');
+          this.toggle_isLogin(false);
+
+          this.$router.push('/login');
+        }
+      );
     },
   },
   computed: {
