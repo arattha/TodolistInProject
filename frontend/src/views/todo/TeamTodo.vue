@@ -23,7 +23,7 @@
           {{ team.teamName }}
         </option>
       </select>
-      <!-- <button
+      <button
         class="
           bg-itemGray
           text-black
@@ -43,10 +43,10 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
-        @click="teamAdd()"
+        @click="showTeamAddModal()"
       >
-        할일추가
-      </button> -->
+        팀 수정
+      </button>
       <button
         class="
           bg-itemGray
@@ -110,13 +110,16 @@
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
+    <Team-Add-Modal v-if="isShowTeamAddModal" :selectTeam="selectTeam" :modifyMemberList="teamMemberList" @closeTeamAddModal="closeTeamAddModal" />
   </div>
 </template>
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
+import { getMembersByTeam } from '@/api/auth.js';
 import { mapGetters, mapActions } from "vuex";
 import { getTeam } from "@/api/team.js";
 
@@ -124,7 +127,8 @@ export default {
   name: 'TEAMTODO',
   components: {
     StatusKanban,
-    MyTodoFilter
+    MyTodoFilter,
+    TeamAddModal
   },
   props:['stomp'],
   data() {
@@ -153,10 +157,12 @@ export default {
           todoList: [],
         },
       ],
+      teamMemberList: [],
       todoInfoList: [],
       bookmarkFilter: false,
       filters: null,
       isShow: false,
+      isShowTeamAddModal: false,
     };
   },
   async created() {
@@ -167,7 +173,7 @@ export default {
       할일 가져오고 this.updateList 연결해줄것
     
     */
-
+    this.getModifyMemberList();
   },
   computed:{
     ...mapGetters(['projectId', 'id', 'bookmarkList']),
@@ -232,6 +238,17 @@ export default {
         this.statusInfoList = JSON.parse(res.body);
       });
 
+    },
+    getModifyMemberList(){
+      getMembersByTeam(
+        this.selectTeam.teamId,
+        (res) => {
+          this.teamMemberList = res.object;
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
     },
     changeTeam() {
       // stautsInfoList를 초기화
@@ -325,6 +342,12 @@ export default {
     cleanFilter() {
       this.filters = null;
       this.isShow = false;
+    },
+    showTeamAddModal() {
+      this.isShowTeamAddModal = true;
+    },
+    closeTeamAddModal() {
+      this.isShowTeamAddModal = false;
     },
   },
 };
