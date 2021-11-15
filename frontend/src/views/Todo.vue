@@ -57,7 +57,7 @@
         진행 상황
       </div> -->
     </div>
-    <router-view class="flex overflow-auto" :stomp="stomp"/>
+    <router-view class="flex overflow-auto" :stomp="stomp" />
   </div>
 </template>
 
@@ -70,7 +70,7 @@ export default {
   components: {
     Header,
   },
-  props:['stomp'],
+  props: ['stomp'],
   data() {
     return {
       pageType: '',
@@ -82,20 +82,39 @@ export default {
   computed: {
     ...mapGetters(['projectId']),
   },
+  watch: {
+    $route(to) {
+      if (to.path === `/projects/${this.projectId}/todos`) {
+        this.pageType = 'total';
+      } else if (to.path === `/projects/${this.projectId}/todos/my`) {
+        this.pageType = 'my';
+      } else if (to.path === `/projects/${this.projectId}/todos/progress`) {
+        this.pageType = 'progress';
+      } else {
+        this.pageType = 'else';
+      }
+    },
+  },
   methods: {
     ...mapActions(['set_project_name', 'set_project_id']),
 
     goTotalTodo() {
-      this.pageType = 'total';
-      this.$router.push('/projects/' + this.projectId + '/todos');
+      if (this.pageType === 'total') {
+        return;
+      }
+      this.$router.push(`/projects/${this.projectId}/todos`);
     },
     goMyTodo() {
-      this.pageType = 'my';
-      this.$router.push('/projects/' + this.projectId + '/todos/my');
+      if (this.pageType === 'my') {
+        return;
+      }
+      this.$router.push(`/projects/${this.projectId}/todos/my`);
     },
     goTodoProgress() {
-      this.pageType = 'progress';
-      this.$router.push('/projects/' + this.projectId + '/progress');
+      if (this.pageType === 'progress') {
+        return;
+      }
+      this.$router.push(`/projects/${this.projectId}/todos/progress`);
     },
   },
 };

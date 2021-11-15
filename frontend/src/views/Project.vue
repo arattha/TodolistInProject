@@ -69,13 +69,26 @@ export default {
       this.pageType = 'done';
     }
   },
+  watch: {
+    $route(to) {
+      if (to.path === '/projects') {
+        this.pageType = 'total';
+      } else if (to.path === '/projects/done') {
+        this.pageType = 'done';
+      }
+    },
+  },
   methods: {
     goTotalPjt() {
-      this.pageType = 'total';
+      if (this.pageType === 'total') {
+        return;
+      }
       this.$router.push('/projects');
     },
     goDonePjt() {
-      this.pageType = 'done';
+      if (this.pageType === 'done') {
+        return;
+      }
       this.$router.push('/projects/done');
     },
   },
