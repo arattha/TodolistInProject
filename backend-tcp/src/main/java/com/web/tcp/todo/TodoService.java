@@ -228,6 +228,18 @@ public class TodoService {
     }
 
     @Transactional
+    public TodoDto updateTodo(TodoDto todoDto){
+        Todo todo = todoDao.findTodoById(todoDto.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+        TodoDto updated = TodoAdaptor.entityToDto(todo);
+        updated.setTitle(todoDto.getTitle());
+        updated.setModifyDate(LocalDateTime.now());
+
+        return TodoAdaptor.entityToDto(todoDao.save(TodoAdaptor.dtoToEntity(updated)));
+    }
+    
+    @Transactional
     public Todo getTodo(String todoTitle) {
 
         Todo todo = todoDao.findTodoByTitle(todoTitle).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));

@@ -22,14 +22,17 @@
           <div class="rounded-full w-10 h-10 mr-3 flex">
             <img
               class="rounded-full flex object-cover w-full h-full"
-              :src="'http://localhost:8080/img/' + id"
+              :src="'http://localhost:8080/img/' + todoInfo.memberId"
             />
           </div>
           <div class="text-base font-bold">{{ todoInfo.memberName }}</div>
         </div>
         <div class="flex justify-center items-center">
           <div id="bookmark" class="mr-5 z-30">
-            <i class="bookmark fas fa-star" :class="{'text-yellow-400' : todoInfo.bookmark , 'text-white' : !todoInfo.bookmark}"></i>
+            <i
+              class="bookmark fas fa-star"
+              :class="{ 'text-yellow-400': todoInfo.bookmark, 'text-white': !todoInfo.bookmark }"
+            ></i>
           </div>
           <Todo-Status :status="todoInfo.status" :isDetail="false" />
         </div>
@@ -92,10 +95,10 @@ export default {
     console.log('todocard :', this.stomp);
   },
   computed: {
-    ...mapGetters(['id','bookmarkList']),
+    ...mapGetters(['id', 'bookmarkList']),
   },
   methods: {
-    ...mapActions(['set_todo_id','push_bookmarkList','delete_bookmark']),
+    ...mapActions(['set_todo_id', 'push_bookmarkList', 'delete_bookmark']),
     bookmark() {
       if (!this.todoInfo.bookmark) {
         addBookmark(

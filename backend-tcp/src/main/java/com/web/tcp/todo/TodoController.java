@@ -72,11 +72,20 @@ public class TodoController {
         try{
             projectId = (String) StringToJson(projectId).get("projectId");
             teamId = (String) StringToJson(teamId).get("teamId");
-            System.out.println(projectId + " " + teamId);
             template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    @MessageMapping(value = "/updateTodo")
+    public void updateTodo(TodoDto todoDto){
+        log.info(todoDto.toString());
+        TodoDto updatedTodo = todoService.updateTodo(todoDto);
+
+        String projectId = updatedTodo.getProjectId();
+        template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
+        template.convertAndSend("/client/detail/" + todoDto.getId(), todoService.getTodoInfo(todoDto.getId()));
     }
 
     // client가 '/server/moveTodo'경로로 이동한 TodoDto 전송
@@ -84,10 +93,8 @@ public class TodoController {
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
 
-        System.out.println(todoDto);
         Todo tmp = todoDao.findTodoById(todoDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
         String beforeMid = tmp.getMemberId();
-        System.out.println("beforeId : " + beforeMid);
 
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);
@@ -98,7 +105,6 @@ public class TodoController {
         } else {
             return;
         }
-
 
         String projectId = todoDto.getProjectId();
         String memberId = todoDto.getMemberId();

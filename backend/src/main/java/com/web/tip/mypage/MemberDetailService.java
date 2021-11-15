@@ -42,6 +42,7 @@ public class MemberDetailService {
     }
 
     public MemberDetailDto updateMemberDetail(UpdateMemberRequest updateMemberRequest) {
+
         Member member = memberDao.findMemberById(updateMemberRequest.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -59,10 +60,21 @@ public class MemberDetailService {
                     }
                 });
 
-        MemberDetail memberDetail = memberDetailDao.findMemberDetailByMemberId(updateMemberRequest.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        MemberDetail memberDetail = member.getMemberDetail();
 
-        MemberDetail updatedMember = MemberDetail.builder()
+        if(Optional.ofNullable(updateMemberRequest.getName()).isPresent()) {
+            memberDao.save(Member.builder()
+                    .memberDetail(memberDetail)
+                    .name(updateMemberRequest.getName())
+                    .id(member.getId())
+                    .authority(member.getAuthority())
+                    .isUse(member.isUse())
+                    .nickname(member.getNickname())
+                    .password(member.getPassword())
+                    .build());
+        }
+
+        MemberDetail updatedMemberDetail = MemberDetail.builder()
                 .member(member)
                 .id(memberDetail.getId())
                 .phone(updateMemberRequest.getPhone() == null ? memberDetail.getPhone() : updateMemberRequest.getPhone())
@@ -70,9 +82,9 @@ public class MemberDetailService {
                 .profileImg(memberDetail.getProfileImg())
                 .build();
 
-        memberDetailDao.save(updatedMember);
+        memberDetailDao.save(updatedMemberDetail);
 
-        return MemberDetailDto.entityToDto(updatedMember);
+        return MemberDetailDto.entityToDto(updatedMemberDetail);
     }
 
     public MemberDetailDto findMemberDetail(Member member) {
