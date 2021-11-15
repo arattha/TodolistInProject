@@ -131,7 +131,6 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
-import { mapGetters } from 'vuex';
 import { getMembersByTeam } from '@/api/auth.js';
 
 export default {
@@ -142,7 +141,7 @@ export default {
       isValid: false,
     };
   },
-  props: ['todoInfo'],
+  props: ['todoInfo', 'stomp'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
@@ -190,9 +189,6 @@ export default {
       );
       this.closeModal();
     },
-  },
-  computed: {
-    ...mapGetters(['stomp']),
   },
 };
 </script>

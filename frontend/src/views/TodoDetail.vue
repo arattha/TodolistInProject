@@ -211,19 +211,19 @@
       >
       </router-view>
     </div>
-    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" :stomp="stomp"/>
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" :stomp="stompClient"/>
     <Todo-Team-Member-Move-Modal
       v-if="isTeamMemberMoveModalShow"
       @closeModal="closeTeamMemberMoveModal"
       :todoInfo="todoInfo"
       :isDetail="true"
-      :stomp="stomp"
+      :stomp="stompClient"
     />
     <Todo-Update-Modal
       v-if="isUpdateTodoModalShow"
       @closeModal="closeUpdateTodoModal"
       :todoInfo="todoInfo"
-      :stomp="stomp"
+      :stomp="stompClient"
     ></Todo-Update-Modal>
   </div>
 </template>
@@ -235,6 +235,8 @@ import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
 import TodoUpdateModal from '@/components/modal/TodoUpdateModal.vue';
 import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default {
   name: 'TODODETAIL',
@@ -244,7 +246,6 @@ export default {
     TodoTeamMemberMoveModal,
     TodoUpdateModal,
   },
-  props:['stomp'],
   data() {
     return {
       isTeamMemberMoveModalShow: false,
@@ -279,17 +280,29 @@ export default {
   methods: {
     ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'push_bookmarkList','delete_bookmark']),
     connect() {
-      this.stomp.send(
-        '/server/getTodoInfo',
-        JSON.stringify({
-          todoId: this.todoId,
-        }),
-        {}
-      );
 
-      this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
-        this.todoInfo = JSON.parse(res.body);
+      const serverURL = 'http://localhost:8082/socket';
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket, { debug: false });
+      this.stompClient.connect({}, () => {
+        
+        // 소켓 연결 성공
+        this.connected = true;
+        this.stompClient.debug = () => {};
+        this.stompClient.send(
+          '/server/getTodoInfo',
+          JSON.stringify({
+            todoId: this.todoId,
+          }),
+          {}
+        );
+
+        this.stompClient.subscribe('/client/detail/' + this.todoId, (res) => {
+          this.todoInfo = JSON.parse(res.body);
+        });
       });
+
+      
 
       if (this.bookmarkList.indexOf(this.todoId) > -1) {
         this.isBookmark = true;
@@ -312,7 +325,7 @@ export default {
         ':' +
         date.getSeconds();
 
-      this.stomp.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
+      this.stompClient.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
     },
     todoContentAdd() {
       this.showModal();
