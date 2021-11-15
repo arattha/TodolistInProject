@@ -34,6 +34,7 @@
         </div>
       </draggable>
     </div>
+    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfoNew" :stomp="stomp"/>
   </div>
 </template>
 
@@ -41,38 +42,76 @@
 import draggable from 'vuedraggable';
 import TodoCard from '@/components/TodoCard.vue';
 import { mapGetters } from 'vuex';
+import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
 
 export default {
   name: 'STATUSKANBAN',
   props: ['status', 'todoList', 'bookmarkFilter', 'stomp'],
+  data() {
+    return {
+      isShow: false,
+      todoInfoNew: {},
+    };
+  },
   components: {
     TodoCard,
     draggable,
+    TodoTeamMemberMoveModal
   },
   methods: {
     setTodoId(e) {
       this.todoId = this.todoList[e.oldIndex];
     },
     updateTeam(e, status) {
-      this.stomp.send(
-        '/server/moveTodo/status',
-        JSON.stringify({
-          id: this.todoList[e.newIndex].id,
-          title: this.todoList[e.newIndex].title,
-          status: status,
-          projectId: this.todoList[e.newIndex].projectId,
-          teamId: this.todoList[e.newIndex].teamId,
-          teamName: this.todoList[e.newIndex].teamName,
-          memberId: this.todoList[e.newIndex].memberId,
-          memberName: this.todoList[e.newIndex].memberName,
-          modifyDate: this.todoList[e.newIndex].modifyDate,
-          regDate: this.todoList[e.newIndex].regDate,
-        }),
-        {}
-      );
+      if(this.todoList[e.newIndex].status == "New"){
+        this.todoInfoNew = this.todoList[e.newIndex];
+        this.isShow = true;
 
-      // 상태를 드래거블로 이동시 바꾸어주기 위한 메서드 MyTodo.vue 참고
-      this.$emit('changeStatus', { index: e.newIndex, status: status });
+      } else if(status == "New"){
+
+        this.stomp.send(
+          '/server/moveTodo/status',
+          JSON.stringify({
+            id: this.todoList[e.newIndex].id,
+            title: this.todoList[e.newIndex].title,
+            status: status,
+            projectId: this.todoList[e.newIndex].projectId,
+            teamId: this.todoList[e.newIndex].teamId,
+            teamName: this.todoList[e.newIndex].teamName,
+            memberId: null,
+            memberName: null,
+            modifyDate: this.todoList[e.newIndex].modifyDate,
+            regDate: this.todoList[e.newIndex].regDate,
+          }),
+          {}
+        );
+
+      } else {
+
+        this.stomp.send(
+          '/server/moveTodo/status',
+          JSON.stringify({
+            id: this.todoList[e.newIndex].id,
+            title: this.todoList[e.newIndex].title,
+            status: status,
+            projectId: this.todoList[e.newIndex].projectId,
+            teamId: this.todoList[e.newIndex].teamId,
+            teamName: this.todoList[e.newIndex].teamName,
+            memberId: this.todoList[e.newIndex].memberId,
+            memberName: this.todoList[e.newIndex].memberName,
+            modifyDate: this.todoList[e.newIndex].modifyDate,
+            regDate: this.todoList[e.newIndex].regDate,
+          }),
+          {}
+        );
+
+        // 상태를 드래거블로 이동시 바꾸어주기 위한 메서드 MyTodo.vue 참고
+        this.$emit('changeStatus', { index: e.newIndex, status: status });
+      }
+
+    },
+    closeModal() {
+      this.isShow = false;
     },
   },
   computed: {
