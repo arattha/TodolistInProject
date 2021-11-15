@@ -59,6 +59,16 @@ public class TodoController {
         }
     }
 
+    @MessageMapping(value = "/updateTodo")
+    public void updateTodo(TodoDto todoDto){
+        log.info(todoDto.toString());
+        TodoDto updatedTodo = todoService.updateTodo(todoDto);
+
+        String projectId = updatedTodo.getProjectId();
+        template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
+        template.convertAndSend("/client/detail/" + todoDto.getId(), todoService.getTodoInfo(todoDto.getId()));
+    }
+
     // client가 '/server/moveTodo'경로로 이동한 TodoDto 전송
     // 수정된 Todo의 목록들을 해당 프로젝트를 구독 중인 client들에게 전송
     @MessageMapping(value = "/moveTodo/{type}")

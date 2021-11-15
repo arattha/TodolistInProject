@@ -16,8 +16,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -106,6 +107,18 @@ public class TodoService {
             return null;
         }
 
+    }
+
+    @Transactional
+    public TodoDto updateTodo(TodoDto todoDto){
+        Todo todo = todoDao.findTodoById(todoDto.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+        TodoDto updated = TodoAdaptor.entityToDto(todo);
+        updated.setTitle(todoDto.getTitle());
+        updated.setModifyDate(LocalDateTime.now());
+
+        return TodoAdaptor.entityToDto(todoDao.save(TodoAdaptor.dtoToEntity(updated)));
     }
 
     private Object refactoring(List<TodoDto> todoDtoList, String projectId) {
