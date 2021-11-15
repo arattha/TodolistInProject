@@ -57,7 +57,7 @@
         진행 상황
       </div> -->
     </div>
-    <router-view class="flex overflow-auto" />
+    <router-view class="flex overflow-auto" :stomp="stomp"/>
   </div>
 </template>
 
@@ -70,6 +70,7 @@ export default {
   components: {
     Header,
   },
+  props:['stomp'],
   data() {
     return {
       pageType: '',

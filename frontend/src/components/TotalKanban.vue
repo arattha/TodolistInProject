@@ -65,12 +65,12 @@
           @add="updateTeam"
         >
           <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index">
-            <Todo-Card :todoInfo="todoInfo" />
+            <Todo-Card :todoInfo="todoInfo" :stomp="stomp"/>
           </div>
         </draggable>
       </div>
     </div>
-    <Todo-Add-Modal v-if="isShow" :teamId="teamInfo.teamId" @closeModal="closeModal" />
+    <Todo-Add-Modal v-if="isShow" :teamId="teamInfo.teamId" @closeModal="closeModal" :stomp="stomp"/>
   </div>
 </template>
 
@@ -86,7 +86,7 @@ export default {
     TodoAddModal,
     draggable,
   },
-  props: ['teamInfo', 'filters', 'bookmarkFilter'],
+  props: ['teamInfo', 'filters', 'bookmarkFilter', 'stomp'],
   data() {
     return {
       isShow: false,
@@ -96,7 +96,7 @@ export default {
     };
   },
   created() {
-    //console.log("teamInfoList in kanban:",this.teamInfo);
+    console.log('total todo :', this.stomp);
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
@@ -138,7 +138,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp']),
+    ...mapGetters(['projectId', 'id', 'projectName']),
     todoFilter: function () {
       let filters = this.filters;
       let bookmarkFilter = this.bookmarkFilter;

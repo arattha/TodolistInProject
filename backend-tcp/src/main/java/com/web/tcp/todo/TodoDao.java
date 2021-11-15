@@ -11,5 +11,5 @@ public interface TodoDao extends JpaRepository<Todo, String> {
     Optional<Todo> findTodoByTitle(String title);
     List<Todo> findTodosByProjectId(String projectId);
     List<Todo> findTodosByProjectIdAndMemberId(String projectId, String memberId);
-
+    List<Todo> findTodosByProjectIdAndTeamId(String projectId, String teamId);
 }

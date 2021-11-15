@@ -1,6 +1,8 @@
 package com.web.tcp.todo;
 
 import com.web.tcp.alarm.AlarmService;
+import com.web.tcp.error.CustomException;
+import com.web.tcp.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -22,6 +24,7 @@ public class TodoController {
 
     AlarmService alarmService;
     TodoService todoService;
+    TodoDao todoDao;
 
     // client가 '/server/addTodo'경로로 새롭게 추가할 Todo에 관한 데이터를 전송
     // Todo를 포함하고 있는 project를 구독 중인 client들에게 send
@@ -30,6 +33,8 @@ public class TodoController {
         String projectId = todoDto.getProjectId();
         todoService.addTodo(todoDto);
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
+        template.convertAndSend("/client/todo/" + todoDto.getProjectId() + "/" + todoDto.getMemberId(),
+                todoService.getTodoMyList(todoDto.getProjectId(), todoDto.getMemberId()));
     }
 
     // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
@@ -48,12 +53,26 @@ public class TodoController {
     // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
     // 해당 프로젝트를 구독 중인 client들에게 send
     @MessageMapping(value = "/getMyTodo")
-    public void getTodo(String projectId, String memberId){
+    public void getMyTodo(String projectId, String memberId){
 
         try{
             projectId = (String) StringToJson(projectId).get("projectId");
             memberId = (String) StringToJson(memberId).get("memberId");
             template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // client가 '/server/getTodo'경로로 프로젝트 아이디 전송
+    // 해당 프로젝트를 구독 중인 client들에게 send
+    @MessageMapping(value = "/getTeamTodo")
+    public void getTeamTodo(String projectId, String teamId){
+
+        try{
+            projectId = (String) StringToJson(projectId).get("projectId");
+            teamId = (String) StringToJson(teamId).get("teamId");
+            template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -74,7 +93,9 @@ public class TodoController {
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
 
-        System.out.println(todoDto);
+        Todo tmp = todoDao.findTodoById(todoDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        String beforeMid = tmp.getMemberId();
+
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);
         } else if(type.equals("team")) {
@@ -86,8 +107,14 @@ public class TodoController {
         }
 
         String projectId = todoDto.getProjectId();
+        String memberId = todoDto.getMemberId();
+        String teamId = todoDto.getTeamId();
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
         template.convertAndSend("/client/detail/" + todoDto.getId(), todoService.getTodoInfo(todoDto.getId()));
+        template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
+        if(beforeMid != null)
+            template.convertAndSend("/client/todo/" + projectId + "/" + beforeMid, todoService.getTodoMyList(projectId, beforeMid));
+        template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
     }
 
     // client가 '/server/getTodoInfo'경로로 Member의 Id와 Todo의 Id 전송

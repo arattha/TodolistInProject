@@ -136,6 +136,7 @@ import { getMembersByTeam } from '@/api/auth.js';
 
 export default {
   name: 'TODOADDMODAL',
+  props:['stomp'],
   data() {
     return {
       inputContent: '',
@@ -200,7 +201,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['stomp', 'projectId', 'teamId', 'id']),
+    ...mapGetters(['projectId', 'teamId', 'id']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);
