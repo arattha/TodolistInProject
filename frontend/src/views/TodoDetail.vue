@@ -31,29 +31,61 @@
       <div class="flex justify-end lg:justify-center lg:items-center mr-5">
         <div class="flex flex-col">
           <div class="flex justify-end lg:justify-start items-center">
-            <button
-              class="
-                bg-itemGray
-                text-black text-xs
-                font-semibold
-                w-16
-                h-8
-                py-2
-                px-2
-                mr-8
-                rounded-lg
-                shadow-md
-                hover:bg-menuGray
-                focus:outline-none
-                focus:ring-2
-                focus:ring-headerGray
-                focus:ring-offset-2
-                focus:ring-offset-purple-200
-              "
-              @click="showTeamMemberMoveModal"
-            >
-              보내기
-            </button>
+            <ul>
+              <li>
+                <button
+                  class="
+                    bg-itemGray
+                    text-black text-xs
+                    font-semibold
+                    w-16
+                    h-8
+                    py-2
+                    px-2
+                    mr-8
+                    mt-4
+                    rounded-lg
+                    shadow-md
+                    hover:bg-menuGray
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-headerGray
+                    focus:ring-offset-2
+                    focus:ring-offset-purple-200
+                  "
+                  @click="showTeamMemberMoveModal"
+                >
+                  보내기
+                </button>
+              </li>
+              <li>
+                <button
+                  class="
+                    bg-itemGray
+                    text-black text-xs
+                    font-semibold
+                    w-16
+                    h-8
+                    py-2
+                    px-2
+                    mr-8
+                    mt-4
+                    rounded-lg
+                    shadow-md
+                    hover:bg-menuGray
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-headerGray
+                    focus:ring-offset-2
+                    focus:ring-offset-purple-200
+                  "
+                  @click="showUpdateTodoModal"
+                >
+                  수정하기
+                </button>
+              </li>
+            </ul>
+
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
               <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
@@ -186,6 +218,12 @@
       :todoInfo="todoInfo"
       :isDetail="true"
     />
+    <Todo-Update-Modal
+      v-if="isUpdateTodoModalShow"
+      @closeModal="closeUpdateTodoModal"
+      :todoInfo="todoInfo"
+      :stomp="stomp"
+    ></Todo-Update-Modal>
   </div>
 </template>
 
@@ -194,9 +232,10 @@ import TodoStatus from '@/components/TodoStatus.vue';
 import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
+import TodoUpdateModal from '@/components/modal/TodoUpdateModal.vue';
 import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'TODODETAIL',
@@ -204,10 +243,12 @@ export default {
     TodoStatus,
     TodoDetailModal,
     TodoTeamMemberMoveModal,
+    TodoUpdateModal,
   },
   data() {
     return {
       isTeamMemberMoveModalShow: false,
+      isUpdateTodoModalShow: false,
       isShow: false,
       curPage: 0,
       todoInfo: {
@@ -229,14 +270,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['id', 'todoId', 'stomp','bookmarkList']),
+    ...mapGetters(['id', 'todoId', 'stomp', 'bookmarkList']),
   },
   created() {
     this.curPage = 0;
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp', 'push_bookmarkList','delete_bookmark']),
+    ...mapActions([
+      'toggle_reload_todo_detail',
+      'set_totalAlarmCnt',
+      'set_stomp',
+      'push_bookmarkList',
+      'delete_bookmark',
+    ]),
     connect() {
       this.stomp.send(
         '/server/getTodoInfo',
@@ -247,27 +294,31 @@ export default {
       );
 
       this.stomp.subscribe('/client/detail/' + this.todoId, (res) => {
-        
         this.todoInfo = JSON.parse(res.body);
       });
-          
 
-      if(this.bookmarkList.indexOf(this.todoId) > -1){
+      if (this.bookmarkList.indexOf(this.todoId) > -1) {
         this.isBookmark = true;
       }
     },
     changeStatus(status) {
-      
       this.todoInfo.status = status;
 
       let date = new Date();
-      this.todoInfo.modifyDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" 
-      + date.getHours() + ":" + (date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()) + ":" + date.getSeconds();
+      this.todoInfo.modifyDate =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() + 1) +
+        '-' +
+        date.getDate() +
+        'T' +
+        date.getHours() +
+        ':' +
+        (date.getMinutes().toString().length == 1 ? '0' + date.getMinutes() : date.getMinutes()) +
+        ':' +
+        date.getSeconds();
 
-      this.stomp.send('/server/moveTodo/status',
-        JSON.stringify(this.todoInfo),
-      {});
-      
+      this.stomp.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
     },
     todoContentAdd() {
       this.showModal();
@@ -344,6 +395,12 @@ export default {
     },
     closeTeamMemberMoveModal() {
       this.isTeamMemberMoveModalShow = false;
+    },
+    showUpdateTodoModal() {
+      this.isUpdateTodoModalShow = true;
+    },
+    closeUpdateTodoModal() {
+      this.isUpdateTodoModalShow = false;
     },
   },
   beforeRouteLeave(to, from, next) {
