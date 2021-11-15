@@ -72,7 +72,6 @@
                     type="checkbox"
                     :id="'s' + index"
                     :value="status"
-                    @change="selectStatus"
                     v-model="filters.status"
                   />
                   <label :for="'s' + index" class="flex items-center justify-center cursor-pointer">
@@ -206,7 +205,7 @@ export default {
       filters: {
         status: [],
       },
-      statusList: ['New', '접수', '진행', '완료', '진행하지않음'],
+      statusList: [],
     };
   },
   computed: {
@@ -222,6 +221,14 @@ export default {
         }
       },
     },
+  },
+  created() {
+    console.log(this.$route.path);
+    if (this.$route.path === `/projects/${this.$route.params.projectId}/todos/my`) {
+      this.statusList = ['접수', '진행', '완료', '진행하지않음'];
+    } else {
+      this.statusList = ['New', '접수', '진행', '완료', '진행하지않음'];
+    }
   },
   methods: {
     onClickOutside() {
