@@ -40,7 +40,7 @@ public class TodoContentService {
     private static final String REGEX = "\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
     private static final String ALIAS_REGEX = "(\\[.*\\])\\(([-a-zA-Z0-9+&@#/%?=~_|!:,.;]*)(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]\\)";
 
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional()
     public TodoContentDto addTodoContent(ContentRequest request) {
         Todo todo = todoDao.findById(request.getTodoId())
                 .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
@@ -60,13 +60,14 @@ public class TodoContentService {
                 .isUse(true)
                 .regDate(LocalDateTime.now())
                 .build();
-
-        makeTodoUrls(todoContentDao.save(todoContent));
+        TodoContent savedTodoContent = todoContentDao.save(todoContent);
+        makeTodoUrls(savedTodoContent);
+        saveInitialTodoContentRecord(savedTodoContent);
 
         return TodoContentDto.entityToDto(todoContent);
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = true)
     public List<TodoContentDto> getTodoContents(String todoId) {
         Todo todo = todoDao.findById(todoId)
                 .orElseThrow(() -> new CustomException(TODO_NOT_FOUND));
@@ -137,6 +138,26 @@ public class TodoContentService {
         return todoContentDto;
     }
 
+    private void saveInitialTodoContentRecord(TodoContent todoContent) {
+        String id = idGenerator.generateId();
+        while (todoContentRecordDao.existsById(id)) {
+            id = idGenerator.generateId();
+        }
+        String writer = todoContent.getMember().getName();
+        Map<String, String> diff = new HashMap<>();
+        diff.put("writer", writer);
+        diff.put("message",  writer + "님께서  " + todoContent.getTodo().getTitle() +"의 상세 정보를 생성했습니다.");
+        diff.put("before", "");
+        diff.put("after", todoContent.getContents());
+
+        todoContentRecordDao.save(TodoContentRecord.builder()
+                .id(id)
+                .diff(diff)
+                .todoContent(todoContent)
+                .modifyDate(LocalDateTime.now())
+                .build());
+    }
+
     private void saveTodoContentRecord(Member writer, TodoContent todoContent, String before) {
         String id = idGenerator.generateId();
         while (todoContentRecordDao.existsById(id)) {
@@ -145,7 +166,7 @@ public class TodoContentService {
 
         Map<String, String> diff = new HashMap<>();
         diff.put("writer", writer.getName());
-        diff.put("message", "\"" + writer.getName() + "\"가 " + todoContent.getTodo().getTitle() +"의 상세 정보를 변경했습니다.");
+        diff.put("message",  writer.getName() + "님께서  " + todoContent.getTodo().getTitle() +"의 상세 정보를 변경했습니다.");
         diff.put("before", before);
         diff.put("after", todoContent.getContents());
 
@@ -165,7 +186,7 @@ public class TodoContentService {
 
         Map<String, String> diff = new HashMap<>();
         diff.put("writer", writer.getName());
-        diff.put("message", "\"" + writer.getName() + "\"가 " + todoContent.getTodo().getTitle() +"의 상세 정보를 삭제했습니다.");
+        diff.put("message", writer.getName() + "님께서 " + todoContent.getTodo().getTitle() +"의 상세 정보를 삭제했습니다.");
         diff.put("before", todoContent.getContents());
         diff.put("after", "");
 
