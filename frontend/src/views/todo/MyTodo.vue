@@ -79,6 +79,7 @@
         :todoList="statusInfo.todoList"
         :bookmarkFilter="bookmarkFilter"
         @changeStatus="changeStatus"
+        :stomp="stomp"
       />
     </div>
     <MyTodoFilter
@@ -87,7 +88,7 @@
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
-    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" />
+    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" :stomp="stomp"/>
   </div>
 </template>
 
@@ -96,9 +97,7 @@ import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import MyTodoAddModal from '@/components/modal/MyTodoAddModal.vue';
 import { getBookmark } from '@/api/bookmark.js';
-import { mapGetters, mapActions } from 'vuex';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: 'MYTODO',
@@ -107,6 +106,7 @@ export default {
     MyTodoFilter,
     MyTodoAddModal,
   },
+  props:['stomp'],
   data() {
     return {
       statusInfoList: [
@@ -138,12 +138,12 @@ export default {
       isModalShow: false,
     };
   },
-  async created() {
-    await this.getBookmarkList();
-    await this.connect();
+  created() {
+    console.log('mytodo stomp :', this.stomp);
+    this.getBookmarkList();
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'bookmarkList']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -158,7 +158,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_totalAlarmCnt', 'set_stomp', 'set_bookmarkList']),
+    ...mapActions(['set_totalAlarmCnt', 'set_bookmarkList']),
     connect() {
       this.stomp.send(
         '/server/getMyTodo',
@@ -171,6 +171,7 @@ export default {
 
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
+        console.log("fasdfnasfasdklfasnl;fnslfnsd");
         this.statusInfoList = JSON.parse(res.body);
         this.updateList();
       });
@@ -225,6 +226,7 @@ export default {
             tmp.push(bookmark.todoId);
           });
           this.set_bookmarkList(tmp);
+          this.connect();
         },
         (error) => {
           alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
@@ -246,37 +248,6 @@ export default {
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
-  },
-  beforeRouteLeave(to, from, next) {
-    // just use `this` this.name = to.params.name next()
-    if (to.fullPath !== from.fullPath) {
-      this.stomp.disconnect();
-      const serverURL = 'http://localhost:8082/socket';
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect({}, () => {
-        this.set_stomp(this.stompClient);
-        // 소켓 연결 성공
-        this.connected = true;
-        this.stompClient.debug = () => {};
-        this.stompClient.send(
-          '/server/getAlarm',
-          JSON.stringify({
-            memberId: this.id,
-          }),
-          {}
-        );
-
-        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
-          this.alarmList = JSON.parse(res.body);
-          this.set_totalAlarmCnt(this.alarmList.length);
-        });
-
-        next();
-      });
-    } else {
-      next();
-    }
-  },
+  }
 };
 </script>

@@ -82,6 +82,7 @@ export default {
   },
   components: {},
   created() {
+
     if (this.totalAlarmCnt > 9) this.cnt = '9+';
     else if (this.totalAlarmCnt == 0) this.cnt = '';
     else this.cnt = this.totalAlarmCnt;

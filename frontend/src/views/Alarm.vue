@@ -118,6 +118,7 @@ export default {
     Header,
     Pagination,
   },
+  props:['stomp'],
   data() {
     return {
       alarmList: [],
@@ -132,7 +133,7 @@ export default {
     this.getAlarm();
   },
   computed: {
-    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt', 'stomp']),
+    ...mapGetters(['id', 'curPage', 'isDel', 'totalAlarmCnt']),
   },
   methods: {
     ...mapActions([

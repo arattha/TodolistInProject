@@ -74,7 +74,7 @@
 
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamFilter" :key="index">
-        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :bookmarkFilter="bookmarkFilter" />
+        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :bookmarkFilter="bookmarkFilter" :stomp="stomp"/>
       </div>
     </div>
     <TodoFilter
@@ -84,7 +84,7 @@
       @applyFilter="applyFilter"
       :teamInfoList="teamInfoList"
     />
-    <Team-Add-Modal v-if="isShowTeamAddModal" @closeTeamAddModal="closeTeamAddModal" />
+    <Team-Add-Modal v-if="isShowTeamAddModal" @closeTeamAddModal="closeTeamAddModal" :stomp="stomp"/>
   </div>
 </template>
 
@@ -95,8 +95,6 @@ import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
 import { getMyTeam } from '@/api/team.js';
-import Stomp from 'webstomp-client';
-import SockJS from 'sockjs-client';
 
 export default {
   name: 'PJTTODO',
@@ -105,6 +103,7 @@ export default {
     TodoFilter,
     TeamAddModal,
   },
+  props:['stomp'],
   data() {
     return {
       teamInfoList: [],
@@ -120,14 +119,15 @@ export default {
     this.getBookmarkList();
     this.isShow = false;
     this.set_project_id(this.projectId);
-    this.connect();
     this.set_project_name(this.projectName);
+    console.log('total todo stomp :', this.stomp);
     getMyTeam(
       this.projectId,
       this.id,
       (res) => {
         console.log(res);
         this.set_team_id(res.object.id);
+        this.getStomp();
       },
       (error) => {
         console.error(error);
@@ -135,7 +135,7 @@ export default {
     );
   },
   computed: {
-    ...mapGetters(['projectId', 'id', 'projectName', 'stomp', 'bookmarkList']),
+    ...mapGetters(['projectId', 'id', 'projectName', 'bookmarkList']),
     teamFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -150,15 +150,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      'set_project_name',
-      'set_project_id',
-      'set_stomp',
-      'set_totalAlarmCnt',
-      'set_bookmarkList',
-      'set_team_id',
-    ]),
-    connect() {
+    ...mapActions(['set_project_name', 'set_project_id', 'set_totalAlarmCnt', 'set_bookmarkList', 'set_team_id']),
+    getStomp(){
       this.stomp.send(
         '/server/getTodo',
         JSON.stringify({
@@ -237,37 +230,6 @@ export default {
     closeTeamAddModal() {
       this.isShowTeamAddModal = false;
     },
-  },
-  beforeRouteLeave(to, from, next) {
-    // just use `this` this.name = to.params.name next()
-    if (to.fullPath !== from.fullPath) {
-      this.stomp.disconnect();
-      const serverURL = 'http://localhost:8082/socket';
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect({}, () => {
-        this.set_stomp(this.stompClient);
-        // 소켓 연결 성공
-        this.connected = true;
-        this.stompClient.debug = () => {};
-        this.stompClient.send(
-          '/server/getAlarm',
-          JSON.stringify({
-            memberId: this.id,
-          }),
-          {}
-        );
-
-        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
-          this.alarmList = JSON.parse(res.body);
-          this.set_totalAlarmCnt(this.alarmList.length);
-        });
-
-        next();
-      });
-    } else {
-      next();
-    }
   },
 };
 </script>

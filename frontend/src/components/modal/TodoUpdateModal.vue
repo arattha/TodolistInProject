@@ -46,7 +46,7 @@
             text-3xl
           "
         >
-          내 할일 추가
+          할일 수정
         </div>
         <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
           <div class="flex flex-col justify-center items-center py-10">
@@ -119,7 +119,7 @@
               focus:ring-offset-2
               focus:ring-offset-blue-200
             "
-            @click="todoAdd"
+            @click="todoUpdate"
           >
             추가
           </button>
@@ -135,19 +135,14 @@ import { mapGetters } from 'vuex';
 import { getMembersByTeam } from '@/api/auth.js';
 
 export default {
-  name: 'TODOADDMODAL',
-  props:['stomp'],
+  name: 'TODOUPDATEMODAL',
   data() {
     return {
-      inputContent: '',
-      beforeContent: '',
       todoName: '',
-      searchName: '',
-      memberList: [],
-      checkedMember: {},
       isValid: false,
     };
   },
+  props: ['todoInfo'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
@@ -170,9 +165,6 @@ export default {
     closeModal() {
       this.$emit('closeModal');
     },
-    typingSearchName(e) {
-      this.searchName = e.target.value;
-    },
     typingTodoName(e) {
       if (!e.target.value) {
         this.isValid = false;
@@ -181,32 +173,28 @@ export default {
 
       this.isValid = true;
     },
-    todoAdd() {
+    todoUpdate() {
       // 팀 이름 입력이 필수!
       if (!this.isValid) {
         return;
       }
-
+      console.log(this.todoInfo);
       this.stomp.send(
-        '/server/addTodo',
+        '/server/updateTodo',
         JSON.stringify({
+          id: this.todoInfo.id,
           title: this.todoName,
-          status: '접수',
-          memberId: this.id,
-          projectId: this.projectId,
-          teamId: this.teamId,
+          status: this.todoInfo.status,
+          memberId: this.todoInfo.memberId,
+          projectId: this.todoInfo.projectId,
+          teamId: this.todoInfo.teamId,
         })
       );
       this.closeModal();
     },
   },
   computed: {
-    ...mapGetters(['projectId', 'teamId', 'id']),
-    searchByMemberName() {
-      return this.memberList.filter((member) => {
-        return member.name.includes(this.searchName);
-      });
-    },
+    ...mapGetters(['stomp']),
   },
 };
 </script>

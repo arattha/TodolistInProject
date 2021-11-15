@@ -99,7 +99,7 @@ public class TodoService {
                 todoDtoList.add(todoDto);
             }
 
-            return refactoring(todoDtoList, projectId);
+            return refactoringTotalTodo(todoDtoList, projectId);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +108,7 @@ public class TodoService {
 
     }
 
-    private Object refactoring(List<TodoDto> todoDtoList, String projectId) {
+    private Object refactoringTotalTodo(List<TodoDto> todoDtoList, String projectId) {
 
         try {
 
@@ -142,6 +142,7 @@ public class TodoService {
 
     }
 
+    @Transactional
     public Object getTodoMyList(String projectId, String memberId) {
         List<TodoDto> todoDtoList = new ArrayList<>();
         try{
@@ -159,7 +160,7 @@ public class TodoService {
                 todoDtoList.add(todoDto);
             }
 
-            return refactoringMyTodo(todoDtoList);
+            return refactoringTodo(todoDtoList);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -167,7 +168,34 @@ public class TodoService {
         }
     }
 
-    private Object refactoringMyTodo(List<TodoDto> todoDtoList) {
+    @Transactional
+    public Object getTodoTeamList(String projectId, String teamId) {
+        List<TodoDto> todoDtoList = new ArrayList<>();
+        try{
+            TodoDto todoDto = null;
+
+            List<Todo> todoList = todoDao.findTodosByProjectIdAndTeamId(projectId, teamId);
+            for(Todo todo : todoList) {
+                todoDto = TodoAdaptor.entityToDto(todo);
+
+                Team team = teamDao.findTeamById(todo.getTeamId()).orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+                todoDto.setTeamName(team.getName());
+                Member member = memberDao.findMemberById(todo.getMemberId()).orElse(null);
+                if(member != null) todoDto.setMemberName(member.getName());
+                else todoDto.setMemberName("담당자 없음");
+
+                todoDtoList.add(todoDto);
+            }
+
+            return refactoringTodo(todoDtoList);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Object refactoringTodo(List<TodoDto> todoDtoList) {
 
         try {
 
@@ -199,6 +227,18 @@ public class TodoService {
 
     }
 
+    @Transactional
+    public TodoDto updateTodo(TodoDto todoDto){
+        Todo todo = todoDao.findTodoById(todoDto.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+        TodoDto updated = TodoAdaptor.entityToDto(todo);
+        updated.setTitle(todoDto.getTitle());
+        updated.setModifyDate(LocalDateTime.now());
+
+        return TodoAdaptor.entityToDto(todoDao.save(TodoAdaptor.dtoToEntity(updated)));
+    }
+    
     @Transactional
     public Todo getTodo(String todoTitle) {
 
