@@ -67,6 +67,7 @@
                     rounded-lg
                     focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
                   "
+                  :disabled="isModify"
                   placeholder="팀 이름을 적어주세요."
                   v-model="teamName"
                   @input="typingTeamName"
@@ -128,7 +129,7 @@
                     <input
                       type="checkbox"
                       v-model="checkedMember"
-                      :value="member"
+                      :value="member.id"
                       :id="member.id"
                       class="
                         w-1/12
@@ -191,7 +192,7 @@
             "
             @click="teamAdd"
           >
-            추가
+            {{ isModify ? "수정" : "추가" }}
           </button>
         </div>
       </div>
@@ -202,11 +203,12 @@
 <script>
 import vClickOutside from 'v-click-outside';
 import { getAllMembers } from '@/api/auth.js';
-import { getProjectMembers, createTeam, teamNameCheck } from '@/api/team.js';
+import { getProjectMembers, createTeam, modifyTeam, teamNameCheck } from '@/api/team.js';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'TEADADDMODAL',
+  props: ['selectTeam','modifyMemberList'],
   data() {
     return {
       inputContent: '',
@@ -217,6 +219,7 @@ export default {
       projectMembers: [],
       checkedMember: [],
       isValid: false,
+      isModify: false,
     };
   },
   directives: {
@@ -224,22 +227,42 @@ export default {
   },
   created() {
     this.getMemberList();
-    this.getCheckedMembers();
+    this.getProjectMembers();
   },
   methods: {
+    checkAddOrModify(){
+      if(this.modifyMemberList == null) {
+        this.isModify = false;
+        return;
+      } else {
+        this.teamName = this.selectTeam.teamName;
+        this.isModify = true;
+        this.isValid = true;
+        this.modifyMemberList.forEach((member) => {
+          this.checkedMember.push(member.id);
+        })
+      }
+    },
     testMember(e){
       if(e.target.checked){
-        let clickedMember = e.target._value;
+        let clickedMember = null;
         let flag = false;
+
+        this.memberList.forEach(m => {
+            if(m.id == e.target._value){
+              clickedMember = m;
+            }
+          }
+        )
 
         this.projectMembers.forEach(members => {
           if(members.memberId == clickedMember.id){
-            flag = true;
+            flag = true
           }
         });
         
         if(flag){
-          if(!confirm(clickedMember.name + "님 은(는) 이미 다른 팀에 속해 있습니다. 진행할까요?")){
+          if(!confirm(clickedMember.name + "님 은(는) 이미 다른 팀 또는 현재 팀에 속해 있습니다. 진행할까요?")){
             this.checkedMember.pop();
             e.target.checked = false;
           }
@@ -249,14 +272,19 @@ export default {
     getMemberList(){
       getAllMembers(
         (res) => {
-          this.memberList = res.object;
+          let memberList = [];
+          res.object.forEach((member) => {
+              memberList.push(member);
+          })
+          this.memberList = memberList;
+          this.checkAddOrModify();
         },
         (error) => {
           console.log(error);
         }
       )
     },
-    getCheckedMembers(){
+    getProjectMembers(){
       getProjectMembers(
         this.projectId,
         (res) => {
@@ -303,24 +331,32 @@ export default {
       if (!this.isValid) {
         return;
       }
-
-      let mlist = [];
-      this.checkedMember.forEach(member => {
-        mlist.push(member.id);
-      })
-      
-      createTeam(
-        {
-          projectId: this.projectId,
-          teamName: this.teamName,
-          memberList: mlist
-        },
-        () => {
-        },
-        (error) => {
-          console.log(error);
-        }
-      )
+      if(!this.isModify){
+        createTeam(
+          {
+            projectId: this.projectId,
+            teamName: this.teamName,
+            memberList: this.checkedMember
+          },
+          () => {
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      } else {
+        modifyTeam(
+          {
+            teamId: this.selectTeam.teamId,
+            memberList: this.checkedMember
+          },
+          () => {
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      }
       this.closeModal();
     },
   },

@@ -44,6 +44,17 @@ function createTeam(userData, callback, errorCallback) {
     });
 }
 
+function modifyTeam(userData, callback, errorCallback) {
+  axiosServiceWithAuth
+    .put('/team', userData)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
 function teamNameCheck(userData, callback, errorCallback) {
   axiosServiceWithAuth
     .get('/team/ncheck', { params: { projectId: userData.projectId, teamName: userData.teamName } })
@@ -55,4 +66,4 @@ function teamNameCheck(userData, callback, errorCallback) {
     });
 }
 
-export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck };
+export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck, modifyTeam };
