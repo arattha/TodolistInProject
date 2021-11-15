@@ -8,7 +8,7 @@
       mr-4
       bg-itemGray
       w-80
-      xl:w-1/5
+      xl:w-1/4
       rounded-md
       h-full
     "
@@ -30,7 +30,7 @@
         @add="updateTeam($event, status)"
       >
         <div class="mb-6" v-for="(todoInfo, index) in todoFilter" :key="index + todoInfo.status">
-          <Todo-Card :todoInfo="todoInfo" :key="index + todoInfo.bookmark" :stomp="stomp"/>
+          <Todo-Card :todoInfo="todoInfo" :key="index + todoInfo.bookmark" :stomp="stomp" />
         </div>
       </draggable>
     </div>
@@ -76,11 +76,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['projectId','id','projectName']),
+    ...mapGetters(['projectId', 'id', 'projectName']),
     todoFilter: function () {
       let bookmarkFilter = this.bookmarkFilter;
       if (!bookmarkFilter) {
-          return this.todoList; //filter가 없을 때는 원본 반환
+        return this.todoList; //filter가 없을 때는 원본 반환
       } else {
         return this.todoList.filter(function (todo) {
           if (todo.bookmark) {
