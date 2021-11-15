@@ -10,6 +10,7 @@ import com.web.tip.member.MemberDao;
 import com.web.tip.project.response.ProjectResponse;
 import com.web.tip.team.Team;
 import com.web.tip.team.TeamDao;
+import com.web.tip.todo.Todo;
 import com.web.tip.todo.TodoDao;
 import com.web.tip.util.IdGenerator;
 import lombok.RequiredArgsConstructor;
@@ -126,18 +127,20 @@ public class ProjectService {
     }
 
     private int[] countTodos(Project project) {
-        int[] count = {0, 0, 0};
-        List<String> status = todoDao.findStatusByProject(project);
-        count[0] = status.size();
+        List<Todo> todos = todoDao.findTodosByProjectId(project.getId());
 
-        int temp = 0;
-        for (String sta : status) {
-            if ("진행중".equals(sta))
-                temp++;
+        int total = 0;
+        int done = 0;
+        for (Todo todo : todos) {
+            if ("진행하지않음".equals(todo.getStatus())) {
+                continue;
+            }
+            total++;
+            if ("완료".equals(todo.getStatus())) {
+                done++;
+            }
         }
-        count[1] = temp;
-        count[2] = count[0] - count[1];
 
-        return count;
+        return new int[]{total, total - done, done};
     }
 }
