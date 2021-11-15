@@ -78,9 +78,6 @@ export default {
       this.pageType = 'done';
       this.$router.push('/projects/done');
     },
-    addPjt() {
-      // console.log('프로젝트 추가');
-    },
   },
 };
 </script>

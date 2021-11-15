@@ -218,7 +218,6 @@ export default {
     
     },
     setStatusInfoList() {
-      console.log("here", this.selectTeam);
       this.stomp.send(
         '/server/getTeamTodo',
         JSON.stringify({

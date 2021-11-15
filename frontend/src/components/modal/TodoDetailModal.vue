@@ -170,7 +170,6 @@ export default {
       this.$emit('closeModal', val);
     },
     checkByte(text_val) {
-      // console.log(obj)
       // const maxByte = 1000; //최대 1000바이트
       const text_len = text_val.length; //입력한 문자수
 
@@ -201,7 +200,6 @@ export default {
       createTodoContent(
         { todoId: this.todoId, memberId: this.memberId, contents: this.inputContent },
         () => {
-          // console.log(res);
           this.closeModal(false);
         },
         (error) => {

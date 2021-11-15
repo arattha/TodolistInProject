@@ -81,7 +81,6 @@ export default {
       this.pageType = 'modifyPwProfile';
     }
 
-    console.log('id : ', this.memberId);
   },
   watch: {
     $route(to) {

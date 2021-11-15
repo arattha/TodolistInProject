@@ -244,7 +244,6 @@ export default {
     getProfile(
       this.memberId,
       (res) => {
-        console.log(res);
         this.userInfo = JSON.parse(JSON.stringify(res.object));
         this.userModifyInfo = res.object;
       },
@@ -273,11 +272,8 @@ export default {
       const inputImg = e.target.files;
       this.uploadImg = URL.createObjectURL(inputImg[0]);
       this.img = inputImg[0];
-      console.log('이미지 업로드 로직!', inputImg[0]);
     },
     modifyProfile() {
-      console.log(this.userInfo);
-      console.log(this.userModifyInfo);
       if (JSON.stringify(this.userInfo) === JSON.stringify(this.userModifyInfo)) {
         alert('바뀐 내용이 없습니다!');
         return;
@@ -298,11 +294,9 @@ export default {
         formData.append('multipartFile', this.img);
       }
 
-      console.log(formData);
       updateProfile(
         formData,
-        (res) => {
-          console.log(res);
+        () => {
           this.$router.push('/profile/' + this.memberId);
         },
         (error) => {

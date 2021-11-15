@@ -249,7 +249,6 @@ export default {
       this.$emit('closeModal');
     },
     checkByte(e) {
-      // console.log(obj)
       // const maxByte = 1000; //최대 1000바이트
       const text_len = e.target.value.length; //입력한 문자수
 
@@ -284,8 +283,6 @@ export default {
 
       //
       let changedText = DOMPurify.sanitize(changeContent);
-
-      // console.log(this.projectName, this.startDate, this.endDate, changedText);
 
       var data = {
         name: this.projectName,

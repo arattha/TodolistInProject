@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     setTodoId(e) {
-      // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.todoList[e.oldIndex];
     },
     updateTeam(e, status) {
@@ -74,7 +73,6 @@ export default {
 
       // 상태를 드래거블로 이동시 바꾸어주기 위한 메서드 MyTodo.vue 참고
       this.$emit('changeStatus', { index: e.newIndex, status: status });
-      // console.log(e.newIndex, status);
     },
   },
   computed: {

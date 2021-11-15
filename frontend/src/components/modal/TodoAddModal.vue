@@ -221,7 +221,6 @@ export default {
     clickOutside: vClickOutside.directive,
   },
   created() {
-    console.log('add todo :', this.stomp);
     getMembersByTeam(
       this.teamId,
       (res) => {

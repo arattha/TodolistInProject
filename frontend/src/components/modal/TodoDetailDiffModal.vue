@@ -155,9 +155,6 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive,
   },
-  created() {
-    // console.log(this.todoHistory.diff);
-  },
   methods: {
     onClickOutside() {
       this.closeModal(true);

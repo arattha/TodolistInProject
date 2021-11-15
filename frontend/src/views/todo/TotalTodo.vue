@@ -120,12 +120,10 @@ export default {
     this.isShow = false;
     this.set_project_id(this.projectId);
     this.set_project_name(this.projectName);
-    console.log('total todo stomp :', this.stomp);
     getMyTeam(
       this.projectId,
       this.id,
       (res) => {
-        console.log(res);
         this.set_team_id(res.object.id);
         this.getStomp();
       },
@@ -197,9 +195,6 @@ export default {
     },
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
-    },
-    horizontalScroll() {
-      // console.log('hi', this);
     },
     onWheel(e) {
       let item = document.getElementById('scroll_div');

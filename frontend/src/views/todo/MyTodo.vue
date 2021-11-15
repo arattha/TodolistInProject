@@ -139,7 +139,6 @@ export default {
     };
   },
   created() {
-    console.log('mytodo stomp :', this.stomp);
     this.getBookmarkList();
   },
   computed: {
@@ -171,7 +170,6 @@ export default {
 
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
-        console.log("fasdfnasfasdklfasnl;fnslfnsd");
         this.statusInfoList = JSON.parse(res.body);
         this.updateList();
       });

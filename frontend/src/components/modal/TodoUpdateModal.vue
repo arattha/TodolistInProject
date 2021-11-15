@@ -150,7 +150,6 @@ export default {
     getMembersByTeam(
       this.teamId,
       (res) => {
-        console.log(res);
         this.memberList = res.object;
       },
       (error) => {
@@ -178,7 +177,6 @@ export default {
       if (!this.isValid) {
         return;
       }
-      console.log(this.todoInfo);
       this.stomp.send(
         '/server/updateTodo',
         JSON.stringify({

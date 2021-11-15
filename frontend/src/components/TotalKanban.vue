@@ -96,7 +96,6 @@ export default {
     };
   },
   created() {
-    console.log('total todo :', this.stomp);
     this.teamId = this.teamInfo.teamId;
   },
   methods: {
@@ -105,7 +104,6 @@ export default {
     },
 
     setTodoId(e) {
-      // console.log("setTodoId :", e.oldIndex);
       this.todoId = this.teamInfo.todoInfoList[e.oldIndex];
     },
     updateTeam(e) {

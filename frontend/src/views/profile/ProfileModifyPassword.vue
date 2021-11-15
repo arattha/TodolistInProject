@@ -163,8 +163,7 @@ export default {
     modifyPassword() {
       changePassword(
         { id: this.memberId, password: this.user.password },
-        (res) => {
-          console.log(res);
+        () => {
           this.$router.push('/profile/' + this.memberId);
         },
         (error) => {

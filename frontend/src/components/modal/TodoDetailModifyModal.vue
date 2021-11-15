@@ -205,7 +205,6 @@ export default {
       modifyTodoContent(
         { id: this.detailId, contents: this.inputContent, memberId: this.id },
         () => {
-          // console.log('수정완료!', this.inputContent, this.todoId, this.detailId);
           this.closeModal(true);
         },
         (error) => {

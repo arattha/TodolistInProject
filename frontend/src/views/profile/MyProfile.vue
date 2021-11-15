@@ -55,7 +55,6 @@ export default {
     getProfile(
       this.memberId,
       (res) => {
-        console.log(res);
         this.userInfo = res.object;
       },
       (error) => {
