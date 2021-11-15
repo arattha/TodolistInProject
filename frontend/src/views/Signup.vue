@@ -1,22 +1,14 @@
 <template>
-  <div class="flex flex-col items-center h-full">
-    <div class="flex h-96 w-auto justify-center items-center">
-      <img src="@/images/logoBig.png" class="h-2/4 w-auto" />
+  <div
+    class="flex flex-col justify-center items-center h-full w-full overflow-auto scroll_type2 py-5"
+  >
+    <div class="flex justify-center items-center h-40">
+      <img src="@/images/logoBig.png" class="flex h-40 w-auto my-10" />
     </div>
     <div
-      class="
-        flex flex-col
-        justify-center
-        items-center
-        w-11/12
-        md:w-2/3
-        xl:w-1/3
-        border-2 border-gray-300
-        rounded-md
-        p-2
-      "
+      class="flex flex-col flex-grow-0 justify-center items-center w-11/12 md:w-2/3 xl:w-1/3 p-2"
     >
-      <ValidationObserver class="w-full" ref="observer" v-slot="{ handleSubmit }">
+      <ValidationObserver class="flex w-full" ref="observer" v-slot="{ handleSubmit }">
         <form
           class="flex flex-col items-center justify-center w-full"
           @submit.prevent="handleSubmit(signup)"
@@ -240,11 +232,11 @@
     <div
       class="
         w-20
-        grid
+        h-10
+        flex
         items-center
-        justify-items-center
+        justify-center
         text-gray-500
-        mt-5
         hover:opacity-50
         cursor-pointer
       "
@@ -278,14 +270,14 @@ extend('required', {
 });
 
 extend('korAlphaNum', {
-  validate: value => {
+  validate: (value) => {
     let regex = /^[가-힣|aA-zZ| ]*$/.test(value);
     if (!regex) {
       return '올바른 한글, 영문만 입력해주세요.';
     } else {
       return true;
     }
-  }
+  },
 });
 
 extend('min', {
@@ -315,12 +307,12 @@ extend('idCheck', {
 
     await nicknameCheck(
       value,
-      (res)=>{
+      (res) => {
         if (!res.object) {
           flag = true;
         }
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
     );
@@ -359,29 +351,27 @@ export default {
       //this.login();
     },
     async signup() {
-
       let data = {
         nickname: this.user.id,
         password: this.user.password,
         name: this.user.name,
         email: this.user.email,
-        phone: this.user.phone
+        phone: this.user.phone,
       };
 
       await signUpUser(
         data,
-        (res)=>{
+        (res) => {
           if (res.object) {
             alert('회원가입 성공');
             this.$router.push('/login');
           }
         },
-        (error)=>{
+        (error) => {
           alert('문제가 발생했습니다. 다시 시도해주세요.');
           console.log(error);
         }
       );
-
     },
   },
 };
