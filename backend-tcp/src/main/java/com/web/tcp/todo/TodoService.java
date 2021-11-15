@@ -324,9 +324,7 @@ public class TodoService {
 
             Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
             String writer = "";
-            if (member == null) {
-                writer = "()";
-            } else {
+            if (member != null) {
                 writer = member.getName();
             }
 
@@ -337,7 +335,11 @@ public class TodoService {
             diff.put("before", todoTmp.getTeamId());
             diff.put("after", todoDto.getTeamId());
 
-            String changeStr = writer + "님께서 해당 할일의 팀을 " + beforeTeam + "에서 " + todoDto.getTeamName() + "(으)로 변경했습니다.";
+            String changeStr = "";
+            if(member != null)
+                changeStr = writer + "님께서 해당 할일의 팀을 " + beforeTeam + "에서 " + todoDto.getTeamName() + "(으)로 변경했습니다.";
+            else
+                changeStr = "해당 할일의 팀이 " + beforeTeam + "에서 " + todoDto.getTeamName() + "(으)로 변경되었습니다.";
 
             if (todoDto.getMemberId() != null) {
                 // 할일이 다음 팀으로 보내지고 담당자도 정해졌을 때
@@ -347,7 +349,11 @@ public class TodoService {
 
                 diff.put("before", writer);
                 diff.put("after", nextWriter);
-                changeStr += "\n할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.";
+
+                if(member == null)
+                    changeStr += "\n할일의 담당자가 " + nextWriter + "님으로 변경되었습니다.";
+                else
+                    changeStr += "\n할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.";
             }
 
             diff.put("message", changeStr);
@@ -388,12 +394,13 @@ public class TodoService {
             Map<String, String> diff = new HashMap<>();
 
             String writer = "";
-            if (todoTmp.getMemberId() != null) {
-                Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-                writer = member.getName();
-            }
 
-            Member nextMember = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
+//            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
+            if(member != null)
+                writer = member.getName();
+
+            Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElse(null);
             String nextWriter = nextMember.getName();
 
             if (writer.equals("")) {
