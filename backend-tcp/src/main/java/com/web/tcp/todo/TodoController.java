@@ -114,7 +114,8 @@ public class TodoController {
         template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
         if(beforeMid != null)
             template.convertAndSend("/client/todo/" + projectId + "/" + beforeMid, todoService.getTodoMyList(projectId, beforeMid));
-        template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
+        if(memberId != null)
+            template.convertAndSend("/client/todo/" + projectId + "/" + memberId, todoService.getTodoMyList(projectId, memberId));
     }
 
     // client가 '/server/getTodoInfo'경로로 Member의 Id와 Todo의 Id 전송
