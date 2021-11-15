@@ -124,9 +124,10 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.path === '/projects' || to.path === '/projects/done') {
     store.dispatch('set_project_name', '');
-    next();
-  } else if (to.name !== 'Login' && to.name !== 'Signup') {
-    if (store.getters.id) {
+  }
+
+  if (to.name !== 'Login' && to.name !== 'Signup') {
+    if (store.getters.isLogin) {
       await reissuUser(
         store.getters.id,
         (res) => {
@@ -152,7 +153,11 @@ router.beforeEach(async (to, from, next) => {
       next('/login');
     }
   } else {
-    next();
+    if (store.getters.isLogin) {
+      next('/projects');
+    } else {
+      next();
+    }
   }
 });
 
