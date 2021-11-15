@@ -102,7 +102,7 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public Object logout(@RequestBody String mid, HttpServletRequest request, HttpServletResponse response) {
+    public Object logout(@RequestBody final Object mid, HttpServletRequest request, HttpServletResponse response) {
         log.info("logout >>> " + mid);
         BasicResponse result = new BasicResponse();
 
@@ -118,7 +118,7 @@ public class MemberController {
 
         result.data = SUCCESS;
         result.status = true;
-        result.object = memberService.logout(mid, accessToken);
+        result.object = memberService.logout(mid.toString(), accessToken);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
