@@ -20,7 +20,7 @@
         @change="changeTeam"
       >
         <option v-for="(team, index) in teamList" :key="index" :value="team">
-          {{ team.name }}
+          {{ team.teamName }}
         </option>
       </select>
       <!-- <button
@@ -101,6 +101,7 @@
         :todoList="statusInfo.todoList"
         :bookmarkFilter="bookmarkFilter"
         @changeStatus="changeStatus"
+        :stomp="stomp"
       />
     </div>
     <MyTodoFilter
@@ -125,9 +126,9 @@ export default {
     StatusKanban,
     MyTodoFilter
   },
+  props:['stomp'],
   data() {
     return {
-      teamId:'',
       teamList: [],
       selectTeam: '',
       statusInfoList: [
@@ -161,7 +162,6 @@ export default {
   async created() {
 
     await this.getTeamList();
-    this.changeTeam();
 
     /* 
       할일 가져오고 this.updateList 연결해줄것
@@ -170,7 +170,7 @@ export default {
 
   },
   computed:{
-    ...mapGetters(['projectId', 'id', 'bookmarkList', 'stomp']),
+    ...mapGetters(['projectId', 'id', 'bookmarkList']),
     statusFilter: function () {
       let filters = this.filters;
       if (filters == null) {
@@ -193,7 +193,7 @@ export default {
         (res) => {
           // team 가져옴
           this.teamList = [];
-          console.log("res ", res.object);
+          
           res.object.forEach((value) => {
             this.teamList.push({
               teamId: value.id,
@@ -231,12 +231,10 @@ export default {
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/team/' + this.selectTeam.teamId, (res) => {
         this.statusInfoList = JSON.parse(res.body);
-        console.log("hihi",this.statusInfoList);
       });
 
     },
     changeTeam() {
-
       // stautsInfoList를 초기화
       this.setStatusInfoList();
     },
@@ -256,17 +254,16 @@ export default {
       }
     },
     changeStatus(val) {
-      console.log(val);
       if (val.status === 'New') {
-        this.statusInfoList.newStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[0].todoList[val.index].status = val.status;
       } else if (val.status === '접수') {
-        this.statusInfoList.accepStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[1].todoList[val.index].status = val.status;
       } else if (val.status === '진행') {
-        this.statusInfoList.progressStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[2].todoList[val.index].status = val.status;
       } else if (val.status === '완료') {
-        this.statusInfoList.doneStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[3].todoList[val.index].status = val.status;
       } else {
-        this.statusInfoList.notProgressStatus.todoList[val.index].status = val.status;
+        this.statusInfoList[4].todoList[val.index].status = val.status;
       }
 
       // this.stomp.send(
@@ -298,7 +295,6 @@ export default {
       );
     },
     updateList() {
-      console.log(this.bookmarkList);
       for (var i = 0; i < this.statusInfoList.length; i++) {
         for (var j = 0; j < this.statusInfoList[i].todoList.length; j++) {
           if (this.bookmarkList.indexOf(this.statusInfoList[i].todoList[j].id) > -1) {
@@ -313,6 +309,14 @@ export default {
       this.isShow = true;
     },
     closeFilter() {
+      this.stomp.send(
+        '/server/getTeamTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+          teamId: this.selectTeam.teamId,
+        }),
+        {}
+      );
       this.isShow = false;
     },
     applyFilter(filters) {

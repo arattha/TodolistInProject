@@ -37,7 +37,7 @@
       </button>
       <div class="flex justify-end text-xs items-end">{{ todoHistory.modifyDate }}</div>
     </div>
-    <Todo-Detail-Diff-Modal v-if="isShow" @closeModal="closeModal" :todoHistory="todoHistory" />
+    <Todo-Detail-Diff-Modal v-if="isShow" @closeModal="closeModal" :todoHistory="todoHistory" :stomp="stomp"/>
   </div>
 </template>
 

@@ -216,11 +216,12 @@ export default {
       isValid: false,
     };
   },
-  props: ['teamId'],
+  props: ['teamId', 'stomp'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
   created() {
+    console.log('add todo :', this.stomp);
     getMembersByTeam(
       this.teamId,
       (res) => {
@@ -283,7 +284,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['stomp', 'projectId']),
+    ...mapGetters(['projectId']),
     searchByMemberName() {
       return this.memberList.filter((member) => {
         return member.name.includes(this.searchName);

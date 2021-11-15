@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="h-screen bg-contentGray">
-    <router-view />
+    <router-view :stomp="stompClient"/>
   </div>
 </template>
 
@@ -16,21 +16,20 @@ export default {
       cnt: '',
     }
   },
-  async created() {
-    await this.connect();
+  created() {
+    this.connect();
   },
   computed:{
     ...mapGetters(['id'])
   },
   methods:{
-    ...mapActions(['set_totalAlarmCnt', 'set_stomp']),
+    ...mapActions(['set_totalAlarmCnt']),
     connect() {
       const serverURL = 'http://localhost:8082/socket';
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-
-        this.set_stomp(this.stompClient);
+        
         // 소켓 연결 성공
         this.connected = true;
         this.stompClient.debug = () => {};
@@ -49,9 +48,5 @@ export default {
       });
     },
   },
-  beforeDestroy(){
-    this.set_stomp(null);
-    this.stompClient.disconnect();
-  }
 };
 </script>

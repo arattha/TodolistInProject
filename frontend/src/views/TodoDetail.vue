@@ -179,12 +179,13 @@
       >
       </router-view>
     </div>
-    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" />
+    <Todo-Detail-Modal v-if="isShow" @closeModal="closeModal" :todoId="todoId" :memberId="id" :stomp="stomp"/>
     <Todo-Team-Member-Move-Modal
       v-if="isTeamMemberMoveModalShow"
       @closeModal="closeTeamMemberMoveModal"
       :todoInfo="todoInfo"
       :isDetail="true"
+      :stomp="stomp"
     />
   </div>
 </template>
@@ -195,8 +196,6 @@ import { mapGetters, mapActions } from 'vuex';
 import TodoDetailModal from '@/components/modal/TodoDetailModal.vue';
 import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.vue';
 import { addBookmark, deleteBookmark } from '@/api/bookmark.js';
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
 
 export default {
   name: 'TODODETAIL',
@@ -205,6 +204,7 @@ export default {
     TodoDetailModal,
     TodoTeamMemberMoveModal,
   },
+  props:['stomp'],
   data() {
     return {
       isTeamMemberMoveModalShow: false,
@@ -229,14 +229,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['id', 'todoId', 'stomp','bookmarkList']),
+    ...mapGetters(['id', 'todoId', 'bookmarkList']),
   },
   created() {
     this.curPage = 0;
     this.connect();
   },
   methods: {
-    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'set_stomp', 'push_bookmarkList','delete_bookmark']),
+    ...mapActions(['toggle_reload_todo_detail', 'set_totalAlarmCnt', 'push_bookmarkList','delete_bookmark']),
     connect() {
       this.stomp.send(
         '/server/getTodoInfo',
@@ -345,41 +345,6 @@ export default {
     closeTeamMemberMoveModal() {
       this.isTeamMemberMoveModalShow = false;
     },
-  },
-  beforeRouteLeave(to, from, next) {
-    // just use `this` this.name = to.params.name next()
-    if (to.fullPath !== from.fullPath) {
-      this.stomp.disconnect();
-      const serverURL = 'http://localhost:8082/socket';
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket, { debug: false });
-      this.stompClient.connect({}, () => {
-
-        this.set_stomp(this.stompClient);
-        // 소켓 연결 성공
-        this.connected = true;
-        this.stompClient.debug = () => {};
-        this.stompClient.send(
-          '/server/getAlarm',
-          JSON.stringify({
-            memberId: this.id,
-          }),
-          {}
-        );
-
-        this.stompClient.subscribe('/client/alarm/' + this.id, (res) => {
-          this.alarmList = JSON.parse(res.body);
-          this.set_totalAlarmCnt(this.alarmList.length);
-        });
-
-        next();
-      });
-    } else {
-      next();
-    }
-
-
-
   },
 };
 </script>

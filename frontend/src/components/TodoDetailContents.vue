@@ -85,6 +85,7 @@
       :todoId="todoId"
       :detailId="detail.id"
       :detailContent="detail.content"
+      :stomp="stomp"
     />
   </div>
 </template>

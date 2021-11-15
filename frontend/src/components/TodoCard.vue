@@ -66,7 +66,7 @@
         </button>
       </div>
     </div>
-    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfo" />
+    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfo" :stomp="stomp"/>
   </div>
 </template>
 
@@ -87,8 +87,10 @@ export default {
     TodoStatus,
     TodoTeamMemberMoveModal,
   },
-  props: ['todoInfo'],
-  created() {},
+  props: ['todoInfo', 'stomp'],
+  created() {
+    console.log('todocard :', this.stomp);
+  },
   computed: {
     ...mapGetters(['id','bookmarkList']),
   },
