@@ -88,7 +88,7 @@
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
-    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" :stomp="stomp"/>
+    <My-Todo-Add-Modal v-if="isModalShow" @closeModal="closeModal" :stomp="stomp" />
   </div>
 </template>
 
@@ -97,7 +97,7 @@ import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import MyTodoAddModal from '@/components/modal/MyTodoAddModal.vue';
 import { getBookmark } from '@/api/bookmark.js';
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'MYTODO',
@@ -106,14 +106,10 @@ export default {
     MyTodoFilter,
     MyTodoAddModal,
   },
-  props:['stomp'],
+  props: ['stomp'],
   data() {
     return {
       statusInfoList: [
-        {
-          status: 'New',
-          todoList: [],
-        },
         {
           status: '접수',
           todoList: [],
@@ -170,7 +166,7 @@ export default {
 
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
-        this.statusInfoList = JSON.parse(res.body);
+        this.statusInfoList = JSON.parse(res.body).filter((element) => element.status !== 'New');
         this.updateList();
       });
     },
@@ -198,9 +194,7 @@ export default {
       this.isShow = false;
     },
     changeStatus(val) {
-      if (val.status === 'New') {
-        this.statusInfoList[0].todoList[val.index].status = val.status;
-      } else if (val.status === '접수') {
+      if (val.status === '접수') {
         this.statusInfoList[1].todoList[val.index].status = val.status;
       } else if (val.status === '진행') {
         this.statusInfoList[2].todoList[val.index].status = val.status;
@@ -246,6 +240,6 @@ export default {
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
     },
-  }
+  },
 };
 </script>
