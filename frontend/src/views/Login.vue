@@ -130,7 +130,7 @@ export default {
             this.set_nickname(res.object.nickname);
             this.toggle_isLogin(true);
 
-            this.$router.push('Projects');
+            this.$router.push('/projects');
           } else {
             alert('로그인이 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
           }
