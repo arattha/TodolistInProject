@@ -120,6 +120,41 @@
               <br />
             </div>
           </div>
+          <div class="flex text-2xl font-bold" id="teams">팀</div>
+          <div class="flex items-center my-5">
+            <input class="mr-5 w-4 h-4" type="checkbox" id="allTeams" v-model="selectAllTeams" />
+            <label class="cursor-pointer" for="allTeams">전체선택</label>
+          </div>
+          <div
+            class="
+              flex flex-col
+              bg-contentGray
+              h-full
+              overflow-y-auto
+              scroll_type2
+              rounded-lg
+              shadow-lg
+            "
+          >
+            <div
+              class="flex justify-center items-center hover:bg-itemGray h-14"
+              v-for="(team, index) in teamInfoList"
+              :key="'t' + index"
+            >
+              <input
+                class="w-1/6"
+                type="checkbox"
+                :id="'t' + index"
+                :value="team.teamName"
+                v-model="filters.team"
+              />
+              <label
+                class="flex w-5/6 h-full justify-center items-center cursor-pointer"
+                :for="'t' + index"
+                >{{ team.teamName }}</label
+              >
+            </div>
+          </div>
         </div>
 
         <div class="flex justify-center items-center p-5 bg-itemGray">
@@ -196,18 +231,39 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
+
 export default {
-  name: 'MyTodoFilter',
-  directives: {
-    clickOutside: vClickOutside.directive,
-  },
+  name: 'TodoFilter',
+  props: ['teamInfoList'],
   data() {
     return {
       filters: {
+        team: [],
         status: [],
       },
       statusList: ['New', '접수', '진행', '완료', '진행하지않음'],
     };
+  },
+  directives: {
+    clickOutside: vClickOutside.directive,
+  },
+  created() {},
+  methods: {
+    onClickOutside() {
+      this.closeModal();
+    },
+    closeModal() {
+      this.$emit('closeModal');
+    },
+    applyFilter() {
+      this.$emit('applyFilter', this.filters);
+    },
+    cleanFilter() {
+      this.$emit('cleanFilter');
+    },
+    selectStatus(e) {
+      console.log('??', e.target.value);
+    },
   },
   computed: {
     selectAllStatus: {
@@ -222,22 +278,20 @@ export default {
         }
       },
     },
-  },
-  methods: {
-    onClickOutside() {
-      this.closeModal();
-    },
-    applyFilter() {
-      this.$emit('applyFilter', this.filters);
-    },
-    cleanFilter() {
-      this.$emit('cleanFilter');
-    },
-    closeModal() {
-      this.$emit('closeModal');
+    selectAllTeams: {
+      get: function () {
+        return this.teamInfoList.length == this.filters.team.length ? true : false;
+      },
+      set: function (value) {
+        if (value) {
+          this.teamInfoList.forEach((team) => {
+            this.filters.team.push(team.teamName);
+          });
+        } else {
+          this.filters.team = [];
+        }
+      },
     },
   },
 };
 </script>
-
-<style></style>

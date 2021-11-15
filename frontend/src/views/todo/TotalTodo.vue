@@ -90,13 +90,13 @@
 
 <script>
 import TotalKanban from '@/components/TotalKanban.vue';
-import TodoFilter from '@/components/TodoFilter.vue';
+import TodoFilter from '@/components/modal/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
 import { getMyTeam } from '@/api/team.js';
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'PJTTODO',
@@ -150,25 +150,32 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_stomp', 'set_totalAlarmCnt', 'set_bookmarkList', 'set_team_id']),
+    ...mapActions([
+      'set_project_name',
+      'set_project_id',
+      'set_stomp',
+      'set_totalAlarmCnt',
+      'set_bookmarkList',
+      'set_team_id',
+    ]),
     connect() {
-        this.stomp.send(
-          '/server/getTodo',
-          JSON.stringify({
-            projectId: this.projectId,
-          }),
-          {}
-        );
-        // subscribe 로 alarm List 가져오기
-        this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
-          this.teamInfoList = JSON.parse(res.body);
-          this.updateList();
-        });
+      this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
+      // subscribe 로 alarm List 가져오기
+      this.stomp.subscribe('/client/todo/' + this.projectId, (res) => {
+        this.teamInfoList = JSON.parse(res.body);
+        this.updateList();
+      });
     },
     updateList() {
       for (let i = 0; i < this.teamInfoList.length; i++) {
         for (let j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
-          if(this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1){
+          if (this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1) {
             this.teamInfoList[i].todoInfoList[j].bookmark = true;
           } else {
             this.teamInfoList[i].todoInfoList[j].bookmark = false;
@@ -239,7 +246,6 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-
         this.set_stomp(this.stompClient);
         // 소켓 연결 성공
         this.connected = true;

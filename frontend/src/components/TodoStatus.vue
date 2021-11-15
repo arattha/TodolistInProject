@@ -80,7 +80,9 @@ export default {
   props: ['status', 'isDetail'],
   methods: {
     changeStatus(status) {
-      this.$emit('changeStatus', status);
+      if (this.isDetail) {
+        this.$emit('changeStatus', status);
+      }
     },
   },
 };

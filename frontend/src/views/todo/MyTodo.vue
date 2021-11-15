@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full w-full mt-5">
-    <div class="flex mb-5 px-8 w-full h-10">
+  <div class="flex flex-col h-full w-full">
+    <div class="flex my-5 px-8 w-full h-10">
       <button
         class="
           bg-itemGray
@@ -23,7 +23,7 @@
         "
         @click="addMyTodo()"
       >
-        내 할일추가
+        할일 추가
       </button>
       <button
         class="
@@ -96,9 +96,9 @@ import StatusKanban from '@/components/kanban/StatusKanban.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import MyTodoAddModal from '@/components/modal/MyTodoAddModal.vue';
 import { getBookmark } from '@/api/bookmark.js';
-import { mapGetters, mapActions } from "vuex";
-import Stomp from "webstomp-client";
-import SockJS from "sockjs-client";
+import { mapGetters, mapActions } from 'vuex';
+import Stomp from 'webstomp-client';
+import SockJS from 'sockjs-client';
 
 export default {
   name: 'MYTODO',
@@ -168,7 +168,7 @@ export default {
         }),
         {}
       );
-      
+
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
         this.statusInfoList = JSON.parse(res.body);
@@ -211,11 +211,7 @@ export default {
         this.statusInfoList[4].todoList[val.index].status = val.status;
       }
 
-      this.stomp.send(
-        'server/moveTodo/status',
-        this.statusInfoList[0].todoList[val.index],
-        {}
-      );
+      this.stomp.send('server/moveTodo/status', this.statusInfoList[0].todoList[val.index], {});
     },
     async getBookmarkList() {
       await getBookmark(
@@ -259,7 +255,6 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket, { debug: false });
       this.stompClient.connect({}, () => {
-
         this.set_stomp(this.stompClient);
         // 소켓 연결 성공
         this.connected = true;
@@ -282,6 +277,6 @@ export default {
     } else {
       next();
     }
-  }
+  },
 };
 </script>
