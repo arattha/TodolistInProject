@@ -90,7 +90,7 @@
 
 <script>
 import TotalKanban from '@/components/TotalKanban.vue';
-import TodoFilter from '@/components/TodoFilter.vue';
+import TodoFilter from '@/components/modal/TodoFilter.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import { mapGetters, mapActions } from 'vuex';
 import { getBookmark } from '@/api/bookmark.js';
@@ -168,7 +168,7 @@ export default {
     updateList() {
       for (let i = 0; i < this.teamInfoList.length; i++) {
         for (let j = 0; j < this.teamInfoList[i].todoInfoList.length; j++) {
-          if(this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1){
+          if (this.bookmarkList.indexOf(this.teamInfoList[i].todoInfoList[j].id) > -1) {
             this.teamInfoList[i].todoInfoList[j].bookmark = true;
           } else {
             this.teamInfoList[i].todoInfoList[j].bookmark = false;

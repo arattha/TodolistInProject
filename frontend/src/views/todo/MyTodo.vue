@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full w-full mt-5">
-    <div class="flex mb-5 px-8 w-full h-10">
+  <div class="flex flex-col h-full w-full">
+    <div class="flex my-5 px-8 w-full h-10">
       <button
         class="
           bg-itemGray
@@ -23,7 +23,7 @@
         "
         @click="addMyTodo()"
       >
-        내 할일추가
+        할일 추가
       </button>
       <button
         class="
@@ -168,7 +168,7 @@ export default {
         }),
         {}
       );
-      
+
       // subscribe 로 alarm List 가져오기
       this.stomp.subscribe('/client/todo/' + this.projectId + '/' + this.id, (res) => {
         console.log("fasdfnasfasdklfasnl;fnslfnsd");
@@ -212,11 +212,7 @@ export default {
         this.statusInfoList[4].todoList[val.index].status = val.status;
       }
 
-      this.stomp.send(
-        'server/moveTodo/status',
-        this.statusInfoList[0].todoList[val.index],
-        {}
-      );
+      this.stomp.send('server/moveTodo/status', this.statusInfoList[0].todoList[val.index], {});
     },
     async getBookmarkList() {
       await getBookmark(
