@@ -2,6 +2,8 @@ package com.web.tcp.alarm;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -16,5 +18,6 @@ public class AlarmDto {
     private boolean isShow;
     private String memberId;
     private String todoId;
+    private LocalDateTime regDate;
 
 }

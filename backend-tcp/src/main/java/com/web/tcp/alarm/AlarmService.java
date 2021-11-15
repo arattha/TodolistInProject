@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class AlarmService {
                             .content(alarm.getContent())
                             .memberId(alarm.getMemberId())
                             .todoId(alarm.getTodoId())
+                            .regDate(alarm.getRegDate())
                             .build();
                     alarmDtoList.add(alarmDto);
                 }
@@ -108,6 +110,7 @@ public class AlarmService {
                         .isShow(false)
                         .memberId(memberId)
                         .todoId(todoId)
+                        .regDate(LocalDateTime.now())
                         .build();
 
                 alarmDao.save(alarm);
@@ -124,6 +127,7 @@ public class AlarmService {
                         .isShow(false)
                         .memberId(manageMember.getId())
                         .todoId(todoId)
+                        .regDate(LocalDateTime.now())
                         .build();
 
                 alarmDao.save(alarm);

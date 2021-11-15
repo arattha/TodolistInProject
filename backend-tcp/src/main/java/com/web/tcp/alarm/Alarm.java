@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,6 +21,8 @@ public class Alarm {
     private boolean isShow;
     private String memberId;
     private String todoId;
+
+    private LocalDateTime regDate;
 
     public void changeIsShow(){
         this.isShow = !this.isShow;

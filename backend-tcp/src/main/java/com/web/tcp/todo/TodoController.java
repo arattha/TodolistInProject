@@ -24,7 +24,6 @@ public class TodoController {
 
     AlarmService alarmService;
     TodoService todoService;
-    TodoDao todoDao;
 
     // client가 '/server/addTodo'경로로 새롭게 추가할 Todo에 관한 데이터를 전송
     // Todo를 포함하고 있는 project를 구독 중인 client들에게 send
@@ -93,14 +92,15 @@ public class TodoController {
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
 
-        Todo tmp = todoDao.findTodoById(todoDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+        TodoDto tmp = todoService.getTodoInfo(todoDto.getId());
         String beforeMid = tmp.getMemberId();
+        String beforeTid = tmp.getTeamId();
 
         if(type.equals("status")){
             todoService.moveTodoStatus(todoDto);
-        } else if(type.equals("team")) {
+        } else if(type.equals("team") && !beforeTid.equals(todoDto.getTeamId())) {
             todoService.moveTodoTeam(todoDto);
-        } else if(type.equals("member")){
+        } else if(type.equals("member") || beforeTid.equals(todoDto.getTeamId())){
             todoService.moveTodoMember(todoDto);
         } else {
             return;
@@ -112,6 +112,7 @@ public class TodoController {
         template.convertAndSend("/client/todo/" + projectId, todoService.getTodoList(projectId));
         template.convertAndSend("/client/detail/" + todoDto.getId(), todoService.getTodoInfo(todoDto.getId()));
         template.convertAndSend("/client/todo/" + projectId + "/team/" + teamId, todoService.getTodoTeamList(projectId, teamId));
+        template.convertAndSend("/client/todo/" + projectId + "/team/" + beforeTid, todoService.getTodoTeamList(projectId, beforeTid));
         if(beforeMid != null)
             template.convertAndSend("/client/todo/" + projectId + "/" + beforeMid, todoService.getTodoMyList(projectId, beforeMid));
         if(memberId != null)

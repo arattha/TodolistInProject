@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col w-11/12 max-h-36 bg-contentGray rounded-lg my-3 shadow-lg py-3 px-5">
-    <div class="flex justify-between w-full h-full">
-      <div class="flex">
+    <div class="flex flex-col justify-between w-full h-full">
+      <div class="flex" v-for="(m, index) in msg" :key="index">
         <div class="flex items-center font-black text-lg">
-          {{ todoHistory.diff.message }}
+          {{ m }}
         </div>
       </div>
     </div>
@@ -62,5 +62,10 @@ export default {
       this.isShow = false;
     },
   },
+  computed:{
+    msg(){
+      return this.todoHistory.diff.message.split("\n");
+    }
+  }
 };
 </script>
