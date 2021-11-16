@@ -22,7 +22,7 @@
     >
       추가하기
     </button>
-    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" />
+    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" @deleteCard="deleteCard"/>
     <Project-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
@@ -87,6 +87,9 @@ export default {
           }
         }
       );
+    },
+    deleteCard(){
+      this.getProject();
     },
     showModal() {
       this.isShow = true;

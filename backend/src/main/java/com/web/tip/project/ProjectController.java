@@ -87,7 +87,7 @@ public class ProjectController {
     // 프로젝트 상태변경
     @PutMapping("/changeDone")
     @ApiOperation(value = "프로젝트 진행 / 완료")
-    public Object changeDoneProject(@RequestParam String projectId) {
+    public Object changeDoneProject(@RequestBody String projectId) {
         log.info("프로젝트 진행 / 완료");
 
         final BasicResponse result = new BasicResponse();
