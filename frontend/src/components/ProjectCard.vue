@@ -18,7 +18,7 @@
       hover:bg-menuGray
       my-5
     "
-    @click="goPjtTodo()"
+    @click="goPjtTodo"
   >
     <div class="flex justify-center flex-col w-full lg:w-10/12">
       <div class="flex lg:flex-row flex-col h-1/2">
@@ -29,6 +29,50 @@
       </div>
       <div class="flex items-center h-1/2 w-full mt-3 lg:mt-0 text-sm lg:text-base">
         {{ pjtInfo.pjt.desc }}
+      </div>
+      <div class="flex items-end justify-center">
+        <button
+          class="
+            modifyBtn
+            bg-itemGray
+            text-black
+            lg:text-base
+            text-sm
+            font-semibold
+            lg:w-24 lg:py-2 lg:px-2
+            rounded-lg
+            shadow-md
+            hover:bg-menuGray
+            focus:outline-none
+            focus:ring-2
+            focus:ring-headerGray
+            focus:ring-offset-2
+            focus:ring-offset-purple-200
+          "
+        >
+          수정
+        </button>
+        <button
+          class="
+            doneBtn
+            bg-itemGray
+            text-black
+            lg:text-base
+            text-sm
+            font-semibold
+            lg:w-24 lg:py-2 lg:px-2
+            rounded-lg
+            shadow-md
+            hover:bg-menuGray
+            focus:outline-none
+            focus:ring-2
+            focus:ring-headerGray
+            focus:ring-offset-2
+            focus:ring-offset-purple-200
+          "
+        >
+          완료
+        </button>
       </div>
     </div>
     <div class="flex lg:justify-center lg:items-center text-xs lg:text-sm lg:flex-col">
@@ -49,16 +93,43 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { changeDoneProject } from '@/api/project.js';
 export default {
   name: 'PROJECTCARD',
   props: ['pjtInfo'],
   methods: {
     ...mapActions(['set_project_id', 'set_project_name']),
-    goPjtTodo() {
+    goPjtTodo(event) {
+      let target = event.target;
+      if (target == event.currentTarget.querySelector('.modifyBtn')) {
+        this.modifyProject();
+        return;
+      }
+      if (target == event.currentTarget.querySelector('.doneBtn')) {
+        this.doneProject();
+        return;
+      }
       this.set_project_id(this.pjtInfo.pjt.id);
       this.set_project_name(this.pjtInfo.pjt.name);
       this.$router.push(`/projects/${this.pjtInfo.pjt.id}/todos`);
     },
+    modifyProject(){
+
+    },
+    doneProject(){
+      if(!confirm(this.pjtInfo.pjt.name+" 프로젝트를 삭제/복구 하시겠습니까?")){
+        return;
+      }
+      changeDoneProject(
+        this.pjtInfo.pjt.id,
+        ()=>{
+          this.$emit('deleteCard');
+        },
+        (error)=>{
+          console.log(error);
+        }
+      )
+    }
   },
 };
 </script>

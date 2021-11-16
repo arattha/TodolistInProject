@@ -22,4 +22,15 @@ function addProject(data, memberId, callback, errorCallback) {
     });
 }
 
-export { getProjectList, addProject };
+function changeDoneProject(projectId, callback, errorCallback) {
+  axiosServiceWithAuth
+    .put("/project/changeDone/" , projectId )
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export { getProjectList, addProject, changeDoneProject };

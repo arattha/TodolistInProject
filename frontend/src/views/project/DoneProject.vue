@@ -1,6 +1,6 @@
 <template>
   <div class="px-16 w-full h-full">
-    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" />
+    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" @deleteCard="deleteCard"/>
   </div>
 </template>
 
@@ -59,6 +59,9 @@ export default {
           console.log(error);
         }
       );
+    },
+    deleteCard(){
+      this.getProject();
     },
   },
 };
