@@ -18,7 +18,7 @@
     <div
       class="
         flex flex-col
-        h-2/6
+        h-1/2
         lg:w-5/12
         w-9/12
         mx-auto
@@ -48,36 +48,40 @@
         >
           할일 수정
         </div>
-        <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
-          <div class="flex flex-col justify-center items-center py-10">
-            <div class="flex justify-between mb-3 w-10/12 lg:w-8/12">
-              <div class="flex items-center font-black w-4/12 text-2xl">할일</div>
-              <div class="flex flex-col w-10/12">
-                <input
-                  class="
-                    bg-contentGray
-                    flex-1
-                    appearance-none
-                    border border-transparent
-                    py-2
-                    px-4
-                    text-gray-700
-                    placeholder-gray-400
-                    shadow-md
-                    rounded-lg
-                    focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
-                  "
-                  placeholder="할일의 이름을 적어주세요."
-                  v-model="todoName"
-                  @input="typingTodoName"
-                  type="text"
-                />
-                <p class="text-red-500 font-black text-xs mt-2" v-if="!isValid">
-                  할일의 이름을 입력해주세요.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div
+          class="
+            flex flex-col
+            items-center
+            justify-center
+            h-full
+            w-full
+            bg-itemGray
+            overflow-y-auto
+          "
+        >
+          <input
+            class="
+              w-11/12
+              bg-contentGray
+              flex
+              appearance-none
+              border border-transparent
+              py-2
+              px-4
+              text-gray-700
+              placeholder-gray-400
+              shadow-md
+              rounded-lg
+              focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
+            "
+            placeholder="수정할 할일의 이름을 적어주세요."
+            v-model="todoName"
+            @input="typingTodoName"
+            type="text"
+          />
+          <p class="text-red-500 font-black text-xs mt-2" v-if="!isValid">
+            할일의 이름을 입력해주세요.
+          </p>
         </div>
         <div class="flex justify-center items-center p-5 bg-itemGray">
           <button
@@ -146,6 +150,7 @@ export default {
     clickOutside: vClickOutside.directive,
   },
   created() {
+    console.log(this.todoInfo);
     getMembersByTeam(
       this.teamId,
       (res) => {
