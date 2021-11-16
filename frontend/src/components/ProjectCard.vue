@@ -46,6 +46,7 @@
     <div class="flex items-center w-full py-3">
       <button
         class="
+          modifyBtn
           bg-buttonGray
           text-black text-xs
           font-semibold
@@ -69,6 +70,7 @@
       </button>
       <button
         class="
+          doneBtn
           bg-buttonGray
           text-black text-xs
           font-semibold
