@@ -1,6 +1,7 @@
 package com.web.tip.project;
 
 import com.web.tip.BasicResponse;
+import com.web.tip.project.request.ProjectRequest;
 import com.web.tip.project.response.ProjectResponse;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -80,6 +81,33 @@ public class ProjectController {
             result.object = null;
 
             return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+
+        }
+    }
+
+    // 프로젝트 상태변경
+    @PutMapping("/changeInfo")
+    @ApiOperation(value = "프로젝트 정보 수정")
+    public Object changeInfoProject(@RequestBody ProjectRequest projectRequest) {
+        log.info("프로젝트 정보 수정");
+
+        final BasicResponse result = new BasicResponse();
+
+        if (projectService.modifyProject(projectRequest)) {
+
+            result.status = true;
+            result.data = SUCCESS;
+            result.object = null;
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } else {
+
+            result.status = false;
+            result.data = "fail";
+            result.object = null;
+
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
 
         }
     }

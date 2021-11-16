@@ -7,6 +7,7 @@ import com.web.tip.error.ErrorCode;
 import com.web.tip.error.JpaErrorCode;
 import com.web.tip.error.JpaException;
 import com.web.tip.member.MemberDao;
+import com.web.tip.project.request.ProjectRequest;
 import com.web.tip.project.response.ProjectResponse;
 import com.web.tip.team.Team;
 import com.web.tip.team.TeamDao;
@@ -100,6 +101,20 @@ public class ProjectService {
             return false;
         }
 
+    }
+
+    @Transactional
+    public boolean modifyProject(ProjectRequest projectRequest) {
+        // 프로젝트 이름으로 완료시킬 프로젝트 Entity를 가져온다.
+        Project project = projectDao.findById(projectRequest.getId()).orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
+        project.changeInfo(projectRequest.getName(),projectRequest.getDesc(),projectRequest.getStartDate(),projectRequest.getEndDate());
+
+        try {
+            projectDao.save(project);
+        } catch (DataAccessException e) {
+            throw new JpaException(JpaErrorCode.SAVE_PROJECT_ERROR);
+        }
+        return true;
     }
 
     @Transactional

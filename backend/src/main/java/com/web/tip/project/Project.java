@@ -31,4 +31,11 @@ public class Project {
         this.isDone = !this.isDone;
     }
 
+    public void changeInfo(String name, String desc, LocalDate startDate, LocalDate endDate ){
+        this.name = name;
+        this.desc = desc;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
 }
