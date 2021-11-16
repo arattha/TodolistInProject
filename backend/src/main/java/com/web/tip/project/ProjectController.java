@@ -90,7 +90,6 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 정보 수정")
     public Object changeInfoProject(@RequestBody ProjectRequest projectRequest) {
         log.info("프로젝트 정보 수정");
-
         final BasicResponse result = new BasicResponse();
 
         if (projectService.modifyProject(projectRequest)) {

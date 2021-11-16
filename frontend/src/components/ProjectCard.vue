@@ -1,4 +1,5 @@
 <template>
+<div>
   <div
     class="
       flex flex-col
@@ -46,6 +47,7 @@
     <div class="flex items-center w-full py-3">
       <button
         class="
+          modifyBtn
           bg-buttonGray
           text-black text-xs
           font-semibold
@@ -69,6 +71,7 @@
       </button>
       <button
         class="
+          doneBtn
           bg-buttonGray
           text-black text-xs
           font-semibold
@@ -92,22 +95,40 @@
       </button>
     </div>
   </div>
+  <Project-Add-Modal v-if="isModalShow" :pjt="pjtInfo.pjt" @closeModal="closeModal"/>
+</div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
 import { changeDoneProject } from '@/api/project.js';
+import ProjectAddModal from '@/components/modal/ProjectAddModal.vue';
 export default {
   name: 'PROJECTCARD',
   props: ['pjtInfo'],
+  components: {
+    ProjectAddModal
+  },
+  data(){
+    return{
+      isModalShow:false,
+    }
+  },
   methods: {
     ...mapActions(['set_project_id', 'set_project_name']),
+    showModal() {
+      this.isModalShow = true;
+    },
+    closeModal() {
+      this.$emit('closeModal');
+      this.isModalShow = false;
+    },
     goPjtTodo(event) {
       let target = event.target;
       if (target == event.currentTarget.querySelector('.modifyBtn')) {
-        this.modifyProject();
+        this.showModal();
         return;
-      }
+      } 
       if (target == event.currentTarget.querySelector('.doneBtn')) {
         this.doneProject();
         return;
@@ -116,7 +137,6 @@ export default {
       this.set_project_name(this.pjtInfo.pjt.name);
       this.$router.push(`/projects/${this.pjtInfo.pjt.id}/todos`);
     },
-    modifyProject() {},
     doneProject() {
       if (!confirm(this.pjtInfo.pjt.name + ' 프로젝트를 삭제/복구 하시겠습니까?')) {
         return;
