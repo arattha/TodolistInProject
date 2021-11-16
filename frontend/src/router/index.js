@@ -126,7 +126,7 @@ router.beforeEach(async (to, from, next) => {
     store.dispatch('set_project_name', '');
   }
 
-  if (to.name !== 'Login' && to.name !== 'Signup') {
+  if (to.name !== 'Login' && to.name !== 'Signup' && to.name !== 'Home') {
     if (store.getters.isLogin) {
       await reissuUser(
         store.getters.id,
@@ -140,22 +140,34 @@ router.beforeEach(async (to, from, next) => {
             }
           } else {
             // 재발급 요청에 실패했을 경우
+            store.dispatch('set_id', '');
+            store.dispatch('set_nickname', '');
+            store.dispatch('toggle_isLogin', false);
             next('/login');
           }
         },
         (error) => {
           alert('문제가 발생했습니다. 다시 시도해주세요.');
           console.log(error);
-          // next('/login');
+          store.dispatch('set_id', '');
+          store.dispatch('set_nickname', '');
+          store.dispatch('toggle_isLogin', false);
+          next('/login');
         }
       );
     } else {
+      store.dispatch('set_id', '');
+      store.dispatch('set_nickname', '');
+      store.dispatch('toggle_isLogin', false);
       next('/login');
     }
   } else {
     if (store.getters.isLogin) {
       next('/projects');
     } else {
+      store.dispatch('set_id', '');
+      store.dispatch('set_nickname', '');
+      store.dispatch('toggle_isLogin', false);
       next();
     }
   }

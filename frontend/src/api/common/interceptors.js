@@ -25,30 +25,37 @@ export function setInterceptors(axiosService) {
 
       if (error.response.data.status === 401) {
         //if (!isTokenRefreshing) {
-          errorApi.retry = true;
-          // 재발급 요청
+        errorApi.retry = true;
+        // 재발급 요청
         let isReissu = false;
-        
-          await reissuUser(
-            store.getters.id,
-            (res) => {
-              // 재발급 요청에 성공할 경우
-              if (res.object) {
-                isReissu = true;
-              } else {
-                // 재발급 요청에 실패했을 경우
-                alert('로그인 유효기간이 만료되었습니다. \n다시 로그인해주세요.');
-                //store.dispatch('set_type', 'logout');
-                //store.dispatch('toggle_isLoading', true);
-                //logout(store.getters.id);
-              }
-            },
-            (error) => {
-              alert('문제가 발생했습니다. 다시 시도해주세요.');
-              console.log(error);
-              router.push('/login');
+
+        await reissuUser(
+          store.getters.id,
+          (res) => {
+            // 재발급 요청에 성공할 경우
+            if (res.object) {
+              isReissu = true;
+            } else {
+              // 재발급 요청에 실패했을 경우
+              alert('로그인 유효기간이 만료되었습니다. \n다시 로그인해주세요.');
+              store.dispatch('set_id', '');
+              store.dispatch('set_nickname', '');
+              store.dispatch('toggle_isLogin', false);
+              this.$router.push('/login');
+              //store.dispatch('set_type', 'logout');
+              //store.dispatch('toggle_isLoading', true);
+              //logout(store.getters.id);
             }
-          );
+          },
+          (error) => {
+            alert('문제가 발생했습니다. 다시 시도해주세요.');
+            console.log(error);
+            store.dispatch('set_id', '');
+            store.dispatch('set_nickname', '');
+            store.dispatch('toggle_isLogin', false);
+            router.push('/login');
+          }
+        );
         if (isReissu) {
           return await axios(errorApi);
         }
