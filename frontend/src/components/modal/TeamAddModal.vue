@@ -277,7 +277,6 @@ export default {
               memberList.push(member);
           })
           this.memberList = memberList;
-          console.log(this.memberList);
           this.checkAddOrModify();
         },
         (error) => {
