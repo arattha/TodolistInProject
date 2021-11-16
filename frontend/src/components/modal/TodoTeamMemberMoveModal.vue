@@ -218,6 +218,7 @@ export default {
       memberList: [],
       checkedMember: [],
       isValid: false,
+      isSend: false,
     };
   },
   directives: {
@@ -252,7 +253,11 @@ export default {
       this.closeModal();
     },
     closeModal() {
-      this.$emit('closeModal');
+      if(this.isSend){
+        this.$emit('closeModal');
+      } else {
+        this.$emit('justCloseModal');
+      }
     },
     typingSearchName(e) {
       this.searchName = e.target.value;
@@ -293,7 +298,7 @@ export default {
       if (!this.isValid) {
         return;
       }
-
+      this.isSend = true;
       // selectTeam에는 보내고자하는 팀이
       // checkMember에는 보내고자하는 팀원이 들어간다.
       let tmp = this.todoInfo;

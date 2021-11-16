@@ -34,7 +34,7 @@
         </div>
       </draggable>
     </div>
-    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfoNew" :stomp="stomp"/>
+    <Todo-Team-Member-Move-Modal v-if="isShow" @justCloseModal="justCloseModal" @closeModal="closeModal" :todoInfo="todoInfoNew" :stomp="stomp"/>
   </div>
 </template>
 
@@ -113,6 +113,17 @@ export default {
     closeModal() {
       this.isShow = false;
     },
+    justCloseModal(){
+      this.isShow = false;
+      this.stomp.send(
+        '/server/getTeamTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+          teamId: this.todoList[0].teamId,
+        }),
+        {}
+      );
+    }
   },
   computed: {
     ...mapGetters(['projectId', 'id', 'projectName']),
