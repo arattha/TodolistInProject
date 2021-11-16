@@ -142,9 +142,11 @@ export default {
           this.toggle_reload_todo_detail(true);
         },
         (error) => {
-          console.error(error);
-          alert('삭제를 하는 도중에 오류가 발생했습니다.');
-          this.toggle_reload_todo_detail(false);
+          if (this.isLogin) {
+            console.error(error);
+            alert('삭제를 하는 도중에 오류가 발생했습니다.');
+            this.toggle_reload_todo_detail(false);
+          }
         }
       );
     },

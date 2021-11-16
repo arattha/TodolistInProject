@@ -33,8 +33,10 @@ export default {
               }
             },
             (error) => {
-              alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-              console.log(error);
+              if (this.isLogin) {
+                alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+                console.log(error);
+              }
             }
           );
         }

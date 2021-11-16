@@ -208,9 +208,11 @@ export default {
           this.closeModal(true);
         },
         (error) => {
-          console.error(error);
-          alert('오류가 발생했습니다.');
-          this.closeModal(false);
+          if (this.isLogin) {
+            console.error(error);
+            alert('오류가 발생했습니다.');
+            this.closeModal(false);
+          }
         }
       );
     },
