@@ -1,25 +1,25 @@
 <template>
-  <div class="flex flex-col justify-center items-center">
-    <ValidationObserver class="w-full" ref="observer" v-slot="{ handleSubmit }">
+  <div class="flex flex-col h-full w-full overflow-auto scroll_type2">
+    <ValidationObserver
+      class="flex flex-col justify-center items-center w-full py-10"
+      ref="observer"
+      v-slot="{ handleSubmit }"
+    >
       <div
         class="
           flex
           xl:flex-row
           flex-col
           items-center
-          mx-auto
-          mt-5
-          sm:mt-16
-          mb-10
           bg-itemGray
           rounded-lg
           w-11/12
           md:w-7/12
-          xl:h-80
+          py-5
           shadow-md
         "
       >
-        <div class="flex items-center justify-center w-1/2 xl:my-0 my-5">
+        <div class="flex items-center justify-center w-1/2 xl:py-5">
           <div
             class="
               flex
@@ -30,7 +30,7 @@
               rounded-full
               w-48
               h-48
-              md:w-64 md:h-64
+              md:w-56 md:h-56
             "
           >
             <img :src="uploadImg" class="object-cover" />
@@ -165,20 +165,25 @@
       <div class="flex justify-center items-center">
         <button
           class="
+            flex
+            justify-center
+            items-center
             bg-headerGray
-            text-white text-base
+            text-white
             font-semibold
             w-20
+            h-10
+            mt-5
             py-2
-            px-4
+            px-2
             rounded-lg
             shadow-md
             hover:bg-menuGray
             focus:outline-none
             focus:ring-2
-            focus:ring-blue-500
+            focus:ring-headerGray
             focus:ring-offset-2
-            focus:ring-offset-blue-200
+            focus:ring-offset-purple-200
           "
           @click="handleSubmit(modifyProfile)"
         >
