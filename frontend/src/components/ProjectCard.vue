@@ -139,7 +139,7 @@ export default {
       this.$router.push(`/projects/${this.pjtInfo.pjt.id}/todos`);
     },
     doneProject() {
-      if (!confirm(this.pjtInfo.pjt.name + ' 프로젝트를 삭제/복구 하시겠습니까?')) {
+      if (!confirm(this.pjtInfo.pjt.name + ' 프로젝트를 완료/복구 하시겠습니까?')) {
         return;
       }
       changeDoneProject(
