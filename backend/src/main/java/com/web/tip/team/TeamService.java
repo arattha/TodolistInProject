@@ -84,7 +84,7 @@ public class TeamService {
 
     @Transactional
     public boolean teamNameCheck(String projectId, String teamName){//이미 팀체크가 끝난상태라 가정
-        if(teamDao.findTeamByProjectIdAndName(projectId,teamName).isPresent()){
+        if(teamDao.findTeamByProjectIdAndNameAndIsUse(projectId,teamName, true).isPresent()){
             return false;
         } else {
             return true;
