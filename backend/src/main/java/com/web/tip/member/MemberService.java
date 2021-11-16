@@ -247,7 +247,7 @@ public class MemberService {
             memberResponses.add(TeamMemberResponse.builder()
                     .id(member.getId())
                     .name(member.getName())
-                    .email(member.getNickname())
+                    .email(member.getMemberDetail().getEmail())
                     .build()
             );
         }

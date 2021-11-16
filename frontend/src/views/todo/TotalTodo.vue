@@ -241,6 +241,13 @@ export default {
     },
     closeTeamAddModal() {
       this.isShowTeamAddModal = false;
+      this.stomp.send(
+        '/server/getTodo',
+        JSON.stringify({
+          projectId: this.projectId,
+        }),
+        {}
+      );
     },
   },
 };

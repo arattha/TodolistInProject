@@ -142,7 +142,7 @@
                       "
                       @change="testMember($event)"
                     />
-                    <div class="flex justify-center items-center w-8/12">{{ member.email }}</div>
+                    <div class="flex justify-center items-center w-8/12">{{ member.memberDetailDto.email }}</div>
                     <div class="flex justify-center items-center w-3/12">{{ member.name }}</div>
                   </label>
                 </div>
@@ -339,9 +339,11 @@ export default {
             memberList: this.checkedMember
           },
           () => {
+            this.closeModal();
           },
           (error) => {
             console.log(error);
+            this.closeModal();
           }
         )
       } else {
@@ -351,13 +353,14 @@ export default {
             memberList: this.checkedMember
           },
           () => {
+            this.closeModal();
           },
           (error) => {
             console.log(error);
+            this.closeModal();
           }
         )
       }
-      this.closeModal();
     },
   },
   computed: {
