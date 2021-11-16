@@ -74,7 +74,12 @@
 
     <div id="scroll_div" class="flex overflow-x-auto px-8 mb-1 scroll_type1 h-full">
       <div class="flex pb-3 mr-8" v-for="(teamInfo, index) in teamFilter" :key="index">
-        <Total-Kanban :teamInfo="teamInfo" :filters="filters" :bookmarkFilter="bookmarkFilter" :stomp="stomp"/>
+        <Total-Kanban
+          :teamInfo="teamInfo"
+          :filters="filters"
+          :bookmarkFilter="bookmarkFilter"
+          :stomp="stomp"
+        />
       </div>
     </div>
     <TodoFilter
@@ -84,7 +89,11 @@
       @applyFilter="applyFilter"
       :teamInfoList="teamInfoList"
     />
-    <Team-Add-Modal v-if="isShowTeamAddModal" @closeTeamAddModal="closeTeamAddModal" :stomp="stomp"/>
+    <Team-Add-Modal
+      v-if="isShowTeamAddModal"
+      @closeTeamAddModal="closeTeamAddModal"
+      :stomp="stomp"
+    />
   </div>
 </template>
 
@@ -103,7 +112,7 @@ export default {
     TodoFilter,
     TeamAddModal,
   },
-  props:['stomp'],
+  props: ['stomp'],
   data() {
     return {
       teamInfoList: [],
@@ -148,8 +157,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_project_name', 'set_project_id', 'set_totalAlarmCnt', 'set_bookmarkList', 'set_team_id']),
-    getStomp(){
+    ...mapActions([
+      'set_project_name',
+      'set_project_id',
+      'set_totalAlarmCnt',
+      'set_bookmarkList',
+      'set_team_id',
+    ]),
+    getStomp() {
       this.stomp.send(
         '/server/getTodo',
         JSON.stringify({
@@ -188,8 +203,10 @@ export default {
           this.set_bookmarkList(tmp);
         },
         (error) => {
-          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-          console.log(error);
+          if (this.isLogin) {
+            alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+            console.log(error);
+          }
         }
       );
     },

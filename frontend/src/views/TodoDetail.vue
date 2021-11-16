@@ -346,8 +346,10 @@ export default {
             this.isBookmark = true;
           },
           (error) => {
-            alert('북마크 실패');
-            console.log(error);
+            if (this.isLogin) {
+              alert('북마크 실패');
+              console.log(error);
+            }
           }
         );
       } else {
@@ -361,8 +363,10 @@ export default {
             this.isBookmark = false;
           },
           (error) => {
-            alert('북마크 실패');
-            console.log(error);
+            if (this.isLogin) {
+              alert('북마크 실패');
+              console.log(error);
+            }
           }
         );
       }

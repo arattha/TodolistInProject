@@ -6,6 +6,7 @@ import user from './user';
 import todo from './todo';
 import page from './page';
 import bookmark from './bookmark';
+import loading from './loading';
 
 Vue.use(Vuex);
 
@@ -16,8 +17,7 @@ export default new Vuex.Store({
     todo,
     page,
     bookmark,
+    loading,
   },
-  plugins: [
-    createPersistedState(),
-  ],
+  plugins: [createPersistedState()],
 });

@@ -51,10 +51,10 @@ export default {
     this.getProject();
   },
   computed: {
-    ...mapGetters(['id']),
+    ...mapGetters(['id', 'isLogin']),
   },
   methods: {
-    getProject(){
+    getProject() {
       getProjectList(
         false,
         this.id,
@@ -81,8 +81,10 @@ export default {
           }
         },
         (error) => {
-          alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-          console.log(error);
+          if (this.isLogin) {
+            alert('프로젝트 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+            console.log(error);
+          }
         }
       );
     },

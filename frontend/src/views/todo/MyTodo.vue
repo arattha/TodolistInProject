@@ -221,8 +221,10 @@ export default {
           this.connect();
         },
         (error) => {
-          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-          console.log(error);
+          if (this.isLogin) {
+            alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+            console.log(error);
+          }
         }
       );
     },

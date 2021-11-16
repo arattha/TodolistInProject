@@ -110,7 +110,12 @@
       @cleanFilter="cleanFilter"
       @applyFilter="applyFilter"
     />
-    <Team-Add-Modal v-if="isShowTeamAddModal" :selectTeam="selectTeam" :modifyMemberList="teamMemberList" @closeTeamAddModal="closeTeamAddModal" />
+    <Team-Add-Modal
+      v-if="isShowTeamAddModal"
+      :selectTeam="selectTeam"
+      :modifyMemberList="teamMemberList"
+      @closeTeamAddModal="closeTeamAddModal"
+    />
   </div>
 </template>
 
@@ -120,17 +125,17 @@ import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
 import { getMembersByTeam } from '@/api/auth.js';
-import { mapGetters, mapActions } from "vuex";
-import { getTeam } from "@/api/team.js";
+import { mapGetters, mapActions } from 'vuex';
+import { getTeam } from '@/api/team.js';
 
 export default {
   name: 'TEAMTODO',
   components: {
     StatusKanban,
     MyTodoFilter,
-    TeamAddModal
+    TeamAddModal,
   },
-  props:['stomp'],
+  props: ['stomp'],
   data() {
     return {
       teamList: [],
@@ -166,7 +171,6 @@ export default {
     };
   },
   async created() {
-
     await this.getTeamList();
 
     /* 
@@ -175,7 +179,7 @@ export default {
     */
     this.getModifyMemberList();
   },
-  computed:{
+  computed: {
     ...mapGetters(['projectId', 'id', 'bookmarkList']),
     statusFilter: function () {
       let filters = this.filters;
@@ -191,22 +195,21 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['set_bookmarkList','push_bookmarkList']),
-    getTeamList(){
-      
+    ...mapActions(['set_bookmarkList', 'push_bookmarkList']),
+    getTeamList() {
       getTeam(
         this.projectId,
         (res) => {
           // team 가져옴
           this.teamList = [];
-          
+
           res.object.forEach((value) => {
             this.teamList.push({
               teamId: value.id,
-              teamName: value.name
+              teamName: value.name,
             });
           });
-    
+
           this.getBookmarkList();
           const findTeam = this.teamList.find((val) => {
             if (val.teamId === this.$route.params.teamId) {
@@ -221,7 +224,6 @@ export default {
           console.log('team 가져오기 실패');
         }
       );
-    
     },
     setStatusInfoList() {
       this.stomp.send(
@@ -232,14 +234,16 @@ export default {
         }),
         {}
       );
-      
-      // subscribe 로 alarm List 가져오기
-      this.stomp.subscribe('/client/todo/' + this.projectId + '/team/' + this.selectTeam.teamId, (res) => {
-        this.statusInfoList = JSON.parse(res.body);
-      });
 
+      // subscribe 로 alarm List 가져오기
+      this.stomp.subscribe(
+        '/client/todo/' + this.projectId + '/team/' + this.selectTeam.teamId,
+        (res) => {
+          this.statusInfoList = JSON.parse(res.body);
+        }
+      );
     },
-    getModifyMemberList(){
+    getModifyMemberList() {
       getMembersByTeam(
         this.selectTeam.teamId,
         (res) => {
@@ -305,8 +309,10 @@ export default {
           this.set_bookmarkList(tmp);
         },
         (error) => {
-          alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
-          console.log(error);
+          if (this.isLogin) {
+            alert('즐겨찾기 목록 받아오는데 문제가 발생했습니다. 새로고침 해주세요!!');
+            console.log(error);
+          }
         }
       );
     },

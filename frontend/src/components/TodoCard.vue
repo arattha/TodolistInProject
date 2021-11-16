@@ -69,7 +69,12 @@
         </button>
       </div>
     </div>
-    <Todo-Team-Member-Move-Modal v-if="isShow" @closeModal="closeModal" :todoInfo="todoInfo" :stomp="stomp"/>
+    <Todo-Team-Member-Move-Modal
+      v-if="isShow"
+      @closeModal="closeModal"
+      :todoInfo="todoInfo"
+      :stomp="stomp"
+    />
   </div>
 </template>
 
@@ -108,8 +113,10 @@ export default {
             this.todoInfo.bookmark = true;
           },
           (error) => {
-            alert('북마크 실패');
-            console.log(error);
+            if (this.isLogin) {
+              alert('북마크 실패');
+              console.log(error);
+            }
           }
         );
       } else {
@@ -123,8 +130,10 @@ export default {
             this.todoInfo.bookmark = false;
           },
           (error) => {
-            alert('북마크 실패');
-            console.log(error);
+            if (this.isLogin) {
+              alert('북마크 실패');
+              console.log(error);
+            }
           }
         );
       }

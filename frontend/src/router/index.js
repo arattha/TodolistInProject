@@ -140,6 +140,7 @@ router.beforeEach(async (to, from, next) => {
             }
           } else {
             // 재발급 요청에 실패했을 경우
+            store.dispatch('toggle_isLoading', true);
             store.dispatch('set_id', '');
             store.dispatch('set_nickname', '');
             store.dispatch('toggle_isLogin', false);
@@ -147,8 +148,9 @@ router.beforeEach(async (to, from, next) => {
           }
         },
         (error) => {
-          alert('문제가 발생했습니다. 다시 시도해주세요.');
+          // alert('문제가 발생했습니다. 다시 시도해주세요.');
           console.log(error);
+          store.dispatch('toggle_isLoading', true);
           store.dispatch('set_id', '');
           store.dispatch('set_nickname', '');
           store.dispatch('toggle_isLogin', false);
@@ -156,12 +158,15 @@ router.beforeEach(async (to, from, next) => {
         }
       );
     } else {
+      store.dispatch('toggle_isLoading', true);
       store.dispatch('set_id', '');
       store.dispatch('set_nickname', '');
       store.dispatch('toggle_isLogin', false);
       next('/login');
     }
   } else {
+    store.dispatch('toggle_isLoading', false);
+
     if (store.getters.isLogin) {
       next('/projects');
     } else {

@@ -118,8 +118,10 @@ export default {
   },
   methods: {
     ...mapActions(['toggle_isLogin', 'set_id', 'set_nickname', 'set_type', 'toggle_isLoading']),
-    login() {
-      loginUser(
+    async login() {
+      this.toggle_isLoading(true);
+
+      await loginUser(
         {
           nickname: this.id,
           password: this.password,
@@ -140,6 +142,8 @@ export default {
           console.log(error);
         }
       );
+
+      this.toggle_isLoading(false);
     },
     goSignup() {
       this.$router.push('/signup');
