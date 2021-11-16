@@ -3,12 +3,12 @@
     <button
       class="
         bg-itemGray
-        text-black text-sm
+        text-black text-xs
         font-semibold
-        mt-1
-        h-10
         w-16
-        lg:w-20 lg:py-2 lg:px-2
+        h-8
+        py-2
+        px-2
         rounded-lg
         shadow-md
         hover:bg-menuGray
@@ -22,7 +22,12 @@
     >
       추가하기
     </button>
-    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" @deleteCard="deleteCard"/>
+    <Project-Card
+      v-for="(pjtInfo, index) in pjtInfoList"
+      :key="index"
+      :pjtInfo="pjtInfo"
+      @deleteCard="deleteCard"
+    />
     <Project-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
 </template>
@@ -88,7 +93,7 @@ export default {
         }
       );
     },
-    deleteCard(){
+    deleteCard() {
       this.getProject();
     },
     showModal() {
