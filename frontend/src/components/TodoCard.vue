@@ -72,6 +72,7 @@
     <Todo-Team-Member-Move-Modal
       v-if="isShow"
       @closeModal="closeModal"
+      @justCloseModal="justCloseModal" 
       :todoInfo="todoInfo"
       :stomp="stomp"
     />
@@ -156,6 +157,9 @@ export default {
       this.isShow = true;
     },
     closeModal() {
+      this.isShow = false;
+    },
+    justCloseModal() {
       this.isShow = false;
     },
   },
