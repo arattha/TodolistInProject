@@ -22,6 +22,17 @@ function addProject(data, memberId, callback, errorCallback) {
     });
 }
 
+function modifyProject(data, callback, errorCallback) {
+  axiosServiceWithAuth
+    .put("/project/changeInfo/", data)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
 function changeDoneProject(projectId, callback, errorCallback) {
   axiosServiceWithAuth
     .put("/project/changeDone/" , projectId )
@@ -33,4 +44,4 @@ function changeDoneProject(projectId, callback, errorCallback) {
     });
 }
 
-export { getProjectList, addProject, changeDoneProject };
+export { getProjectList, addProject, changeDoneProject, modifyProject };

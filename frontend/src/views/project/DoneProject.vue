@@ -1,6 +1,6 @@
 <template>
   <div class="px-16 w-full h-full">
-    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" @deleteCard="deleteCard"/>
+    <Project-Card v-for="(pjtInfo, index) in pjtInfoList" :key="index" :pjtInfo="pjtInfo" @closeModal="deleteCard" @deleteCard="deleteCard"/>
   </div>
 </template>
 

@@ -47,7 +47,7 @@
             text-3xl
           "
         >
-          프로젝트 추가
+          {{ pjt != null ? "프로젝트 추가" : "프로젝트 수정" }}
         </div>
         <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
           <div class="flex flex-col justify-center items-center py-5">
@@ -99,6 +99,7 @@
                   v-model="startDate"
                   @input="inputStartDate"
                   :min="minDate"
+                  :disabled="pjt != null"
                   type="date"
                 />
 
@@ -150,7 +151,7 @@
               focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
             "
             v-model="inputContent"
-            @input="checkByte"
+            @input="update"
             placeholder="내용을 입력해주세요."
           ></textarea>
           <div class="flex justify-end mx-8">
@@ -200,9 +201,9 @@
               focus:ring-offset-2
               focus:ring-offset-blue-200
             "
-            @click="addTodoDetail()"
+            @click="addOrModify()"
           >
-            추가
+            {{ pjt == null ? "추가" : "수정" }}
           </button>
         </div>
       </div>
@@ -214,10 +215,12 @@
 import DOMPurify from 'dompurify';
 import vClickOutside from 'v-click-outside';
 import { mapGetters } from 'vuex';
-import { addProject } from '@/api/project.js'
+import _ from 'lodash';
+import { addProject, modifyProject } from '@/api/project.js'
 
 export default {
   name: 'PROJECTADDMODAL',
+  props: ['pjt'],
   data() {
     return {
       inputContent: '',
@@ -237,6 +240,10 @@ export default {
   },
   created() {
     this.minDate = new Date().toISOString().substring(0, 10);
+    this.setInfo();
+  },
+  mounted(){
+    this.checkByte(this.inputContent);
   },
   computed: {
     ...mapGetters(['id']),
@@ -248,13 +255,66 @@ export default {
     closeModal() {
       this.$emit('closeModal');
     },
-    checkByte(e) {
+    addOrModify(){
+      if(this.pjt == null){
+        this.addTodoDetail();
+      } else {
+        this.modifyInfo();
+      }
+    },
+    modifyInfo(){
+      if (this.wordCnt > 500) {
+        alert('최대 500Byte 까지 입력이 가능합니다.');
+        return;
+      }
+      
+      let changeContent = this.inputContent
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+      //
+      let changedText = DOMPurify.sanitize(changeContent);
+
+      var data = {
+        id: this.pjt.id,
+        name: this.projectName,
+        desc: changedText,
+        startDate: this.startDate,
+        endDate: this.endDate,
+      }
+
+      modifyProject(data,
+      () => {
+        alert('수정완료');
+        this.closeModal();
+      },
+      () => {})
+    },
+    setInfo(){
+      if(this.pjt == null){
+        return;
+      }
+      this.projectNameValid = true;
+      this.startDateValid = true;
+      this.endDateValid = true;
+      this.inputContent = this.pjt.desc;
+      this.startDate = this.pjt.startDate;
+      this.endDate = this.pjt.endDate;
+      this.projectName = this.pjt.name;
+    },
+    update: _.debounce(function (e) {
+      this.checkByte(e.target.value);
+    }, 300),
+    checkByte(text_val) {
       // const maxByte = 1000; //최대 1000바이트
-      const text_len = e.target.value.length; //입력한 문자수
+      const text_len = text_val.length; //입력한 문자수
 
       let totalByte = 0;
       for (let i = 0; i < text_len; i++) {
-        const each_char = e.target.value.charAt(i);
+        const each_char = text_val.charAt(i);
         const uni_char = escape(each_char); //유니코드 형식으로 변환
         if (uni_char.length > 4) {
           // 한글 : 2Byte
@@ -266,7 +326,7 @@ export default {
       }
 
       this.wordCnt = totalByte;
-      this.inputContent = e.target.value;
+      this.inputContent = text_val;
     },
     addTodoDetail() {
       if (this.wordCnt > 500) {

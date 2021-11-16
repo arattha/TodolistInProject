@@ -28,6 +28,7 @@
       :key="index"
       :pjtInfo="pjtInfo"
       @deleteCard="deleteCard"
+      @closeModal="closeModal"
     />
     <Project-Add-Modal v-if="isShow" @closeModal="closeModal" />
   </div>
