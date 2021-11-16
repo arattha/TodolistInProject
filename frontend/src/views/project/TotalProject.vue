@@ -7,6 +7,7 @@
         font-semibold
         w-16
         h-8
+        my-1
         py-2
         px-2
         rounded-lg
