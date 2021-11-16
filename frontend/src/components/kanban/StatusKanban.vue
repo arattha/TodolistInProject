@@ -34,7 +34,7 @@
         </div>
       </draggable>
     </div>
-    <Todo-Team-Member-Move-Modal v-if="isShow" @justCloseModal="justCloseModal" @closeModal="closeModal" :todoInfo="todoInfoNew" :stomp="stomp"/>
+    <Todo-Team-Member-Move-Modal v-if="isShow" @justCloseModal="justCloseModal" @closeModal="closeModal" :todoInfo="todoInfoNew" :stomp="stomp" :selectedTeam="selectedTeam"/>
   </div>
 </template>
 
@@ -46,7 +46,7 @@ import TodoTeamMemberMoveModal from '@/components/modal/TodoTeamMemberMoveModal.
 
 export default {
   name: 'STATUSKANBAN',
-  props: ['status', 'todoList', 'bookmarkFilter', 'stomp'],
+  props: ['status', 'todoList', 'bookmarkFilter', 'stomp', 'selectedTeam'],
   data() {
     return {
       isShow: false,

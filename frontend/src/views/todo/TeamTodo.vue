@@ -100,6 +100,7 @@
         :status="statusInfo.status"
         :todoList="statusInfo.todoList"
         :bookmarkFilter="bookmarkFilter"
+        :selectedTeam="selectTeam"
         @changeStatus="changeStatus"
         :stomp="stomp"
       />
