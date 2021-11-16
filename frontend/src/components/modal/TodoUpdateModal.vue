@@ -74,7 +74,7 @@
               rounded-lg
               focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
             "
-            placeholder="수정할 할일의 이름을 적어주세요."
+            placeholder="변경할 할일의 이름을 적어주세요."
             v-model="todoName"
             @input="typingTodoName"
             type="text"
