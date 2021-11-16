@@ -29,71 +29,72 @@
         <div class="flex items-center h-1/2 w-full mt-3 lg:mt-0 text-sm lg:text-base">
           {{ pjtInfo.pjt.desc }}
         </div>
+        <div class="flex items-center w-full py-3">
+          <button
+            class="
+              modifyBtn
+              bg-buttonGray
+              text-black text-xs
+              font-semibold
+              w-16
+              h-8
+              py-2
+              px-2
+              mr-8
+              mt-4
+              rounded-lg
+              shadow-md
+              hover:bg-itemGray
+              focus:outline-none
+              focus:ring-2
+              focus:ring-headerGray
+              focus:ring-offset-2
+              focus:ring-offset-purple-200
+            "
+          >
+            수정
+          </button>
+          <button
+            class="
+              doneBtn
+              bg-buttonGray
+              text-black text-xs
+              font-semibold
+              w-16
+              h-8
+              py-2
+              px-2
+              mr-8
+              mt-4
+              rounded-lg
+              shadow-md
+              hover:bg-itemGray
+              focus:outline-none
+              focus:ring-2
+              focus:ring-headerGray
+              focus:ring-offset-2
+              focus:ring-offset-purple-200
+            "
+          >
+            완료
+          </button>
+        </div>
       </div>
       <div class="flex lg:justify-center lg:items-center text-xs lg:text-sm lg:flex-col">
-        <div class="mr-2 lg:mr-0 my-1">
-          전체 할일 <span class="hidden lg:inline">&nbsp;&nbsp;</span> :
-          <span class="font-black text-sm">{{ pjtInfo.totalCnt }}</span>
+        <div class="flex mr-2 lg:mr-0 my-1">
+          전체 할일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :
+          <span class="flex font-black text-sm">{{ pjtInfo.totalCnt }}</span>
         </div>
-        <div class="mr-2 lg:mr-0 my-1">
-          진행중인 일 : <span class="font-black text-sm">{{ pjtInfo.progressCnt }}</span>
+        <div class="flex mr-2 lg:mr-0 my-1">
+          진행중인 일 : <span class="flex font-black text-sm">{{ pjtInfo.progressCnt }}</span>
         </div>
-        <div class="mr-2 lg:mr-0 my-1">
-          완료한 일 <span class="hidden lg:inline">&nbsp;&nbsp;</span> :
-          <span class="font-black text-sm">{{ pjtInfo.doneCnt }}</span>
+        <div class="flex mr-2 lg:mr-0 my-1">
+          완료한 일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :
+          <span class="flex font-black text-sm">{{ pjtInfo.doneCnt }}</span>
         </div>
       </div>
     </div>
-    <div class="flex items-center w-full py-3">
-      <button
-        class="
-          modifyBtn
-          bg-buttonGray
-          text-black text-xs
-          font-semibold
-          w-16
-          h-8
-          py-2
-          px-2
-          mr-8
-          mt-4
-          rounded-lg
-          shadow-md
-          hover:bg-itemGray
-          focus:outline-none
-          focus:ring-2
-          focus:ring-headerGray
-          focus:ring-offset-2
-          focus:ring-offset-purple-200
-        "
-      >
-        수정
-      </button>
-      <button
-        class="
-          doneBtn
-          bg-buttonGray
-          text-black text-xs
-          font-semibold
-          w-16
-          h-8
-          py-2
-          px-2
-          mr-8
-          mt-4
-          rounded-lg
-          shadow-md
-          hover:bg-itemGray
-          focus:outline-none
-          focus:ring-2
-          focus:ring-headerGray
-          focus:ring-offset-2
-          focus:ring-offset-purple-200
-        "
-      >
-        완료
-      </button>
-    </div>
+    
   </div>
   <Project-Add-Modal v-if="isModalShow" :pjt="pjtInfo.pjt" @closeModal="closeModal"/>
 </div>

@@ -172,12 +172,6 @@ export default {
   },
   async created() {
     await this.getTeamList();
-
-    /* 
-      할일 가져오고 this.updateList 연결해줄것
-    
-    */
-    this.getModifyMemberList();
   },
   computed: {
     ...mapGetters(['projectId', 'id', 'bookmarkList']),
@@ -218,6 +212,7 @@ export default {
           });
 
           this.selectTeam = findTeam;
+          this.getModifyMemberList();
           this.setStatusInfoList();
         },
         () => {
@@ -240,6 +235,7 @@ export default {
         '/client/todo/' + this.projectId + '/team/' + this.selectTeam.teamId,
         (res) => {
           this.statusInfoList = JSON.parse(res.body);
+          this.updateList();
         }
       );
     },
