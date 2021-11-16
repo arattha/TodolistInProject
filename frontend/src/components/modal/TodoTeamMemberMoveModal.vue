@@ -209,7 +209,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'TODOMOVEMODAL',
-  props: ['todoInfo', 'isDetail', 'stomp'],
+  props: ['todoInfo', 'isDetail', 'stomp', 'selectedTeam'],
   data() {
     return {
       teamList: [],
@@ -227,6 +227,8 @@ export default {
   created() {
     // 팀을 선택하면 멤버를 부를지 멤버를 선택하면 팀을 부를지는 로직 개발자가 선택할 것
     // 여기서는 팀을 선택하면 멤버를 선택한다고 가정하고 페이지를 구성
+    this.setDefault();
+
     getTeam(
       this.projectId,
       (res) => {
@@ -261,6 +263,13 @@ export default {
     },
     typingSearchName(e) {
       this.searchName = e.target.value;
+    },
+    setDefault(){
+      if(this.selectedTeam != null){
+        this.isValid = true;
+        this.selectTeam = this.selectedTeam;
+        this.inputTeam();
+      }
     },
     inputTeam() {
       if (this.selectTeam == []) {
