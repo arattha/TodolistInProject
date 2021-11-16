@@ -14,6 +14,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.time.LocalDateTime;
+
 @Controller
 @AllArgsConstructor
 @Slf4j
@@ -91,6 +93,8 @@ public class TodoController {
     // 수정된 Todo의 목록들을 해당 프로젝트를 구독 중인 client들에게 전송
     @MessageMapping(value = "/moveTodo/{type}")
     public void moveTodo(TodoDto todoDto, @DestinationVariable("type") String type){
+
+        todoDto.setModifyDate(LocalDateTime.now());
 
         TodoDto tmp = todoService.getTodoInfo(todoDto.getId());
         String beforeMid = tmp.getMemberId();

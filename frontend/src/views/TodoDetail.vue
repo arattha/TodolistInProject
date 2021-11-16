@@ -316,23 +316,20 @@ export default {
       }
     },
     changeStatus(status) {
-      this.todoInfo.status = status;
+      
+      if(this.todoInfo.status == "New"){
+        // 전 상태가 New 였다면 보내기 모달창 활성화
+        this.isTeamMemberMoveModalShow = true;
+      } else if(status == "New"){
+        // 바꿀 상태가 New라면 담당자를 없음으로 변경
+        this.todoInfo.status = status;
+        this.todoInfo.memberId = null;
+        this.stompClient.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
+      } else {
+        this.todoInfo.status = status;
+        this.stompClient.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
+      }
 
-      let date = new Date();
-      this.todoInfo.modifyDate =
-        date.getFullYear() +
-        '-' +
-        (date.getMonth() + 1) +
-        '-' +
-        date.getDate() +
-        'T' +
-        date.getHours() +
-        ':' +
-        (date.getMinutes().toString().length == 1 ? '0' + date.getMinutes() : date.getMinutes()) +
-        ':' +
-        date.getSeconds();
-
-      this.stompClient.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
     },
     todoContentAdd() {
       this.showModal();

@@ -296,17 +296,12 @@ export default {
 
       // selectTeam에는 보내고자하는 팀이
       // checkMember에는 보내고자하는 팀원이 들어간다.
-      let date = new Date();
       let tmp = this.todoInfo;
       tmp.status = "접수";
       tmp.teamId = this.selectTeam.teamId;
       tmp.teamName = this.selectTeam.teamName;
       tmp.memberId = this.checkedMember.id;
       tmp.memberName = this.checkedMember.name;
-      tmp.modifyDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" 
-      + (date.getHours().toString().length == 1 ? "0" + date.getHours() : date.getHours()) + ":" + 
-      (date.getMinutes().toString().length == 1 ? "0" + date.getMinutes() : date.getMinutes()) + ":" + 
-      (date.getSeconds().toString().length == 1 ? "0" + date.getSeconds() : date.getSeconds());
       
       if (this.checkedMember.length === 0) {
         tmp.status = "New";
