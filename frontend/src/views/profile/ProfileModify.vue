@@ -33,7 +33,7 @@
               md:w-56 md:h-56
             "
           >
-            <img :src="uploadImg" class="object-cover" />
+            <img :src="uploadImg" class="rounded-full flex object-cover w-full h-full" />
 
             <label
               for="getImgInput"
