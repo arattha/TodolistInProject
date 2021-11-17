@@ -46,7 +46,7 @@
             text-3xl
           "
         >
-          팀 추가
+          {{ isModify ? "팀 수정" : "팀 추가" }}
         </div>
         <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
           <div class="flex flex-col justify-center items-center py-10">
