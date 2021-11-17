@@ -3,7 +3,7 @@
     <div class="flex justify-between w-full">
       <div class="flex">
         <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
-          <img :src="'http://localhost:8080/img/' + detail.writerId" />
+          <img class="rounded-full flex object-cover w-full h-full" :src="'http://localhost:8080/img/' + detail.writerId" />
         </div>
         <div class="flex items-end font-black text-2xl">{{ detail.name }}</div>
         <div class="flex ml-5 text-xs items-end pb-1">{{ detail.regDate }}</div>
