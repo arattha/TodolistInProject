@@ -133,7 +133,9 @@ export default {
       this.projectId,
       this.id,
       (res) => {
-        this.set_team_id(res.object.id);
+        if (res.status) {
+          this.set_team_id(res.object.id);
+        }
         this.getStomp();
       },
       (error) => {
