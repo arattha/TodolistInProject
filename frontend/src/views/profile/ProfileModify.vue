@@ -279,7 +279,10 @@ export default {
       this.img = inputImg[0];
     },
     modifyProfile() {
-      if (JSON.stringify(this.userInfo) === JSON.stringify(this.userModifyInfo)) {
+      if (
+        this.img === '' &&
+        JSON.stringify(this.userInfo) === JSON.stringify(this.userModifyInfo)
+      ) {
         alert('바뀐 내용이 없습니다!');
         return;
       }
