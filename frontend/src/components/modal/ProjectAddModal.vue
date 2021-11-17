@@ -47,7 +47,7 @@
             text-3xl
           "
         >
-          {{ pjt != null ? "프로젝트 추가" : "프로젝트 수정" }}
+          {{ pjt == null ? "프로젝트 추가" : "프로젝트 수정" }}
         </div>
         <div class="flex flex-col h-full w-full bg-itemGray overflow-y-auto">
           <div class="flex flex-col justify-center items-center py-5">
