@@ -324,6 +324,9 @@ export default {
         }
       }
     },
+    activeBookmarkFilter() {
+      this.bookmarkFilter = !this.bookmarkFilter;
+    },
     todoFilter() {
       this.isShow = true;
     },
