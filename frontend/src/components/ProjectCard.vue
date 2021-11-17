@@ -76,20 +76,20 @@
               focus:ring-offset-purple-200
             "
           >
-            완료
+            {{ isDonePath ? "복구" : "완료" }}
           </button>
         </div>
       </div>
-      <div class="flex lg:justify-center lg:items-center text-xs lg:text-sm lg:flex-col">
+      <div class="flex lg:justify-center text-xs lg:text-sm lg:flex-col">
         <div class="flex mr-2 lg:mr-0 my-1">
-          전체 할일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :
+          전체 할일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :&nbsp;
           <span class="flex font-black text-sm">{{ pjtInfo.totalCnt }}</span>
         </div>
         <div class="flex mr-2 lg:mr-0 my-1">
-          진행중인 일 : <span class="flex font-black text-sm">{{ pjtInfo.progressCnt }}</span>
+          진행중인 일 :&nbsp; <span class="flex font-black text-sm">{{ pjtInfo.progressCnt }}</span>
         </div>
         <div class="flex mr-2 lg:mr-0 my-1">
-          완료한 일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :
+          완료한 일 <span class="hidden lg:flex">&nbsp;&nbsp;</span> :&nbsp;
           <span class="flex font-black text-sm">{{ pjtInfo.doneCnt }}</span>
         </div>
       </div>
@@ -113,12 +113,23 @@ export default {
   data(){
     return{
       isModalShow:false,
+      isDonePath:false,
     }
+  },
+  created(){
+    this.setPath();
   },
   methods: {
     ...mapActions(['set_project_id', 'set_project_name']),
     showModal() {
       this.isModalShow = true;
+    },
+    setPath(){
+      if(this.$route.path == '/projects'){
+        this.isDonePath = false;
+      } else if(this.$route.path == '/projects/done'){
+        this.isDonePath = true;
+      }
     },
     closeModal() {
       this.$emit('closeModal');
@@ -139,7 +150,8 @@ export default {
       this.$router.push(`/projects/${this.pjtInfo.pjt.id}/todos`);
     },
     doneProject() {
-      if (!confirm(this.pjtInfo.pjt.name + ' 프로젝트를 완료/복구 하시겠습니까?')) {
+      let str = this.isDonePath ? '복구' : '완료';
+      if (!confirm(this.pjtInfo.pjt.name + ' 프로젝트를 ' + str + '하시겠습니까?')) {
         return;
       }
       changeDoneProject(
