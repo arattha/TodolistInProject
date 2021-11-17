@@ -87,7 +87,7 @@
             </ul>
 
             <div class="rounded-full w-14 h-14 lg:w-16 lg:h-16 bg-white mr-3">
-              <img :src="'http://localhost:8080/img/' + todoInfo.memberId" />
+              <img class="rounded-full flex object-cover w-full h-full" :src="'http://localhost:8080/img/' + todoInfo.memberId" />
             </div>
             <div class="flex flex-col">
               <div class="lg:text-2xl">{{ todoInfo.memberName }}</div>
