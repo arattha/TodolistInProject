@@ -28,7 +28,6 @@ public class TodoRecord {
 
     private String todo_id;
 
-    @Column(insertable = false)
     private LocalDateTime modifyDate;
 
     @Type(type = "jsonb")
