@@ -77,4 +77,17 @@ function modifyProjectTeamName(data, callback, errorCallback) {
     });
 }
 
-export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck, modifyTeam, modifyProjectTeamName };
+function deleteProjectTeam(data, callback, errorCallback) {
+  axiosServiceWithAuth
+    .delete('/team', {params : {
+      teamId : data
+    }})
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck, modifyTeam, modifyProjectTeamName, deleteProjectTeam };

@@ -29,6 +29,32 @@
             focus:ring-offset-2
             focus:ring-offset-purple-200
           "
+          @click="delTeam()"
+          v-if="teamInfo.todoInfoList.length == 0"
+        >
+          팀 삭제
+        </button>
+        <button
+          class="
+            flex
+            justify-center
+            items-center
+            bg-contentGray
+            text-black text-sm
+            font-semibold
+            h-10
+            w-24
+            py-2
+            px-4
+            rounded-lg
+            shadow-md
+            hover:bg-menuGray
+            focus:outline-none
+            focus:ring-2
+            focus:ring-headerGray
+            focus:ring-offset-2
+            focus:ring-offset-purple-200
+          "
           @click="showModal()"
         >
           할일 추가
@@ -78,6 +104,7 @@
 import TodoCard from '@/components/TodoCard.vue';
 import TodoAddModal from '@/components/modal/TodoAddModal.vue';
 import draggable from 'vuedraggable';
+import { deleteProjectTeam } from '@/api/team.js';
 import { mapGetters } from 'vuex';
 export default {
   name: 'MYTODOADDMODAL',
@@ -134,6 +161,24 @@ export default {
       const projectId = this.$route.params.projectId;
       this.$router.push(`/projects/${projectId}/todos/team/${this.teamId}`);
     },
+    delTeam(){
+
+      if(confirm("팀 " + this.teamInfo.teamName + "을(를) 지우시겠습니까?")){
+
+        deleteProjectTeam(this.teamId,
+        () => {
+          this.stomp.send(
+            '/server/getTodo',
+            JSON.stringify({
+              projectId: this.projectId,
+            }),
+            {}
+          );
+        },
+        () => {});
+      }
+
+    }
   },
   computed: {
     ...mapGetters(['projectId', 'id', 'projectName']),
