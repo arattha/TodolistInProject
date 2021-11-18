@@ -66,4 +66,15 @@ function teamNameCheck(userData, callback, errorCallback) {
     });
 }
 
-export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck, modifyTeam };
+function modifyProjectTeamName(data, callback, errorCallback) {
+  axiosServiceWithAuth
+    .patch('/team', data)
+    .then((res) => {
+      callback(res.data);
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
+}
+
+export { getTeam, getMyTeam, getProjectMembers, createTeam, teamNameCheck, modifyTeam, modifyProjectTeamName };

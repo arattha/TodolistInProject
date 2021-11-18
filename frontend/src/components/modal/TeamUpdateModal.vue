@@ -46,7 +46,7 @@
             text-3xl
           "
         >
-          할일 수정
+          팀 이름 수정
         </div>
         <div
           class="
@@ -74,13 +74,13 @@
               rounded-lg
               focus:outline-none focus:ring-1 focus:ring-headerGray focus:border-transparent
             "
-            placeholder="변경할 할일의 이름을 적어주세요."
-            v-model="todoName"
-            @input="typingTodoName"
+            placeholder="변경할 팀의 이름을 적어주세요."
+            v-model="teamName"
+            @input="typingTeamName"
             type="text"
           />
           <p class="text-red-500 font-black text-xs mt-2" v-if="!isValid">
-            할일의 이름을 입력해주세요.
+            팀의 이름을 입력해주세요.
           </p>
         </div>
         <div class="flex justify-center items-center p-5 bg-itemGray">
@@ -123,7 +123,7 @@
               focus:ring-offset-2
               focus:ring-offset-blue-200
             "
-            @click="todoUpdate"
+            @click="teamUpdate"
           >
             수정
           </button>
@@ -135,40 +135,32 @@
 
 <script>
 import vClickOutside from 'v-click-outside';
-import { getMembersByTeam } from '@/api/auth.js';
+import { mapGetters } from 'vuex';
+import { modifyProjectTeamName } from '@/api/team.js';
 
 export default {
-  name: 'TODOUPDATEMODAL',
+  name: 'TEAMUPDATEMODAL',
   data() {
     return {
-      todoName: '',
+      teamName: '',
       isValid: false,
     };
   },
-  props: ['todoInfo', 'stomp'],
+  props: ['todoInfo', 'stomp', 'teamId'],
   directives: {
     clickOutside: vClickOutside.directive,
   },
-  created() {
-    console.log(this.todoInfo);
-    getMembersByTeam(
-      this.teamId,
-      (res) => {
-        this.memberList = res.object;
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
+  computed:{
+      ...mapGetters(['projectId'])
   },
   methods: {
     onClickOutside() {
       this.closeModal();
     },
     closeModal() {
-      this.$emit('closeModal');
+      this.$emit('closeTeamNameModal');
     },
-    typingTodoName(e) {
+    typingTeamName(e) {
       if (!e.target.value) {
         this.isValid = false;
         return;
@@ -176,22 +168,20 @@ export default {
 
       this.isValid = true;
     },
-    todoUpdate() {
+    teamUpdate() {
       // 팀 이름 입력이 필수!
       if (!this.isValid) {
         return;
       }
-      this.stomp.send(
-        '/server/updateTodo',
-        JSON.stringify({
-          id: this.todoInfo.id,
-          title: this.todoName,
-          status: this.todoInfo.status,
-          memberId: this.todoInfo.memberId,
-          projectId: this.todoInfo.projectId,
-          teamId: this.todoInfo.teamId,
-        })
-      );
+
+      modifyProjectTeamName({
+          id: this.teamId,
+          name: this.teamName,
+          projectId: this.projectId
+      },
+      () => {},
+      () => {});
+
       this.closeModal();
     },
   },
