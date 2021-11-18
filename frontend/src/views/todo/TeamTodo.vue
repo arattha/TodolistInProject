@@ -43,6 +43,30 @@
           focus:ring-offset-2
           focus:ring-offset-purple-200
         "
+        @click="showTeamNameModal()"
+      >
+        이름 수정
+      </button>
+      <button
+        class="
+          bg-itemGray
+          text-black
+          lg:text-base
+          text-sm
+          font-semibold
+          h-full
+          w-20
+          lg:w-24 lg:py-2 lg:px-2
+          mr-8
+          rounded-lg
+          shadow-md
+          hover:bg-menuGray
+          focus:outline-none
+          focus:ring-2
+          focus:ring-headerGray
+          focus:ring-offset-2
+          focus:ring-offset-purple-200
+        "
         @click="showTeamAddModal()"
       >
         팀 수정
@@ -105,6 +129,11 @@
         :stomp="stomp"
       />
     </div>
+    <TeamUpdateModal
+      v-if="isTeamNameShow"
+      @closeTeamNameModal="closeTeamNameModal"
+      :teamId="selectTeam.teamId"
+    />
     <MyTodoFilter
       v-if="isShow"
       @closeModal="closeFilter"
@@ -122,6 +151,7 @@
 
 <script>
 import StatusKanban from '@/components/kanban/StatusKanban.vue';
+import TeamUpdateModal from '@/components/modal/TeamUpdateModal.vue';
 import TeamAddModal from '@/components/modal/TeamAddModal.vue';
 import MyTodoFilter from '@/components/MyTodoFilter.vue';
 import { getBookmark } from '@/api/bookmark.js';
@@ -133,6 +163,7 @@ export default {
   name: 'TEAMTODO',
   components: {
     StatusKanban,
+    TeamUpdateModal,
     MyTodoFilter,
     TeamAddModal,
   },
@@ -166,6 +197,7 @@ export default {
       teamMemberList: [],
       todoInfoList: [],
       bookmarkFilter: false,
+      isTeamNameShow: false,
       filters: null,
       isShow: false,
       isShowTeamAddModal: false,
@@ -326,6 +358,12 @@ export default {
     },
     activeBookmarkFilter() {
       this.bookmarkFilter = !this.bookmarkFilter;
+    },
+    showTeamNameModal() {
+      this.isTeamNameShow = true;
+    },
+    closeTeamNameModal() {
+      this.isTeamNameShow = false;
     },
     todoFilter() {
       this.isShow = true;
