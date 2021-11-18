@@ -279,7 +279,7 @@ public class TodoService {
             // todo변경 시 diff에 저장
             Map<String, String> diff = new HashMap<>();
 
-            Member member = memberDao.findMemberById(todoTmp.getMemberId()).orElse(null);
+            Member member = memberDao.findMemberById(todoDto.getMemberId()).orElse(null);
             String writer = member.getName();
 
             diff.put("writer", writer);
@@ -293,6 +293,11 @@ public class TodoService {
             TodoRecord todoRecord = setTodoRecord(todoRecordId, diff, todoTmp.getId());
 
             todoRecordDao.save(todoRecord);
+
+            if(todoDto.getStatus().equals("New")){
+                // 할 일의 상태가 New로 바뀌었다면 담당자가 없어야한다.
+                todoDto.setMemberId(null);
+            }
             todoDao.save(TodoAdaptor.dtoToEntity(todoDto));
             alarmController.spreadAlarm(todoDto.getTitle() + " : " + diff.get("message"), todoDto.getId());
 
