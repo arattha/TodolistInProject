@@ -280,12 +280,19 @@ public class TodoService {
             Map<String, String> diff = new HashMap<>();
 
             Member member = memberDao.findMemberById(todoDto.getMemberId()).orElse(null);
-            String writer = member.getName();
+            String writer = "";
+            if(member != null){
+                writer = member.getName();
+            }
 
             diff.put("writer", writer);
             diff.put("before", todoTmp.getStatus());
             diff.put("after", todoDto.getStatus());
-            diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+            if(member == null){
+                diff.put("message", "상태가 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+            } else {
+                diff.put("message", writer + "님께서 상태를 " + todoTmp.getStatus() + "에서 " + todoDto.getStatus() + "(으)로 변경했습니다.");
+            }
 
             todoTmp.changeStatus(todoDto.getStatus());
             todoTmp.changeModifyDate();
@@ -406,16 +413,23 @@ public class TodoService {
                 writer = member.getName();
 
             Member nextMember = memberDao.findMemberById(todoDto.getMemberId()).orElse(null);
-            String nextWriter = nextMember.getName();
+            String nextWriter = "";
+            if(nextMember != null){
+                nextWriter = nextMember.getName();
+            }
+
+            if(writer.equals(nextWriter)) return true;
+
+            diff.put("before", writer);
+            diff.put("after", nextWriter);
 
             if (writer.equals("")) {
-                diff.put("before", writer);
-                diff.put("after", nextWriter);
-                diff.put("message", "할일의 담당자가 " + nextWriter + "님으로 변경되었습니다.");
-            } else {
-                diff.put("before", writer);
-                diff.put("after", nextWriter);
-                diff.put("message", "할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.");
+                if(!nextWriter.equals("")) diff.put("message", "할일의 담당자가 " + nextWriter + "님으로 변경되었습니다.");
+                else diff.put("message", "할일의 이동으로 담당자가 아직 지정되지 않았습니다.");
+            }
+            else {
+                if(!nextWriter.equals("")) diff.put("message", "할일의 담당자가 " + writer + "님에서 " + nextWriter + "님으로 변경되었습니다.");
+                else diff.put("message", "할일의 이동으로 담당자가 아직 지정되지 않았습니다.");
             }
 
             todoTmp.changeBelong(todoDto.getTeamId(), todoDto.getMemberId());

@@ -164,8 +164,7 @@ export default {
     delTeam(){
 
       if(confirm("팀 " + this.teamInfo.teamName + "을(를) 지우시겠습니까?")){
-
-        deleteProjectTeam(this.teamId,
+        deleteProjectTeam(this.teamInfo.teamId,
         () => {
           this.stomp.send(
             '/server/getTodo',
