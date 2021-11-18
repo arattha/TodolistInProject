@@ -323,7 +323,6 @@ export default {
         this.isTeamMemberMoveModalShow = true;
       } else {
         this.todoInfo.status = status;
-        this.todoInfo.memberId = this.id;
         this.stompClient.send('/server/moveTodo/status', JSON.stringify(this.todoInfo), {});
       }
 
