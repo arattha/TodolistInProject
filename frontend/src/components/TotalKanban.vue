@@ -125,6 +125,9 @@ export default {
   created() {
     this.teamId = this.teamInfo.teamId;
   },
+  updated(){
+    this.teamId = this.teamInfo.teamId;
+  },
   methods: {
     todoAdd() {
       this.showModal();

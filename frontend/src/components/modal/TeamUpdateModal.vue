@@ -80,7 +80,7 @@
             type="text"
           />
           <p class="text-red-500 font-black text-xs mt-2" v-if="!isValid">
-            팀의 이름을 입력해주세요.
+            팀 이름이 중복이거나 비어있습니다.
           </p>
         </div>
         <div class="flex justify-center items-center p-5 bg-itemGray">
@@ -136,7 +136,7 @@
 <script>
 import vClickOutside from 'v-click-outside';
 import { mapGetters } from 'vuex';
-import { modifyProjectTeamName } from '@/api/team.js';
+import { modifyProjectTeamName, teamNameCheck } from '@/api/team.js';
 
 export default {
   name: 'TEAMUPDATEMODAL',
@@ -165,8 +165,22 @@ export default {
         this.isValid = false;
         return;
       }
-
-      this.isValid = true;
+      teamNameCheck(
+        {
+          projectId : this.$route.params.projectId,
+          teamName : this.teamName,
+        },
+        (res) => {
+          if(res.status){
+            this.isValid = true;
+          } else {
+            this.isValid = false;
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
     },
     teamUpdate() {
       // 팀 이름 입력이 필수!
