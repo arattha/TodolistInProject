@@ -21,7 +21,7 @@
 ## :clipboard: 프로젝트 명세
 
 ### 개발 환경
-![image](/uploads/234e5901babe1d77fc4d84e84bc3bb05/image.png)
+![image](/산출물/아키텍쳐.png)
 
 
 ## 기술 스택
